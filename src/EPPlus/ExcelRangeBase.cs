@@ -288,8 +288,9 @@ namespace OfficeOpenXml
             }
 
             range.CheckAndSplitSharedFormula(address);
-            ExcelWorksheet.Formulas f = new ExcelWorksheet.Formulas(SourceCodeTokenizer.Default);
-            f.Formula = value;
+            //ExcelWorksheet.Formulas f = new ExcelWorksheet.Formulas(SourceCodeTokenizer.Default);
+            var f = new SharedFormula(range, value);
+            //f.Formula = value;
             f.Index = range._worksheet.GetMaxShareFunctionIndex(IsArray);
             f.Address = address.FirstAddress;
             f.StartCol = address.Start.Column;
@@ -1599,7 +1600,7 @@ namespace OfficeOpenXml
                 {
                     if (fIsSet)
                     {
-                        f = new ExcelWorksheet.Formulas(SourceCodeTokenizer.Default);
+                        f = new SharedFormula(fRange, "");
                         f.Index = _worksheet.GetMaxShareFunctionIndex(false);
                         f.StartCol = fRange._fromCol;
                         f.IsArray = false;
@@ -1631,9 +1632,19 @@ namespace OfficeOpenXml
                 //Right Range
                 if (fRange._toCol > address._toCol)
                 {
+                    int startCol = address._toCol + 1;
+                    int startRow;
+                    if (address._fromRow < fRange._fromRow)
+                        startRow = fRange._fromRow;
+                    else
+                    {
+                        startRow = address._fromRow;
+                    }
+
                     if (fIsSet)
                     {
-                        f = new ExcelWorksheet.Formulas(SourceCodeTokenizer.Default);
+                        //f = new ExcelWorksheet.Formulas(SourceCodeTokenizer.Default);
+                        f = new SharedFormula(this, "");
                         f.Index = _worksheet.GetMaxShareFunctionIndex(false);
                         f.IsArray = false;
                         _worksheet._sharedFormulas.Add(f.Index, f);
@@ -1641,25 +1652,18 @@ namespace OfficeOpenXml
                     else
                     {
                         fIsSet = true;
-                    }
-                    f.StartCol = address._toCol + 1;
-                    if (address._fromRow < fRange._fromRow)
-                        f.StartRow = fRange._fromRow;
-                    else
-                    {
-                        f.StartRow = address._fromRow;
+                        f.StartCol = startCol;
                     }
 
                     if (fRange._toRow < address._toRow)
                     {
-                        f.Address = ExcelCellBase.GetAddress(f.StartRow, f.StartCol,
-                                fRange._toRow, fRange._toCol);
+                        f.Address = ExcelCellBase.GetAddress(f.StartRow, f.StartCol, fRange._toRow, fRange._toCol);
                     }
                     else
                     {
-                        f.Address = ExcelCellBase.GetAddress(f.StartRow, f.StartCol,
-                                address._toRow, fRange._toCol);
+                        f.Address = ExcelCellBase.GetAddress(f.StartRow, f.StartCol, address._toRow, fRange._toCol);
                     }
+
                     f.Formula = TranslateFromR1C1(formulaR1C1, f.StartRow, f.StartCol);
                     _worksheet.Cells[f.Address].SetSharedFormulaID(f.Index, pIx);
                 }
@@ -1668,7 +1672,8 @@ namespace OfficeOpenXml
                 {
                     if (fIsSet)
                     {
-                        f = new ExcelWorksheet.Formulas(SourceCodeTokenizer.Default);
+                        //f = new ExcelWorksheet.Formulas(SourceCodeTokenizer.Default);
+                        f = new SharedFormula(this, "");
                         f.Index = _worksheet.GetMaxShareFunctionIndex(false);
                         f.IsArray = false;
                         _worksheet._sharedFormulas.Add(f.Index, f);
@@ -1679,7 +1684,7 @@ namespace OfficeOpenXml
 
                     f.Formula = TranslateFromR1C1(formulaR1C1, f.StartRow, f.StartCol);
 
-                    f.Address = ExcelCellBase.GetAddress(f.StartRow, f.StartCol,
+                    f.Address = GetAddress(f.StartRow, f.StartCol,
                             fRange._toRow, fRange._toCol);
                     _worksheet.Cells[f.Address].SetSharedFormulaID(f.Index, pIx);
 

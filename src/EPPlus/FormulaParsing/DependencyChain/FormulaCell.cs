@@ -28,7 +28,7 @@ namespace OfficeOpenXml.FormulaParsing
         internal CellStoreEnumerator<object> iterator;
         internal ExcelWorksheet iteratorWs;
         internal ExcelWorksheet ws;
-        internal List<Token> Tokens { get; set; }
+        internal IList<Token> Tokens { get; set; }
         internal string Formula { get; set; }
         internal int ShIndex;
     }

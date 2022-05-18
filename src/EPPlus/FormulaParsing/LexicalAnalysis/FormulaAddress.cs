@@ -1,25 +1,92 @@
 ﻿using OfficeOpenXml.Table;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 {
-    internal class SharedFormula
+    internal class Formula
     {
-        ExcelWorksheet _ws;
-        ExcelRangeBase _range;
-        internal static ISourceCodeTokenizer _tokenizer= OptimizedSourceCodeTokenizer.Default;
-        public SharedFormula(ExcelRangeBase range, string formula)
-        {            
-            _range = range;
-            _ws = range.Worksheet;
-            Tokens = _tokenizer.Tokenize(formula);
-            SetTokenInfos();
-        
-        }
+        internal ExcelWorksheet _ws;
+        internal int StartRow, StartCol;
+        internal static ISourceCodeTokenizer _tokenizer = OptimizedSourceCodeTokenizer.Default;
         internal IList<Token> Tokens;
-        internal Dictionary<int, TokenInfo> TokenInfos;
+        public Formula(ExcelWorksheet ws, string formula)
+        {
+            _ws = ws;
+            Tokens = _tokenizer.Tokenize(formula);
+        }
+        public Formula(ExcelWorksheet ws, int row, int col, string formula)
+        {
+            _ws = ws;
+            StartRow = row;
+            StartCol = col;
+            Tokens = _tokenizer.Tokenize(formula);
+        }
+        internal void SetRowCol(int row, int col)
+        {
+            StartRow = row;
+            StartCol = col;
+        }
+    }
+    internal class SharedFormula : Formula
+    {        
+        internal int EndRow, EndCol;
+        int _rowOffset = 0, _colOffset = 0;
+        public SharedFormula(ExcelWorksheet ws, string address, string formula) : base(ws, formula)
+        {
+            _ws = ws;
+            Formula = formula;
+            ExcelCellBase.GetRowColFromAddress(address, out StartRow, out StartCol, out EndRow, out EndCol);
+        }
 
+        public SharedFormula(ExcelRangeBase range, string formula) : this(range.Worksheet, range._fromRow, range._fromCol, range._toRow, range._toCol, formula)
+        {
+        }
+
+        public SharedFormula(ExcelWorksheet ws, int fromRow, int fromCol, int toRow, int toCol, string formula) : base(ws, fromRow, fromCol, formula)
+        {
+            EndRow = toRow;
+            EndCol = toCol;
+            Formula = formula;
+            SetTokenInfos();
+        }
+
+        internal int Index { get; set; }
+        internal string Formula { get; set; }
+        //public string Formula 
+        //{ 
+        //    get
+        //    {
+        //        var sb = new StringBuilder();
+        //        for(int i = 0;i<Tokens.Count;i++)
+        //        {
+        //            var t = Tokens[i];
+        //            if (t.TokenType==TokenType.ExcelAddress)
+        //            {
+        //                sb.Append(TokenInfos[i].GetValue());
+        //            }
+        //            else
+        //            {
+        //                sb.Append(t.Value);
+        //            }
+        //        }
+        //        return sb.ToString();
+        //    }
+        //}
+        internal bool IsArray { get; set; }
+        internal string Address
+        {
+            get
+            {
+                return ExcelCellBase.GetAddress(StartRow, StartCol, EndRow, EndCol);
+            }
+            set
+            {
+                ExcelCellBase.GetRowColFromAddress(value, out StartRow, out StartCol, out EndRow, out EndCol);
+            }
+        }
+        internal Dictionary<int, TokenInfo> TokenInfos;
         private void SetTokenInfos()
         {
             TokenInfos = new Dictionary<int, TokenInfo>();
@@ -63,8 +130,10 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 }
             }
         }
-
-        int _rowOffset=0, _colOffset = 0;
+        internal void SetOffset(string wsName, int rowOffset, int colOffset)
+        {
+            SetOffset(rowOffset, colOffset);
+        }
         internal void SetOffset(int rowOffset, int colOffset)
         {
             var changeRowOffset = rowOffset - _rowOffset;
@@ -76,19 +145,18 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                     case FormulaType.CellAddress:
                     case FormulaType.FormulaRange:
                         t.SetOffset(changeRowOffset, changeColOffset);
-                        break;
+                        break;                    
                 }
             }
             _rowOffset = rowOffset;
             _colOffset = colOffset;
         }
-
         private void AddTableAddress(short pos)
         {
             short i = pos;
             var t = Tokens[i];
             TokenInfos = new Dictionary<int, TokenInfo>();
-            var table = _range.Worksheet.Workbook.GetTable(t.Value);
+            var table = _ws.Workbook.GetTable(t.Value);
             if(table != null)
             {
                 if(Tokens[++i].TokenType == TokenType.OpeningBracket)
@@ -147,6 +215,19 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 }
             }
         }
+
+        internal SharedFormula Clone()
+        {
+            return new SharedFormula(_ws, StartRow, StartCol, EndRow, EndCol, Formula)
+            {
+                Index = Index,
+                IsArray = IsArray,
+                Tokens = Tokens,
+                TokenInfos = TokenInfos,
+                _ws = _ws,
+            };
+        }
+
         private void SetColFromTablePart(string value, ExcelTable table, ref int fromCol, ref int toCol, bool lastColon)
         {
             var col = table.Columns[value];
@@ -206,14 +287,14 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                     break;
                 case "#this row":
                     var dr = table.DataRange;
-                    if (_ws != table.WorkSheet || _range._fromRow < dr._fromRow || _range._fromRow > dr._toRow)
+                    if (_ws != table.WorkSheet || StartRow < dr._fromRow || StartRow > dr._toRow)
                     {
                         fromRow = toRow = -1;
                     }
                     else
                     {
-                        fromRow = _range._fromRow;
-                        toRow = _range._fromRow;
+                        fromRow = StartRow;
+                        toRow = StartRow;
                         fixedFlag = FixedFlag.FromColFixed | FixedFlag.ToColFixed;
                     }
                     break;
@@ -272,6 +353,69 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 }
             }
         }
+
+        internal string GetFormula(int row, int column, string worksheet)
+        {
+            if (StartRow == row && StartCol == column)
+            {
+                return Formula;
+            }
+
+            SetTokens(worksheet);
+            string f = "";
+            foreach (var token in Tokens)
+            {
+                if (token.TokenTypeIsSet(TokenType.ExcelAddress))
+                {
+                    var a = new ExcelFormulaAddress(token.Value, (ExcelWorksheet)null);
+                    if (a.IsFullColumn)
+                    {
+                        if (a.IsFullRow)
+                        {
+                            f += token.Value;
+                        }
+                        else
+                        {
+                            f += a.GetOffset(0, column - StartCol, true);
+                        }
+                    }
+                    else if (a.IsFullRow)
+                    {
+                        f += a.GetOffset(row - StartRow, 0, true);
+                    }
+                    else
+                    {
+                        if (a.Table != null)
+                        {
+                            f += token.Value;
+                        }
+                        else
+                        {
+                            f += a.GetOffset(row - StartRow, column - StartCol, true);
+                        }
+                    }
+                }
+                else
+                {
+                    if (token.TokenTypeIsSet(TokenType.StringContent))
+                    {
+                        f += "\"" + token.Value.Replace("\"", "\"\"") + "\"";
+                    }
+                    else
+                    {
+                        f += token.Value;
+                    }
+                }
+            }
+            return f;
+        }
+        internal void SetTokens(string worksheet)
+        {
+            if (Tokens == null)
+            {
+                Tokens = _tokenizer.Tokenize(Formula, worksheet);
+            }
+        }
     }
     internal enum FormulaType
     {
@@ -290,13 +434,15 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         ToColFixed = 0x8,
         All = 0xF,
     }
-
     internal abstract class TokenInfo
     {
         internal FormulaType Type;
         internal short TokenStartPosition;
         internal short TokenEndPosition;
         internal virtual void SetOffset(int rowOffset, int colOffset) { }
+
+        internal abstract string GetValue();
+
         internal virtual bool IsFixed { get { return true; } }
     }
     internal class FormulaCellAddress : TokenInfo
@@ -316,6 +462,10 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             if (!FixedCol) Col += colOffset;
         }
         internal override bool IsFixed { get { return FixedRow & FixedCol; } }
+        internal override string GetValue()
+        {
+            return ExcelCellBase.GetAddress(Row, FixedRow, Col, FixedCol);
+        }
     }
     internal class FormulaFixedValue : TokenInfo
     {
@@ -327,6 +477,10 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             Value = v;
         }
         internal object Value;
+        internal override string GetValue()
+        {
+            return Value.ToString();
+        }
     }
     internal class FormulaNamedFormula : TokenInfo
     {
@@ -338,7 +492,11 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             Formula = f;
         }
         internal string Formula;
-        internal override bool IsFixed { get { return false; } } //TODO: Check here if we can us fixed from the acutal formula in  later stadge.
+        internal override bool IsFixed { get { return false; } } //TODO: Check here if we can us fixed from the actual formula in  later stage.
+        internal override string GetValue()
+        {
+            return Formula;
+        }
     }
     internal class FormulaRange : TokenInfo
     {
@@ -435,6 +593,20 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                         });
                 }
             }
+        }
+        internal override string GetValue()
+        {
+            var sb=new StringBuilder();
+            foreach(var r in Ranges)
+            {
+                sb.Append(ExcelCellBase.GetAddress(r.FromRow, r.FromCol, r.ToRow, r.ToCol,
+                    (r.FixedFlag & FixedFlag.FromRowFixed) > 0,
+                    (r.FixedFlag & FixedFlag.FromColFixed) > 0,
+                    (r.FixedFlag & FixedFlag.ToRowFixed) > 0,
+                    (r.FixedFlag & FixedFlag.ToColFixed) > 0));
+                sb.Append(':');
+            }
+            return sb.ToString(0, sb.Length - 1);
         }
     }
 }

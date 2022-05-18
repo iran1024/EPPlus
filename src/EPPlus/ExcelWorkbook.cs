@@ -256,7 +256,7 @@ namespace OfficeOpenXml
 		internal FormulaParser _formulaParser = null;
 		internal ExcelThreadedCommentPersonCollection _threadedCommentPersons = null;
 		internal FormulaParserManager _parserManager;
-		internal CellStore<List<Token>> _formulaTokens;
+		internal CellStore<IList<Token>> _formulaTokens;
 		internal class PivotTableCacheRangeInfo
 		{
 			public string Address { get; set; }

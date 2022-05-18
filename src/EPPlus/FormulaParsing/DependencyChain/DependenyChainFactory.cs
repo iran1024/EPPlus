@@ -176,7 +176,9 @@ namespace OfficeOpenXml.FormulaParsing
             Stack<FormulaCell> stack = new Stack<FormulaCell>();
             if (f.ShIndex > 0)
             {
-                f.Tokens = ws._sharedFormulas[f.ShIndex].GetTokensFromOffset(f.ws.Name, f.Row, f.Column).ToList();
+                var sf = ws._sharedFormulas[f.ShIndex];
+                sf.SetOffset(f.ws.Name, f.Row-sf.StartRow, f.Column-sf.StartCol);
+                f.Tokens = sf.Tokens;
             }
         iterateToken:
             while (f.tokenIx < f.Tokens.Count)

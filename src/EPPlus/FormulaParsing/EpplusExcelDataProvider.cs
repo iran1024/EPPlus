@@ -842,7 +842,7 @@ namespace OfficeOpenXml.FormulaParsing
             }
             return ValueToTextHandler.FormatValue(value,false, ft, null);
         }
-        public override List<LexicalAnalysis.Token> GetRangeFormulaTokens(string worksheetName, int row, int column)
+        public override IList<Token> GetRangeFormulaTokens(string worksheetName, int row, int column)
         {
             return _package.Workbook.Worksheets[worksheetName]._formulaTokens.GetValue(row, column);
         }

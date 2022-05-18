@@ -3255,5 +3255,14 @@ namespace EPPlusTest
                 }
             }
         }
+        [TestMethod]
+        public void AddImage()
+        {
+            using (var p = OpenPackage("test.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets.Add("image");
+                ws.Drawings.AddPicture("Image1",new FileInfo($@"c:\temp\EPPlus20211018.jpg"));
+            }
+        }
     }
 }

@@ -89,9 +89,7 @@ namespace OfficeOpenXml
             }
             public int StartRow { get; set; }
             public int StartCol { get; set; }
-
             internal List<Token> Tokens { get; set; }
-
             internal IEnumerable<Token> GetTokensFromOffset(string currentWs, int row, int column)
             {
                 if (_tokenOffsetCollection == null)
@@ -103,7 +101,6 @@ namespace OfficeOpenXml
                 return _tokenOffsetCollection;
             }
 
-
             private TokenOffsetCollection _tokenOffsetCollection;
             internal void SetTokens(string worksheet)
             {
@@ -114,7 +111,7 @@ namespace OfficeOpenXml
             }
             internal string GetFormula(int row, int column, string worksheet)
             {
-                if ((StartRow == row && StartCol == column))
+                if (StartRow == row && StartCol == column)
                 {
                     return Formula;
                 }
@@ -203,7 +200,6 @@ namespace OfficeOpenXml
                 formulaCells.Value = null;
             }
         }
-
         /// <summary>
         /// Removes all values of cells with formulas in the entire worksheet, but keeps the formulas.
         /// </summary>
@@ -315,7 +311,6 @@ namespace OfficeOpenXml
                 }
                 return true;
             }
-
             internal void SetIndex(ExcelAddressBase address, int ix)
             {
                 if (address._fromRow == 1 && address._toRow == ExcelPackage.MaxRows) //Entire row
@@ -407,14 +402,14 @@ namespace OfficeOpenXml
         internal CellStoreValue _values;
         internal CellStore<object> _formulas;
         internal FlagCellStore _flags;
-        internal CellStore<List<Token>> _formulaTokens;
+        internal CellStore<IList<Token>> _formulaTokens;
 
         internal CellStore<Uri> _hyperLinks;
         internal CellStore<int> _commentsStore;
         internal CellStore<int> _threadedCommentsStore;
         internal CellStore<MetaDataReference> _metadataStore;
 
-        internal Dictionary<int, Formulas> _sharedFormulas = new Dictionary<int, Formulas>();
+        internal Dictionary<int, SharedFormula> _sharedFormulas = new Dictionary<int, SharedFormula>();
         internal RangeSorter _rangeSorter;
         internal int _minCol = ExcelPackage.MaxColumns;
         internal int _maxCol = 0;
@@ -1864,7 +1859,7 @@ namespace OfficeOpenXml
                             string formula = ConvertUtil.ExcelDecodeString(xr.ReadElementContentAsString());
                             if (formula != "")
                             {
-                                _sharedFormulas.Add(sfIndex, new Formulas(SourceCodeTokenizer.Default) { Index = sfIndex, Formula = formula, Address = fAddress, StartRow = address._fromRow, StartCol = address._fromCol });
+                                _sharedFormulas.Add(sfIndex, new SharedFormula(this, fAddress, formula) { Index = sfIndex });
                             }
                         }
                         else
@@ -1882,7 +1877,7 @@ namespace OfficeOpenXml
                             WriteArrayFormulaRange(refAddress, afIndex);
                         }
 
-                        _sharedFormulas.Add(afIndex, new Formulas(SourceCodeTokenizer.Default) { Index = afIndex, Formula = formula, Address = refAddress, StartRow = address._fromRow, StartCol = address._fromCol, IsArray = true });
+                        _sharedFormulas.Add(afIndex, new SharedFormula(this, refAddress, formula) { Index = afIndex, IsArray = true });
                     }
                     else if (t=="dataTable") //Unsupported
                     {
@@ -3406,7 +3401,7 @@ namespace OfficeOpenXml
                         {
                             if (!(addr._fromRow == row && addr._fromCol == col))
                             {
-                                var fIx=_formulas.GetValue(row, col);
+                                var fIx = _formulas.GetValue(row, col);
                                 if (fIx is int && (int)fIx == f.Index)
                                 {
                                     _formulas.SetValue(row, col, f.GetFormula(row, col, this.Name));

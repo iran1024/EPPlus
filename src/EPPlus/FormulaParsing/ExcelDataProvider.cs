@@ -77,7 +77,7 @@ namespace OfficeOpenXml.FormulaParsing
         public abstract IEnumerable<object> GetRangeValues(string address);
 
         public abstract string GetRangeFormula(string worksheetName, int row, int column);
-        public abstract List<Token> GetRangeFormulaTokens(string worksheetName, int row, int column);
+        public abstract IList<Token> GetRangeFormulaTokens(string worksheetName, int row, int column);
         public abstract bool IsRowHidden(string worksheetName, int row);
         ///// <summary>
         ///// Returns a single cell value
