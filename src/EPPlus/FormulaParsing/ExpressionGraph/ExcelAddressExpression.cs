@@ -46,7 +46,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         }
 
         internal ExcelAddressExpression(string expression, ExcelDataProvider excelDataProvider, ParsingContext parsingContext, RangeAddressFactory rangeAddressFactory, bool negate)
-            : base(expression)
+            : base(expression, parsingContext)
         {
             Require.That(excelDataProvider).Named("excelDataProvider").IsNotNull();
             Require.That(parsingContext).Named("parsingContext").IsNotNull();

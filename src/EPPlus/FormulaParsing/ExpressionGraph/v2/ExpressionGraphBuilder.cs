@@ -44,7 +44,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.v2
             _parsingContext = parsingContext;
         }
 
-        public ExpressionGraph Build(IEnumerable<Token> tokens)
+        public ExpressionGraph Build(IEnumerable<Token> tokens, IDictionary<int, TokenInfo> tokenInfo=null)
         {
             _tokenIndex = 0;
             _graph.Reset();
@@ -123,12 +123,12 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.v2
         {
             if (parent == null)
             {
-                _graph.Add(new EnumerableExpression());
+                _graph.Add(new EnumerableExpression(_parsingContext));
                 BuildUp(tokens, _graph.Current);
             }
             else
             {
-                var enumerableExpression = new EnumerableExpression();
+                var enumerableExpression = new EnumerableExpression(_parsingContext);
                 parent.AddChild(enumerableExpression);
                 BuildUp(tokens, enumerableExpression);
             }
@@ -238,7 +238,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.v2
         {
             if (parent == null)
             {
-                _graph.Add(new GroupExpression(_negateNextExpression));
+                _graph.Add(new GroupExpression(_negateNextExpression, _parsingContext));
                 _negateNextExpression = false;
                 BuildUp(tokens, _graph.Current);
             }
@@ -246,7 +246,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.v2
             {
                 if (parent.IsGroupedExpression || parent is FunctionArgumentExpression)
                 {
-                    var newGroupExpression = new GroupExpression(_negateNextExpression);
+                    var newGroupExpression = new GroupExpression(_negateNextExpression, _parsingContext);
                     _negateNextExpression = false;
                     parent.AddChild(newGroupExpression);
                     BuildUp(tokens, newGroupExpression);

@@ -21,7 +21,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
         [ClassCleanup]
         public static void Cleanup()
         {
-
+            SaveAndCleanup(_pck);
         }
         [TestMethod]
         public void VerifyFormulaTokensTable_Performance()
@@ -38,16 +38,16 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
         {
             var f = @"SUM(MyTable[[#This Row],[Date]])";
             var formula = new SharedFormula(_ws.Cells["A4:A105"], f);
-            
+
             Assert.AreEqual(13, formula.Tokens.Count);
             Assert.AreEqual(1, formula.TokenInfos.Count);
-            
+
             Assert.AreEqual(TokenType.TableName, formula.Tokens[2].TokenType);
             Assert.AreEqual(TokenType.TablePart, formula.Tokens[5].TokenType);
             Assert.AreEqual(TokenType.TableColumn, formula.Tokens[9].TokenType);
             Assert.IsInstanceOfType(formula.TokenInfos[2], typeof(FormulaRange));
-            
-            var fr=(FormulaRange)formula.TokenInfos[2];
+
+            var fr = (FormulaRange)formula.TokenInfos[2];
             Assert.AreEqual(4, fr.Ranges[0].FromRow);
             Assert.AreEqual(1, fr.Ranges[0].FromCol);
             Assert.AreEqual(4, fr.Ranges[0].ToRow);
@@ -142,7 +142,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             //Setup
             var f = @"SUM(MyTable[#totals])";
             var formula = new SharedFormula(_ws.Cells["A4:A105"], f);
-            
+
             //Assert
             Assert.AreEqual(7, formula.Tokens.Count);
             Assert.AreEqual(1, formula.TokenInfos.Count);
@@ -182,7 +182,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(5, fr.Ranges[0].ToCol);
             Assert.IsTrue(fr.IsFixed);
             Assert.AreEqual(FixedFlag.All, fr.Ranges[0].FixedFlag);
-            
+
             _ws.Tables[0].ShowTotal = false;    //Resore to false to avoid problems with other tests.
         }
         [TestMethod]
@@ -257,7 +257,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
 
             Assert.AreEqual(1, c1.Row);
             Assert.AreEqual(1, c1.Col);
-            
+
             Assert.AreEqual(5, c2.Row);
             Assert.AreEqual(3, c2.Col);
         }
@@ -304,9 +304,20 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(8, c2.Col);
         }
         [TestMethod]
+        public void VerifyFormulaTokens_if_returning_range()
+        {
+            var f = @"SUM(A1:IF(A2=1,A3:A4,B3:B4))";
+            var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
+            Assert.AreEqual(formula.Tokens.Count, 19);
+        }
+        [TestMethod]
         public void VerifyFormulaTokens_CellFormula2()
         {
             //Setup
+
+            /*
+             * Funkar nu fram tills rangen ska returneras som en IRangeInfo. /Mats
+             */
             var f = @"SUM($A1:C$5)";
             var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
 
@@ -381,18 +392,43 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.IsInstanceOfType(formula.TokenInfos[0], typeof(FormulaNamedFormula));
 
             var fv = (FormulaNamedFormula)formula.TokenInfos[0];
-            
-            Assert.IsFalse(fv.IsFixed); 
+
+            Assert.IsFalse(fv.IsFixed);
             Assert.AreEqual(expectedFormula, fv.Formula);
         }
         [TestMethod]
         public void TokenizeLongFormula()
         {
-            var f="IF(ISNUMBER(MATCH(AG5,uswPerils,0)),\"USW\",IF(ISNUMBER(MATCH(AG5,usqPerils,0)),\"USQ\",IF(ISNUMBER(MATCH(AG5,euwPerils,0)),\"EUW\",IF(ISNUMBER(MATCH(AG5,jpwPerils,0)),\"JPW\",IF(ISNUMBER(MATCH(AG5,jpqPerils,0)),\"JPQ\",IF(ISNUMBER(MATCH(AG5,otherqPerils,0)),\"OtherQ\",IF(ISNUMBER(MATCH(AG5,otherwPerils,0)),\"OtherW\",IF(ISNUMBER(MATCH(AG5,otherOtherPerils,0)),\"OtherOther\",IF(AG5=\"EOF\",\"EOF\",\"FAIL!\")))))))))";
+            var f = "IF(ISNUMBER(MATCH(AG5,uswPerils,0)),\"USW\",IF(ISNUMBER(MATCH(AG5,usqPerils,0)),\"USQ\",IF(ISNUMBER(MATCH(AG5,euwPerils,0)),\"EUW\",IF(ISNUMBER(MATCH(AG5,jpwPerils,0)),\"JPW\",IF(ISNUMBER(MATCH(AG5,jpqPerils,0)),\"JPQ\",IF(ISNUMBER(MATCH(AG5,otherqPerils,0)),\"OtherQ\",IF(ISNUMBER(MATCH(AG5,otherwPerils,0)),\"OtherW\",IF(ISNUMBER(MATCH(AG5,otherOtherPerils,0)),\"OtherOther\",IF(AG5=\"EOF\",\"EOF\",\"FAIL!\")))))))))";
             var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
-            f= "\"{'entity':'\" & entity & \"', 'effective_date':'\" & effective_date & \"', 'fcm_codes':[],'characteristics':[\" &$O$58 & \"],'target_cell':'E3'}\"";
-            formula = new SharedFormula(_ws.Cells["D4:E12"], f); 
-            Assert.AreEqual(1, formula.Tokens.Count);
+            f = "\"{'entity':'\" & entity & \"', 'effective_date':'\" & effective_date & \"', 'fcm_codes':[],'characteristics':[\" &$O$58 & \"],'target_cell':'E3'}\"";
+            formula = new SharedFormula(_ws.Cells["D4:E12"], f);
+            Assert.AreEqual(13, formula.Tokens.Count);
         }
+        [TestMethod]
+        public void VerifyFormulaTokens_MultiAdresses()
+        {
+            var f = @"SUM($A1:C$5:B12)";
+            var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
+        }
+        [TestMethod]
+        public void VerifyFormulaTokens_SheetAdresses()
+        {
+            var f = @"SUM('sheet1'!$A1:C$5:B12)";
+            var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
+        }
+        [TestMethod]
+        public void VerifyFormulaTokens_OffsetFirst()
+        {
+            var f = "SUM(OFFSET(A3, -1, 0):A1:OFFSET(A3, 1, 0))";
+            var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
+        }
+        [TestMethod]
+        public void VerifyFormulaTokens_Intersect()
+        {
+            var f = "SUM(A1:A3 A2:A4)";
+            var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
+        }
+
     }
 }

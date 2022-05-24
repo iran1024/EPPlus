@@ -37,7 +37,7 @@ namespace OfficeOpenXml.FormulaParsing
         {
             internal ExcelWorksheet _ws;
             CellStoreEnumerator<ExcelValue> _values = null;
-            int _fromRow, _toRow, _fromCol, _toCol;
+            //int _fromRow, _toRow, _fromCol, _toCol;
             int _cellCount = 0;
             ExcelAddressBase _address;
             ICellInfo _cell;
@@ -69,14 +69,15 @@ namespace OfficeOpenXml.FormulaParsing
             private void SetAddress(ExcelWorksheet ws, ExcelAddressBase address)
             {
                 _ws = ws;
-                _fromRow = address._fromRow;
-                _fromCol = address._fromCol;
-                _toRow = address._toRow;
-                _toCol = address._toCol;
+                RangeNew = new FormulaRangeAddress(null) { FromRow = address._fromRow, FromCol = address._fromCol, ToRow = address._toRow, ToCol = address._toCol, WorksheetIx = (short)ws.PositionId };
+                //_fromRow = address._fromRow;
+                //_fromCol = address._fromCol;
+                //_toRow = address._toRow;
+                //_toCol = address._toCol;
                 _address = address;
                 if (_ws != null && _ws.IsDisposed == false)
                 {
-                    _values = new CellStoreEnumerator<ExcelValue>(_ws._values, _fromRow, _fromCol, _toRow, _toCol);
+                    _values = new CellStoreEnumerator<ExcelValue>(_ws._values, address._fromRow, address._fromCol, address._toRow, address._toCol);
                     _cell = new CellInfo(_ws, _values);
                 }
             }
@@ -87,7 +88,7 @@ namespace OfficeOpenXml.FormulaParsing
             /// <returns></returns>
             public int GetNCells()
             {
-                return ((_toRow - _fromRow) + 1) * ((_toCol - _fromCol) + 1);
+                return ((RangeNew.ToRow - RangeNew.FromRow) + 1) * ((RangeNew.ToCol - RangeNew.FromCol) + 1);
             }
 
             /// <summary>
@@ -97,7 +98,7 @@ namespace OfficeOpenXml.FormulaParsing
             {
                 get
                 {
-                    return _ws == null || _fromRow < 0 || _toRow < 0;
+                    return _ws == null || RangeNew.FromRow < 0 || RangeNew.ToRow < 0;
                 }
             }
             /// <summary>
@@ -249,6 +250,8 @@ namespace OfficeOpenXml.FormulaParsing
                 get { return _address; }
             }
 
+            public FormulaRangeAddress RangeNew { get; private set; }
+
             /// <summary>
             /// Returns the cell value 
             /// </summary>
@@ -263,9 +266,9 @@ namespace OfficeOpenXml.FormulaParsing
             public object GetOffset(int rowOffset, int colOffset)
             {
                 if (_values == null) return null;
-                if (_values.Row < _fromRow || _values.Column < _fromCol)
+                if (_values.Row < RangeNew.FromRow || _values.Column < RangeNew.FromCol)
                 {
-                    return _ws.GetValue(_fromRow + rowOffset, _fromCol + colOffset);
+                    return _ws.GetValue(RangeNew.FromRow + rowOffset, RangeNew.FromCol + colOffset);
                 }
                 else
                 {
@@ -273,7 +276,6 @@ namespace OfficeOpenXml.FormulaParsing
                 }
             }
         }
-
         public class CellInfo : ICellInfo
         {
             ExcelWorksheet _ws;
@@ -446,6 +448,19 @@ namespace OfficeOpenXml.FormulaParsing
         public override ExcelNamedRangeCollection GetWorkbookNameValues()
         {
             return _package.Workbook.Names;
+        }
+
+        internal override IRangeInfo GetRange(FormulaRangeAddress range)
+        {
+            _currentWorksheet = _package.Workbook.Worksheets[range.WorksheetIx];
+            if (_currentWorksheet == null)
+            {
+                throw new ExcelErrorValueException(eErrorType.Ref);
+            }
+            else
+            {
+                return new RangeInfo(_currentWorksheet, range.FromRow, range.FromCol, range.ToRow, range.ToCol);
+            }
         }
 
         public override IRangeInfo GetRange(string worksheet, int fromRow, int fromCol, int toRow, int toCol)
@@ -888,7 +903,6 @@ namespace OfficeOpenXml.FormulaParsing
             }
             return false;
         }
-
         //public override void SetToTableAddress(ExcelAddress address)
         //{
         //    address.SetRCFromTable(_package, address);

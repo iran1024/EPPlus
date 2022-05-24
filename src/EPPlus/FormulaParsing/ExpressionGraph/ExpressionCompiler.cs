@@ -24,17 +24,19 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         private IEnumerable<Expression> _expressions;
         private IExpressionConverter _expressionConverter;
         private ICompileStrategyFactory _compileStrategyFactory;
+        private readonly ParsingContext _parsingContext;
 
-        public ExpressionCompiler()
-            : this(new ExpressionConverter(), new CompileStrategyFactory())
+        public ExpressionCompiler(ParsingContext ctx)
+            : this(new ExpressionConverter(ctx), new CompileStrategyFactory(ctx), ctx)
         {
- 
+    
         }
 
-        public ExpressionCompiler(IExpressionConverter expressionConverter, ICompileStrategyFactory compileStrategyFactory)
+        public ExpressionCompiler(IExpressionConverter expressionConverter, ICompileStrategyFactory compileStrategyFactory, ParsingContext ctx)
         {
             _expressionConverter = expressionConverter;
             _compileStrategyFactory = compileStrategyFactory;
+            _parsingContext = ctx;
         }
 
         public CompileResult Compile(IEnumerable<Expression> expressions)

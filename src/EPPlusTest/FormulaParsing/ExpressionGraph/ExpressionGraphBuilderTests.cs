@@ -270,7 +270,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             var expression = _graphBuilder.Build(tokens);
             Assert.AreEqual(1, expression.Expressions.Count());
 
-            var compiler = new ExpressionCompiler(new ExpressionConverter(), new CompileStrategyFactory());
+            var compiler = new ExpressionCompiler(new ExpressionConverter(ctx), new CompileStrategyFactory(ctx), ctx);
             var result = compiler.Compile(expression.Expressions);
             Assert.AreEqual("Yes", result.Result);
         }

@@ -215,6 +215,9 @@ namespace OfficeOpenXml.FormulaParsing
         {
             get { return _address; }
         }
+
+        public FormulaRangeAddress RangeNew { get; }
+
         /// <summary>
         /// Gets the value 
         /// </summary>

@@ -24,6 +24,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             {'>', new Token(">", TokenType.Operator)},
             {'<', new Token("<", TokenType.Operator)},
             {'=', new Token("=", TokenType.Operator)},
+            {'!', new Token("!", TokenType.Operator) },
+            {':', new Token(":", TokenType.Operator)},
             {'(', new Token("(", TokenType.OpeningParenthesis)},
             {')', new Token(")", TokenType.ClosingParenthesis)},
             {'{', new Token("{", TokenType.OpeningEnumerable)},
@@ -33,8 +35,6 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             {';', new Token(";", TokenType.SemiColon) },
             {'%', new Token("%", TokenType.Percent) },
             {' ', new Token(" ", TokenType.WhiteSpace) },
-            {'!', new Token("!", TokenType.WorksheetName) },
-            {':', new Token(":", TokenType.Colon)},
             {'[', new Token("[", TokenType.OpeningBracket)},
             {']', new Token("]", TokenType.ClosingBracket)}
         };
@@ -466,7 +466,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                     }
                     else
                     {
-                        l.Add(new Token(currentString, TokenType.ExcelAddress));
+                        //l.Add(new Token(currentString, TokenType.ExcelAddress));
+                        l.Add(new Token(currentString, TokenType.CellAddress));
                     }
                 }
             }
@@ -479,14 +480,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 }
                 else if (_r1c1==false && IsValidCellAddress(currentString))
                 {
-                    if ((flags & statFlags.isColon) == statFlags.isColon)
-                    {
-                        l.Add(new Token(currentString, TokenType.ExcelAddress| TokenType.RangeOffset));
-                    }
-                    else
-                    {
-                        l.Add(new Token(currentString, TokenType.ExcelAddress));
-                    }
+                    l.Add(new Token(currentString, TokenType.CellAddress));
                 }
                 else if (_r1c1 == true && ExcelAddressBase.IsR1C1(currentString))
                 {

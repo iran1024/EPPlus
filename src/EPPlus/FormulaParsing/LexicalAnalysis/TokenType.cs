@@ -166,6 +166,10 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         /// <summary>
         /// Represents a table column name in an address.
         /// </summary>
-        TableColumn = (ulong)1 << 35,        
+        TableColumn = (ulong)1 << 35,
+        /// <summary>
+        /// Represents a cell address.
+        /// </summary>
+        CellAddress = (ulong)1 << 36,
     }
 }

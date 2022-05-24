@@ -33,18 +33,21 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using OfficeOpenXml.FormulaParsing.Excel.Operators;
+using OfficeOpenXml.FormulaParsing;
 
 namespace EPPlusTest.FormulaParsing.ExpressionGraph
 {
     [TestClass]
     public class IntegerExpressionTests
     {
+        private ParsingContext _context = ParsingContext.Create();
+
         [TestMethod]
         public void MergeWithNextWithPlusOperatorShouldCalulateSumCorrectly()
         {
-            var exp1 = new IntegerExpression("1");
+            var exp1 = new IntegerExpression("1", _context);
             exp1.Operator = Operator.Plus;
-            var exp2 = new IntegerExpression("2");
+            var exp2 = new IntegerExpression("2", _context);
             exp1.Next = exp2;
 
             var result = exp1.MergeWithNext();
@@ -55,9 +58,9 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         [TestMethod]
         public void MergeWithNextWithPlusOperatorShouldSetNextPointer()
         {
-            var exp1 = new IntegerExpression("1");
+            var exp1 = new IntegerExpression("1", _context);
             exp1.Operator = Operator.Plus;
-            var exp2 = new IntegerExpression("2");
+            var exp2 = new IntegerExpression("2", _context);
             exp1.Next = exp2;
 
             var result = exp1.MergeWithNext();

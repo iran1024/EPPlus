@@ -23,20 +23,20 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         private double? _compiledValue;
         private bool _negate;
 
-        public IntegerExpression(string expression)
-            : this(expression, false)
+        public IntegerExpression(string expression, ParsingContext ctx)
+            : this(expression, false, ctx)
         {
 
         }
 
-        public IntegerExpression(string expression, bool negate)
-            : base(expression)
+        public IntegerExpression(string expression, bool negate, ParsingContext ctx)
+            : base(expression, ctx)
         {
             _negate = negate;
         }
 
-        public IntegerExpression(double val)
-            : base(val.ToString(CultureInfo.InvariantCulture))
+        public IntegerExpression(double val, ParsingContext ctx)
+            : base(val.ToString(CultureInfo.InvariantCulture), ctx)
         {
             _compiledValue = Math.Floor(val);
         }

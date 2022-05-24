@@ -19,13 +19,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     internal class GroupExpression : Expression
     {
-        public GroupExpression(bool isNegated)
-            : this(isNegated, new ExpressionCompiler())
+        public GroupExpression(bool isNegated, ParsingContext ctx)
+            : this(isNegated, new ExpressionCompiler(ctx), ctx)
         {
 
         }
 
-        public GroupExpression(bool isNegated, IExpressionCompiler expressionCompiler)
+        public GroupExpression(bool isNegated, IExpressionCompiler expressionCompiler, ParsingContext ctx)
+            : base(ctx)
         {
             _expressionCompiler = expressionCompiler;
             _isNegated = isNegated;

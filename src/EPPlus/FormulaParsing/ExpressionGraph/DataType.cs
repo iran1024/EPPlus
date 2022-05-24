@@ -77,6 +77,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         /// <summary>
         /// An unknown data type
         /// </summary>
-        Unknown
+        Unknown,
+        /// <summary>
+        /// Worksheet name
+        /// </summary>
+        WorksheetName,
     }
 }

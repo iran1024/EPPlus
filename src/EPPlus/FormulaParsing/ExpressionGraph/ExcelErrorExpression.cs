@@ -23,14 +23,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     public class ExcelErrorExpression : Expression
     {
         ExcelErrorValue _error;
-        public ExcelErrorExpression(string expression, ExcelErrorValue error)
-            : base(expression)
+        public ExcelErrorExpression(string expression, ExcelErrorValue error, ParsingContext ctx)
+            : base(expression, ctx)
         {
             _error = error;
         }
 
-        public ExcelErrorExpression(ExcelErrorValue error)
-            : this(error.ToString(), error)
+        public ExcelErrorExpression(ExcelErrorValue error, ParsingContext ctx)
+            : this(error.ToString(), error, ctx)
         {
             
         }

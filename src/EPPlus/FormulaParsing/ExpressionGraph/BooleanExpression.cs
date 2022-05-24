@@ -21,14 +21,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     {
         private bool? _precompiledValue;
 
-        public BooleanExpression(string expression)
-            : base(expression)
+        public BooleanExpression(string expression, ParsingContext ctx)
+            : base(expression, ctx)
         {
 
         }
 
-        public BooleanExpression(bool value)
-            : base(value ? "true" : "false")
+        public BooleanExpression(bool value, ParsingContext ctx)
+            : base(value ? "true" : "false", ctx)
         {
             _precompiledValue = value;
         }

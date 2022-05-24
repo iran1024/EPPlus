@@ -50,8 +50,8 @@ namespace OfficeOpenXml.FormulaParsing
         /// Constructor
         /// </summary>
         /// <param name="excelDataProvider">An instance of <see cref="ExcelDataProvider"/> which provides access to a workbook</param>
-        internal FormulaParser(ExcelDataProvider excelDataProvider)
-            : this(excelDataProvider, ParsingContext.Create())
+        internal FormulaParser(ExcelDataProvider excelDataProvider, ExcelPackage package = null)
+            : this(excelDataProvider, ParsingContext.Create(package))
         {
            
         }
@@ -74,7 +74,7 @@ namespace OfficeOpenXml.FormulaParsing
                 configuration
                     .SetLexer(new Lexer(_parsingContext.Configuration.FunctionRepository, _parsingContext.NameValueProvider))
                     .SetGraphBuilder(new ExpressionGraphBuilder(excelDataProvider, _parsingContext))
-                    .SetExpresionCompiler(new ExpressionCompiler())
+                    .SetExpresionCompiler(new ExpressionCompiler(parsingContext))
                     .FunctionRepository.LoadModule(new BuiltInFunctions());
             });
         }

@@ -36,12 +36,12 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         /// <param name="parsingContext"></param>
         /// <param name="isNegated">True if the numeric result of the function should be negated.</param>
         public FunctionExpression(string expression, ParsingContext parsingContext, bool isNegated)
-            : base(expression)
+            : base(expression, parsingContext)
         {
             _parsingContext = parsingContext;
             _functionCompilerFactory = new FunctionCompilerFactory(parsingContext.Configuration.FunctionRepository, parsingContext);
             _isNegated = isNegated;
-            base.AddChild(new FunctionArgumentExpression(this));
+            base.AddChild(new FunctionArgumentExpression(this, parsingContext));
         }
 
         private readonly ParsingContext _parsingContext;
@@ -117,7 +117,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         /// <returns></returns>
         public override Expression PrepareForNextChild()
         {
-            return base.AddChild(new FunctionArgumentExpression(this));
+            return base.AddChild(new FunctionArgumentExpression(this, Context));
         }
 
         /// <summary>

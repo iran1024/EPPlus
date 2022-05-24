@@ -19,8 +19,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     public abstract class AtomicExpression : Expression
     {
-        public AtomicExpression(string expression)
-            : base(expression)
+        public AtomicExpression(string expression, ParsingContext ctx)
+            : base(expression, ctx)
         {
 
         }

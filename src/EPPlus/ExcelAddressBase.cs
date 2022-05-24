@@ -277,7 +277,8 @@ namespace OfficeOpenXml
         internal ExcelAddressBase Intersect(ExcelAddressBase address)
         {
             if(address._fromRow > _toRow || _toRow < address._fromRow ||
-               address._fromCol > _toCol || _toCol < address._fromCol)
+               address._fromCol > _toCol || _toCol < address._fromCol ||
+               address._ws != _ws)
             {
                 return null;
             }

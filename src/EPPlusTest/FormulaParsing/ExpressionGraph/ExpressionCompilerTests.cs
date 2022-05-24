@@ -34,6 +34,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using ExpGraph = OfficeOpenXml.FormulaParsing.ExpressionGraph.ExpressionGraph;
 using OfficeOpenXml.FormulaParsing.Excel.Operators;
+using OfficeOpenXml.FormulaParsing;
 
 namespace EPPlusTest.FormulaParsing.ExpressionGraph
 {
@@ -42,21 +43,23 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
     {
         private IExpressionCompiler _expressionCompiler;
         private ExpGraph _graph;
+        private ParsingContext _context;
         
         [TestInitialize]
         public void Setup()
         {
-            _expressionCompiler = new ExpressionCompiler();
+            _context = ParsingContext.Create();
+            _expressionCompiler = new ExpressionCompiler(_context);
             _graph = new ExpGraph();
         }
 
         [TestMethod]
         public void ShouldCompileTwoInterExpressionsToCorrectResult()
         {
-            var exp1 = new IntegerExpression("2");
+            var exp1 = new IntegerExpression("2", _context);
             exp1.Operator = Operator.Plus;
             _graph.Add(exp1);
-            var exp2 = new IntegerExpression("2");
+            var exp2 = new IntegerExpression("2", _context);
             _graph.Add(exp2);
 
             var result = _expressionCompiler.Compile(_graph.Expressions);
@@ -68,14 +71,14 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         [TestMethod]
         public void CompileShouldMultiplyGroupExpressionWithFollowingIntegerExpression()
         {
-            var groupExpression = new GroupExpression(false);
-            groupExpression.AddChild(new IntegerExpression("2"));
+            var groupExpression = new GroupExpression(false, _context);
+            groupExpression.AddChild(new IntegerExpression("2", _context));
             groupExpression.Children.First().Operator = Operator.Plus;
-            groupExpression.AddChild(new IntegerExpression("3"));
+            groupExpression.AddChild(new IntegerExpression("3", _context));
             groupExpression.Operator = Operator.Multiply;
 
             _graph.Add(groupExpression);
-            _graph.Add(new IntegerExpression("2"));
+            _graph.Add(new IntegerExpression("2", _context));
 
             var result = _expressionCompiler.Compile(_graph.Expressions);
 
@@ -85,16 +88,16 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         [TestMethod]
         public void CompileShouldCalculateMultipleExpressionsAccordingToPrecedence()
         {
-            var exp1 = new IntegerExpression("2");
+            var exp1 = new IntegerExpression("2", _context);
             exp1.Operator = Operator.Multiply;
             _graph.Add(exp1);
-            var exp2 = new IntegerExpression("2");
+            var exp2 = new IntegerExpression("2", _context);
             exp2.Operator = Operator.Plus;
             _graph.Add(exp2);
-            var exp3 = new IntegerExpression("2");
+            var exp3 = new IntegerExpression("2", _context);
             exp3.Operator = Operator.Multiply;
             _graph.Add(exp3);
-            var exp4 = new IntegerExpression("2");
+            var exp4 = new IntegerExpression("2", _context);
             _graph.Add(exp4);
 
             var result = _expressionCompiler.Compile(_graph.Expressions);

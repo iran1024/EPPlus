@@ -25,9 +25,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers
     {
         public SumIfCompiler(ExcelFunction function, ParsingContext context) : base(function, context)
         {
+            _evaluator = new ExpressionEvaluator(context);
         }
 
-        private readonly ExpressionEvaluator _evaluator = new ExpressionEvaluator();
+        private readonly ExpressionEvaluator _evaluator;
 
         public override CompileResult Compile(IEnumerable<Expression> children)
         {

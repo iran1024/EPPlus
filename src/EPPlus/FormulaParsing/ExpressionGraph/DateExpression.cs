@@ -20,8 +20,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     public class DateExpression : AtomicExpression
     {
-        public DateExpression(string expression)
-            : base(expression)
+        public DateExpression(string expression, ParsingContext ctx)
+            : base(expression, ctx)
         {
 
         }

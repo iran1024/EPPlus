@@ -30,20 +30,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
         IntroducedInExcelVersion = "2007")]
     internal class AverageIf : HiddenValuesHandlingFunction
     {
-        private readonly ExpressionEvaluator _expressionEvaluator;
-
-        public AverageIf()
-            : this(new ExpressionEvaluator())
-        {
-
-        }
-
-        public AverageIf(ExpressionEvaluator evaluator)
-        {
-            Require.That(evaluator).Named("evaluator").IsNotNull();
-            _expressionEvaluator = evaluator;
-        }
-
+        private ExpressionEvaluator _expressionEvaluator;
         private bool Evaluate(object obj, string expression)
         {
             double? candidate = default(double?);
@@ -66,6 +53,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
         public override CompileResult Execute(IEnumerable<FunctionArgument> arguments, ParsingContext context)
         {
             ValidateArguments(arguments, 2);
+            _expressionEvaluator = new ExpressionEvaluator(context);
             var argRange = ArgToRangeInfo(arguments, 0);
             var criteria = GetCriteraFromArg(arguments);
             double returnValue;

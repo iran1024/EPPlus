@@ -31,23 +31,23 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         }
 
 
-        public Expression Create(Token token)
+        public Expression Create(Token token, TokenInfo tokenInfo)
         {
             if(token.TokenTypeIsSet(TokenType.Integer))
             {
-                return new IntegerExpression(token.Value, token.IsNegated);
+                return new IntegerExpression(token.Value, token.IsNegated, _parsingContext);
             }
             if (token.TokenTypeIsSet(TokenType.String))
             {
-                return new StringExpression(token.Value);
+                return new StringExpression(token.Value, _parsingContext);
             }
             if (token.TokenTypeIsSet(TokenType.Decimal))
             {
-                return new DecimalExpression(token.Value, token.IsNegated);
+                return new DecimalExpression(token.Value, token.IsNegated, _parsingContext);
             }
             if (token.TokenTypeIsSet(TokenType.Boolean))
             {
-                return new BooleanExpression(token.Value);
+                return new BooleanExpression(token.Value, _parsingContext);
             }
             if (token.TokenTypeIsSet(TokenType.ExcelAddress))
             {
@@ -55,27 +55,35 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 exp.HasCircularReference = token.TokenTypeIsSet(TokenType.CircularReference);
                 return exp;
             }
+            if(token.TokenTypeIsSet(TokenType.WorksheetNameContent))
+            {
+                return new WorksheetNameExpression(token.Value, _parsingContext);
+            }
+            if(token.TokenTypeIsSet(TokenType.CellAddress))
+            {
+                return new CellAddressExpression(token, _parsingContext);
+            }
             if (token.TokenTypeIsSet(TokenType.InvalidReference))
             {
-                return new ExcelErrorExpression(token.Value, ExcelErrorValue.Create(eErrorType.Ref));
+                return new ExcelErrorExpression(token.Value, ExcelErrorValue.Create(eErrorType.Ref), _parsingContext);
             }
             if (token.TokenTypeIsSet(TokenType.NumericError))
             {
-                return new ExcelErrorExpression(token.Value, ExcelErrorValue.Create(eErrorType.Num));
+                return new ExcelErrorExpression(token.Value, ExcelErrorValue.Create(eErrorType.Num), _parsingContext);
             }
             if (token.TokenTypeIsSet(TokenType.ValueDataTypeError))
             {
-                return new ExcelErrorExpression(token.Value, ExcelErrorValue.Create(eErrorType.Value));
+                return new ExcelErrorExpression(token.Value, ExcelErrorValue.Create(eErrorType.Value), _parsingContext);
             }
             if (token.TokenTypeIsSet(TokenType.Null))
             {
-                return new ExcelErrorExpression(token.Value, ExcelErrorValue.Create(eErrorType.Null));
+                return new ExcelErrorExpression(token.Value, ExcelErrorValue.Create(eErrorType.Null), _parsingContext);
             }
             if (token.TokenTypeIsSet(TokenType.NameValue))
             {
                 return new NamedValueExpression(token.Value, _parsingContext);
             }
-            return new StringExpression(token.Value);
+            return new StringExpression(token.Value, _parsingContext);
         }
     }
 }

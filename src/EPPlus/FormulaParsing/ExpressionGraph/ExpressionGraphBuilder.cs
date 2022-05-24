@@ -44,16 +44,16 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             _parsingContext = parsingContext;
         }
 
-        public ExpressionGraph Build(IEnumerable<Token> tokens)
+        public ExpressionGraph Build(IEnumerable<Token> tokens, IDictionary<int, TokenInfo> tokenInfo=null)
         {
             _tokenIndex = 0;
             _graph.Reset();
             var tokensArr = tokens != null ? tokens.ToArray() : new Token[0];
-            BuildUp(tokensArr, null);
+            BuildUp(tokensArr, null, tokenInfo);
             return _graph;
         }
 
-        private void BuildUp(Token[] tokens, Expression parent)
+        private void BuildUp(Token[] tokens, Expression parent, IDictionary<int, TokenInfo> tokenInfo=null)
         {
             while (_tokenIndex < tokens.Length)
             {
@@ -65,35 +65,25 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 }
                 else if (token.TokenTypeIsSet(TokenType.RangeOffset))
                 {
-                    BuildRangeOffsetExpression(tokens, parent, token);
+                    BuildRangeOffsetExpression(tokens, parent, token, tokenInfo);
                 }
                 else if (token.TokenTypeIsSet(TokenType.Function))
                 {
-                    BuildFunctionExpression(tokens, parent, token.Value);
+                    BuildFunctionExpression(tokens, parent, token.Value, tokenInfo);
                 }
                 else if (token.TokenTypeIsSet(TokenType.OpeningEnumerable))
                 {
                     _tokenIndex++;
-                    BuildEnumerableExpression(tokens, parent);
+                    BuildEnumerableExpression(tokens, parent, tokenInfo);
                 }
                 else if (token.TokenTypeIsSet(TokenType.OpeningParenthesis))
                 {
                     _tokenIndex++;
-                    BuildGroupExpression(tokens, parent);
+                    BuildGroupExpression(tokens, parent, tokenInfo);
                 }
                 else if (token.TokenTypeIsSet(TokenType.ClosingParenthesis) || token.TokenTypeIsSet(TokenType.ClosingEnumerable))
                 {
                     break;
-                }
-                else if(token.TokenTypeIsSet(TokenType.WorksheetName))
-                {
-                    var sb = new StringBuilder();
-                    sb.Append(tokens[_tokenIndex++].Value);
-                    sb.Append(tokens[_tokenIndex++].Value);
-                    sb.Append(tokens[_tokenIndex++].Value);
-                    sb.Append(tokens[_tokenIndex].Value);
-                    var t = new Token(sb.ToString(), TokenType.ExcelAddress);
-                    CreateAndAppendExpression(ref parent, ref t);
                 }
                 else if (token.TokenTypeIsSet(TokenType.Negator))
                 {
@@ -113,28 +103,29 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 }
                 else
                 {
-                    CreateAndAppendExpression(ref parent, ref token);
+                    var ti = tokenInfo == null || tokenInfo.ContainsKey(_tokenIndex) == false ? null : tokenInfo[_tokenIndex];
+                    CreateAndAppendExpression(ref parent, ref token, ti);
                 }
                 _tokenIndex++;
             }
         }
 
-        private void BuildEnumerableExpression(Token[] tokens, Expression parent)
+        private void BuildEnumerableExpression(Token[] tokens, Expression parent, IDictionary<int, TokenInfo> tokenInfo = null)
         {
             if (parent == null)
             {
-                _graph.Add(new EnumerableExpression());
-                BuildUp(tokens, _graph.Current);
+                _graph.Add(new EnumerableExpression(_parsingContext));
+                BuildUp(tokens, _graph.Current, tokenInfo);
             }
             else
             {
-                var enumerableExpression = new EnumerableExpression();
+                var enumerableExpression = new EnumerableExpression(_parsingContext);
                 parent.AddChild(enumerableExpression);
-                BuildUp(tokens, enumerableExpression);
+                BuildUp(tokens, enumerableExpression, tokenInfo);
             }
         }
 
-        private void CreateAndAppendExpression(ref Expression parent, ref Token token)
+        private void CreateAndAppendExpression(ref Expression parent, ref Token token, TokenInfo tokenInfo=null)
         {
             if (IsWaste(token)) return;
             if (parent != null && 
@@ -148,7 +139,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 token = token.CloneWithNegatedValue(true);
                 _negateNextExpression = false;
             }
-            var expression = _expressionFactory.Create(token);
+            var expression = _expressionFactory.Create(token, tokenInfo);
             if (parent == null)
             {
                 _graph.Add(expression);
@@ -168,7 +159,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             return false;
         }
 
-        private void BuildRangeOffsetExpression(Token[] tokens, Expression parent, Token token)
+        private void BuildRangeOffsetExpression(Token[] tokens, Expression parent, Token token, IDictionary<int, TokenInfo> tokenInfo)
         {
             if(_nRangeOffsetTokens++ % 2 == 0)
             {
@@ -176,7 +167,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 if(token.TokenTypeIsSet(TokenType.Function) && token.Value.ToLower() == "offset")
                 {
                     _rangeOffsetExpression.OffsetExpression1 = new FunctionExpression("offset", _parsingContext, false);
-                    HandleFunctionArguments(tokens, _rangeOffsetExpression.OffsetExpression1);
+                    HandleFunctionArguments(tokens, _rangeOffsetExpression.OffsetExpression1, tokenInfo);
                 }
                 else if(token.TokenTypeIsSet(TokenType.ExcelAddress))
                 {
@@ -196,7 +187,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 if (token.TokenTypeIsSet(TokenType.Function) && token.Value.ToLower() == "offset")
                 {
                     _rangeOffsetExpression.OffsetExpression2 = new FunctionExpression("offset", _parsingContext, _negateNextExpression);
-                    HandleFunctionArguments(tokens, _rangeOffsetExpression.OffsetExpression2);
+                    HandleFunctionArguments(tokens, _rangeOffsetExpression.OffsetExpression2, tokenInfo);
                 }
                 else if (token.TokenTypeIsSet(TokenType.ExcelAddress))
                 {
@@ -205,24 +196,24 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
         }
 
-        private void BuildFunctionExpression(Token[] tokens, Expression parent, string funcName)
+        private void BuildFunctionExpression(Token[] tokens, Expression parent, string funcName, IDictionary<int, TokenInfo> tokenInfo)
         {
             if (parent == null)
             {
                 _graph.Add(new FunctionExpression(funcName, _parsingContext, _negateNextExpression));
                 _negateNextExpression = false;
-                HandleFunctionArguments(tokens, _graph.Current);
+                HandleFunctionArguments(tokens, _graph.Current, tokenInfo);
             }
             else
             {
                 var func = new FunctionExpression(funcName, _parsingContext, _negateNextExpression);
                 _negateNextExpression = false;
                 parent.AddChild(func);
-                HandleFunctionArguments(tokens, func);
+                HandleFunctionArguments(tokens, func, tokenInfo);
             }
         }
 
-        private void HandleFunctionArguments(Token[] tokens, Expression function)
+        private void HandleFunctionArguments(Token[] tokens, Expression function, IDictionary<int, TokenInfo> tokenInfo)
         {
             _tokenIndex++;
             var token = tokens.ElementAt(_tokenIndex);
@@ -231,27 +222,27 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 throw new ExcelErrorValueException(eErrorType.Value);
             }
             _tokenIndex++;
-            BuildUp(tokens, function.Children.First());
+            BuildUp(tokens, function.Children.First(), tokenInfo);
         }
 
-        private void BuildGroupExpression(Token[] tokens, Expression parent)
+        private void BuildGroupExpression(Token[] tokens, Expression parent, IDictionary<int, TokenInfo> tokenInfo)
         {
             if (parent == null)
             {
-                _graph.Add(new GroupExpression(_negateNextExpression));
+                _graph.Add(new GroupExpression(_negateNextExpression, _parsingContext));
                 _negateNextExpression = false;
-                BuildUp(tokens, _graph.Current);
+                BuildUp(tokens, _graph.Current, tokenInfo);
             }
             else
             {
                 if (parent.IsGroupedExpression || parent is FunctionArgumentExpression)
                 {
-                    var newGroupExpression = new GroupExpression(_negateNextExpression);
+                    var newGroupExpression = new GroupExpression(_negateNextExpression, _parsingContext);
                     _negateNextExpression = false;
                     parent.AddChild(newGroupExpression);
-                    BuildUp(tokens, newGroupExpression);
+                    BuildUp(tokens, newGroupExpression, tokenInfo);
                 }
-                 BuildUp(tokens, parent);
+                 BuildUp(tokens, parent, tokenInfo);
             }
         }
 

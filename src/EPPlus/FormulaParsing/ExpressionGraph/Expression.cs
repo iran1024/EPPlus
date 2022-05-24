@@ -23,6 +23,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     {
         internal string ExpressionString { get; private set; }
         private readonly List<Expression> _children = new List<Expression>();
+        protected ParsingContext Context { get; private set; }
         public IEnumerable<Expression> Children { get { return _children; } }
         public Expression Next { get; set; }
         public Expression Prev { get; set; }
@@ -36,15 +37,16 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             get; set;
         }
 
-        public Expression()
+        public Expression(ParsingContext ctx)
         {
-
+            Context = ctx;
         }
 
-        public Expression(string expression)
+        public Expression(string expression, ParsingContext ctx)
         {
             ExpressionString = expression;
             Operator = null;
+            Context = ctx;
         }
 
         public virtual bool HasChildren
@@ -74,8 +76,15 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             var expression = this;
             if (Next != null && Operator != null)
             {
-                var result = Operator.Apply(Compile(), Next.Compile());
-                expression = ExpressionConverter.Instance.FromCompileResult(result);
+                var result = default(CompileResult);
+                var left = Compile();
+                var right = Next.Compile();
+                if(left.DataType == DataType.ExcelRange && right.DataType == DataType.ExcelRange && Operator == null)
+                {
+                    Operator = OfficeOpenXml.FormulaParsing.Excel.Operators.Operator.Intersect;
+                }
+                result = Operator.Apply(left, right, Context);
+                expression = ExpressionConverter.GetInstance(Context).FromCompileResult(result);
                 if (expression is ExcelErrorExpression)
                 {
                     expression.Next = null;

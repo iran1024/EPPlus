@@ -22,7 +22,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     public class NamedValueExpression : AtomicExpression
     {
         public NamedValueExpression(string expression, ParsingContext parsingContext)
-            : base(expression)
+            : base(expression, parsingContext)
         {
             _parsingContext = parsingContext;
         }

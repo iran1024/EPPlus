@@ -8,7 +8,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     public class ExcelRangeExpression : Expression
     {
-        public ExcelRangeExpression(IRangeInfo rangeInfo)
+        public ExcelRangeExpression(IRangeInfo rangeInfo, ParsingContext ctx)
+            : base(ctx)
         {
             _rangeInfo = rangeInfo;
         }

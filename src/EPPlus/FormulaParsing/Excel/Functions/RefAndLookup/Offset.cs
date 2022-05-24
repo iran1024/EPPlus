@@ -29,9 +29,13 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
         {
             var functionArguments = arguments as FunctionArgument[] ?? arguments.ToArray();
             ValidateArguments(functionArguments, 3);
-            var startRange = ArgToAddress(functionArguments, 0, context);
+            var arg0 = functionArguments.First();
             var rowOffset = ArgToInt(functionArguments, 1);
             var colOffset = ArgToInt(functionArguments, 2);
+            var r = arg0.ValueAsRangeInfo;
+
+            var startRange = ArgToAddress(functionArguments, 0, context);
+            
             int width = 0, height = 0;
             if (functionArguments.Length > 3)
             {
@@ -44,7 +48,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 if (width == 0) return new CompileResult(eErrorType.Ref);
             }
             var ws = context.Scopes.Current.Address.Worksheet;            
-            var r =context.ExcelDataProvider.GetRange(ws, context.Scopes.Current.Address.FromRow, context.Scopes.Current.Address.FromCol, startRange);
+            //var r =context.ExcelDataProvider.GetRange(ws, context.Scopes.Current.Address.FromRow, context.Scopes.Current.Address.FromCol, startRange);
             var adr = r.Address;
 
             var fromRow = adr._fromRow + rowOffset;

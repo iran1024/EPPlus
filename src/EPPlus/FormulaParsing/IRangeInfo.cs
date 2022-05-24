@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using System;
 using System.Collections.Generic;
 /*************************************************************************************************
   Required Notice: Copyright (C) EPPlus Software AB. 
@@ -36,6 +37,7 @@ namespace OfficeOpenXml.FormulaParsing
         /// The address.
         /// </summary>
         ExcelAddressBase Address { get; }
+        FormulaRangeAddress RangeNew { get; }
         /// <summary>
         /// Get the value from a cell
         /// </summary>

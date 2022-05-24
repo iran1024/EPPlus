@@ -19,8 +19,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.CompileStrategy
 {
     public class DefaultCompileStrategy : CompileStrategy
     {
-        public DefaultCompileStrategy(Expression expression)
-            : base(expression)
+        public DefaultCompileStrategy(Expression expression, ParsingContext ctx)
+            : base(expression, ctx)
         {
 
         }

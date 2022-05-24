@@ -175,6 +175,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         protected string ArgToAddress(IEnumerable<FunctionArgument> arguments, int index, ParsingContext context)
         {
             var arg = arguments.ElementAt(index);
+            
             if(arg.ExcelAddressReferenceId > 0)
             {
                 return context.AddressCache.Get(arg.ExcelAddressReferenceId);

@@ -18,13 +18,17 @@ using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using OfficeOpenXml.FormulaParsing.Exceptions;
 using OfficeOpenXml.Utils;
 using OfficeOpenXml.FormulaParsing;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using static OfficeOpenXml.ExcelAddressBase;
 
 namespace OfficeOpenXml.FormulaParsing.Excel.Operators
 {
     public class Operator : IOperator
     {
-        private const int PrecedenceColon = 0;
+        private const int PrecedenceExclamation = 0;
+        private const int PrecedenceColon = 1;
         private const int PrecedencePercent = 2;
+        private const int PrecedenceIntersect = 3;
         private const int PrecedenceExp = 4;
         private const int PrecedenceMultiplyDevide = 6;
         private const int PrecedenceIntegerDivision = 8;
@@ -35,14 +39,15 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
 
         private Operator() { }
 
-        private Operator(Operators @operator, int precedence, Func<CompileResult, CompileResult, CompileResult> implementation)
+        private Operator(Operators @operator, int precedence, Func<CompileResult, CompileResult, ParsingContext, CompileResult> implementation)
         {
             _implementation = implementation;
             _precedence = precedence;
             _operator = @operator;
         }
 
-        private readonly Func<CompileResult, CompileResult, CompileResult> _implementation;
+
+        private readonly Func<CompileResult, CompileResult, ParsingContext, CompileResult> _implementation;
         private readonly int _precedence;
         private readonly Operators _operator;
 
@@ -56,7 +61,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             get { return _operator; }
         }
 
-        public CompileResult Apply(CompileResult left, CompileResult right)
+
+        public CompileResult Apply(CompileResult left, CompileResult right, ParsingContext ctx)
         {
             if (left.Result is ExcelErrorValue)
             {
@@ -66,7 +72,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             {
                 return new CompileResult(right.Result, DataType.ExcelError);
             }
-            return _implementation(left, right);
+            return _implementation(left, right, ctx);
         }
 
         public override string ToString()
@@ -85,7 +91,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         {
             get
             {
-                return _plus ?? (_plus = new Operator(Operators.Plus, PrecedenceAddSubtract, (l, r) =>
+                return _plus ?? (_plus = new Operator(Operators.Plus, PrecedenceAddSubtract, (l, r, ctx) =>
                 {
                     l = l == null || l.Result == null ? CompileResult.ZeroInt : l;
                     r = r == null || r.Result == null ? CompileResult.ZeroInt : r;
@@ -112,7 +118,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         {
             get
             {
-                return _minus ?? (_minus = new Operator(Operators.Minus, PrecedenceAddSubtract, (l, r) =>
+                return _minus ?? (_minus = new Operator(Operators.Minus, PrecedenceAddSubtract, (l, r, ctx) =>
                 {
                     l = l == null || l.Result == null ? CompileResult.ZeroInt : l;
                     r = r == null || r.Result == null ? CompileResult.ZeroInt : r;
@@ -135,7 +141,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         {
             get
             {
-                return _multiply ?? (_multiply = new Operator(Operators.Multiply, PrecedenceMultiplyDevide, (l, r) =>
+                return _multiply ?? (_multiply = new Operator(Operators.Multiply, PrecedenceMultiplyDevide, (l, r, ctx) =>
                 {
                     l = l ?? CompileResult.ZeroInt;
                     r = r ?? CompileResult.ZeroInt;
@@ -157,7 +163,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         {
             get
             {
-                return _divide ?? (_divide = new Operator(Operators.Divide, PrecedenceMultiplyDevide, (l, r) =>
+                return _divide ?? (_divide = new Operator(Operators.Divide, PrecedenceMultiplyDevide, (l, r, ctx) =>
                 {
                     if (!(l.IsNumeric || l.IsNumericString || l.IsDateString || l.Result is IRangeInfo) ||
                         !(r.IsNumeric || r.IsNumericString || r.IsDateString || r.Result is IRangeInfo))
@@ -183,7 +189,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         {
             get
             {
-                return new Operator(Operators.Exponentiation, PrecedenceExp, (l, r) =>
+                return new Operator(Operators.Exponentiation, PrecedenceExp, (l, r, ctx) =>
                     {
                         if (l == null && r == null)
                         {
@@ -216,7 +222,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         {
             get
             {
-                return new Operator(Operators.Concat, PrecedenceConcat, (l, r) =>
+                return new Operator(Operators.Concat, PrecedenceConcat, (l, r, ctx) =>
                     {
                         l = l ?? new CompileResult(string.Empty, DataType.String);
                         r = r ?? new CompileResult(string.Empty, DataType.String);
@@ -227,18 +233,121 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             }
         }
 
+        static IOperator _colon=null;
         public static IOperator Colon
         {
             get
             {
-                return new Operator(Operators.Colon, PrecedenceColon, (l, r) =>
+                if (_colon == null)
                 {
-                    l = l ?? new CompileResult(string.Empty, DataType.String);
-                    r = r ?? new CompileResult(string.Empty, DataType.String);
-                    var lStr = l.Result != null ? CompileResultToString(l) : string.Empty;
-                    var rStr = r.Result != null ? CompileResultToString(r) : string.Empty;
-                    return new CompileResult(string.Concat(lStr, rStr), DataType.String);
-                });
+                    _colon = new Operator(Operators.Colon, PrecedenceColon, (l, r, ctx) =>
+                      {
+                          var result = new FormulaRangeAddress(ctx);
+                          if (l.Result is FormulaCellAddress cr)
+                          {
+                              result.WorksheetIx = cr.WorksheetIx;
+                              result.FromRow = cr.Row;
+                              result.FromCol = cr.Col;
+                          }
+                          else if (l.Result is IRangeInfo lri)
+                          {
+                              result.WorksheetIx = (short)lri.Worksheet.PositionId;
+                              result.FromRow = lri.Address._fromRow;
+                              result.FromCol = lri.Address._fromCol;
+                              result.ToRow = lri.Address._toRow;
+                              result.ToCol = lri.Address._toCol;
+                          }
+
+                          if (r.Result is FormulaCellAddress rr)
+                          {
+                              if (result.FromRow > rr.Row)
+                              {
+                                  result.ToRow = result.FromRow;
+                                  result.FromRow = rr.Row;
+                              }
+                              else
+                              {
+                                  if (rr.Row == 0 || rr.Row > result.ToRow) result.ToRow = rr.Row;
+                              }
+
+                              if (result.FromCol > rr.Col)
+                              {
+                                  result.ToCol = result.FromCol;
+                                  result.FromCol = rr.Col;
+                              }
+                              else
+                              {
+                                  if (rr.Col == 0 || rr.Col > result.ToCol) result.ToCol = rr.Col;
+                              }
+                          }
+                          else if (r.Result is IRangeInfo rri)
+                          {
+                              result.FromRow = result.FromRow < rri.Address._fromRow ? result.FromRow : rri.Address._fromRow;
+                              result.FromCol = result.FromCol < rri.Address._fromCol ? result.FromCol : rri.Address._fromCol;
+                              result.ToRow = result.ToRow > rri.Address._toRow ? result.ToRow : rri.Address._toRow;
+                              result.ToCol = result.ToCol > rri.Address._toCol ? result.ToCol : rri.Address._toCol;
+                          }
+
+                          return new CompileResult(result, DataType.ExcelRange);
+                          throw new ExcelErrorValueException(eErrorType.Ref);
+                      });
+                }
+                return _colon;
+            }
+        }
+        static IOperator _exclamation = null;
+        public static IOperator Exclamation
+        {
+            get
+            {
+                if(_exclamation==null)
+                {
+                    _exclamation = new Operator(Operators.Exclamation, PrecedenceExclamation,
+                                   (l, r, ctx) => 
+                                   {
+                                       if(l.DataType == DataType.WorksheetName && r.DataType == DataType.ExcelCellAddress)
+                                       {
+                                           var wsName = l.Result?.ToString();
+                                           var cellAddress = r.Result as FormulaCellAddress;
+                                           if(cellAddress != null)
+                                           {
+                                               var wsIndex = ctx.Package.Workbook.Worksheets[wsName]?.PositionId;
+                                               cellAddress.WorksheetIx = (short)(wsIndex.HasValue ? wsIndex.Value : -1);
+                                               return new CompileResult(cellAddress, DataType.ExcelCellAddress);
+                                           }
+                                       }
+                                       return new CompileResult(eErrorType.Ref);
+                                   });
+                }
+                return _exclamation;
+            }
+        }
+
+        static IOperator _intersect = null;
+        public static IOperator Intersect
+        {
+            get
+            {
+                if (_intersect == null)
+                {
+                    _intersect = new Operator(Operators.Intersect, PrecedenceIntersect,
+                                   (l, r, ctx) =>
+                                   {
+                                       if(l.Result is IRangeInfo left && r.Result is IRangeInfo right)
+                                       {
+                                           var iA = left.Address.Intersect(right.Address);
+                                           if (iA == null)
+                                           {
+                                               return new CompileResult(eErrorType.Null);
+                                           }
+                                           var intersectRange = ctx.ExcelDataProvider.GetRange(left.Worksheet.Name, iA._fromRow, iA._fromCol, iA._toRow, iA._toCol);
+                                           return new CompileResult(intersectRange, DataType.ExcelRange);
+                                           
+                                       }
+                                       return new CompileResult(eErrorType.Value);
+                                   });
+                }
+                return _intersect;
             }
         }
 
@@ -250,7 +359,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 return _greaterThan ??
                        (_greaterThan =
                            new Operator(Operators.GreaterThan, PrecedenceComparison,
-                               (l, r) => Compare(l, r, (compRes) => compRes > 0)));
+                               (l, r, ctx) => Compare(l, r, (compRes) => compRes > 0)));
             }
         }
 
@@ -262,7 +371,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 return _eq ??
                        (_eq =
                            new Operator(Operators.Equals, PrecedenceComparison,
-                               (l, r) => Compare(l, r, (compRes) => compRes == 0)));
+                               (l, r, ctx) => Compare(l, r, (compRes) => compRes == 0)));
             }
         }
 
@@ -274,7 +383,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 return _notEqualsTo ??
                        (_notEqualsTo =
                            new Operator(Operators.NotEqualTo, PrecedenceComparison,
-                               (l, r) => Compare(l, r, (compRes) => compRes != 0)));
+                               (l, r, ctx) => Compare(l, r, (compRes) => compRes != 0)));
             }
         }
 
@@ -286,7 +395,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 return _greaterThanOrEqual ??
                        (_greaterThanOrEqual =
                            new Operator(Operators.GreaterThanOrEqual, PrecedenceComparison,
-                               (l, r) => Compare(l, r, (compRes) => compRes >= 0)));
+                               (l, r, ctx) => Compare(l, r, (compRes) => compRes >= 0)));
             }
         }
 
@@ -298,7 +407,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 return _lessThan ??
                        (_lessThan =
                            new Operator(Operators.LessThan, PrecedenceComparison,
-                               (l, r) => Compare(l, r, (compRes) => compRes < 0)));
+                               (l, r, ctx) => Compare(l, r, (compRes) => compRes < 0)));
             }
         }
 
@@ -307,7 +416,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             get
             {
                 //return new Operator(Operators.LessThanOrEqual, PrecedenceComparison, (l, r) => new CompileResult(Compare(l, r) <= 0, DataType.Boolean));
-                return new Operator(Operators.LessThanOrEqual, PrecedenceComparison, (l, r) => Compare(l, r, (compRes) => compRes <= 0));
+                return new Operator(Operators.LessThanOrEqual, PrecedenceComparison, (l, r, ctx) => Compare(l, r, (compRes) => compRes <= 0));
             }
         }
 
@@ -318,7 +427,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             {
                 if (_percent == null)
                 {
-                    _percent = new Operator(Operators.Percent, PrecedencePercent, (l, r) =>
+                    _percent = new Operator(Operators.Percent, PrecedencePercent, (l, r, ctx) =>
                         {
                             l = l ?? CompileResult.ZeroInt;
                             r = r ?? CompileResult.ZeroInt;

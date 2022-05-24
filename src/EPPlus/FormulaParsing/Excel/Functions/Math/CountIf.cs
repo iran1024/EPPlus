@@ -29,20 +29,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
         Description = "Returns the number of cells (of a supplied range), that satisfy a given criteria")]
     internal class CountIf : ExcelFunction
     {
-        private readonly ExpressionEvaluator _expressionEvaluator;
-
-        public CountIf()
-            : this(new ExpressionEvaluator())
-        {
-
-        }
-
-        public CountIf(ExpressionEvaluator evaluator)
-        {
-            Require.That(evaluator).Named("evaluator").IsNotNull();
-            _expressionEvaluator = evaluator;
-        }
-
+        private ExpressionEvaluator _expressionEvaluator;
         private bool Evaluate(object obj, string expression)
         {
             double? candidate = default(double?);
@@ -61,6 +48,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
         {
             var functionArguments = arguments as FunctionArgument[] ?? arguments.ToArray();
             ValidateArguments(functionArguments, 2);
+            _expressionEvaluator = new ExpressionEvaluator(context);
             var range = functionArguments.ElementAt(0);
             var criteria = functionArguments.ElementAt(1).ValueFirstString;
             double result = 0d;

@@ -21,21 +21,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
 {
     internal abstract class DatabaseFunction : ExcelFunction
     {
-        protected RowMatcher RowMatcher { get; private set; }
-
-        public DatabaseFunction()
-            : this(new RowMatcher())
-        {
-            
-        }
-
-        public DatabaseFunction(RowMatcher rowMatcher)
-        {
-            RowMatcher = rowMatcher;
-        }
-
         protected IEnumerable<double> GetMatchingValues(IEnumerable<FunctionArgument> arguments, ParsingContext context)
         {
+            var rowMatcher = new RowMatcher(context);
             var dbAddress = arguments.ElementAt(0).ValueAsRangeInfo.Address.Address;
             //var field = ArgToString(arguments, 1).ToLower(CultureInfo.InvariantCulture);
             var field = arguments.ElementAt(1).Value;
@@ -48,7 +36,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
             while (db.HasMoreRows)
             {
                 var dataRow = db.Read();
-                if (!RowMatcher.IsMatch(dataRow, criteria)) continue;
+                if (!rowMatcher.IsMatch(dataRow, criteria)) continue;
                 var candidate = ConvertUtil.IsNumericOrDate(field) ? dataRow[(int)ConvertUtil.GetValueDouble(field)] : dataRow[field.ToString().ToLower(CultureInfo.InvariantCulture)];
                 if (ConvertUtil.IsNumericOrDate(candidate))
                 {

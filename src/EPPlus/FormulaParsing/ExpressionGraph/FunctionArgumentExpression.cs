@@ -21,8 +21,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     {
         private readonly Expression _function;
 
-        public FunctionArgumentExpression(Expression function)
-            : base(false)
+        public FunctionArgumentExpression(Expression function, ParsingContext ctx)
+            : base(false, ctx)
         {
             _function = function;
         }

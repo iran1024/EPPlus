@@ -27,6 +27,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     internal class RangeOffsetExpression : Expression
     {
         public RangeOffsetExpression(ParsingContext context)
+            : base(context)
         {
             _parsingContext = context;  
         }

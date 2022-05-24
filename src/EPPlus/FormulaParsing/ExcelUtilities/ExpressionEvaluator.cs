@@ -25,18 +25,20 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
     {
         private readonly WildCardValueMatcher _wildCardValueMatcher;
         private readonly CompileResultFactory _compileResultFactory;
+        private readonly ParsingContext _parsingContext;
         private readonly TimeStringParser _timeStringParser = new TimeStringParser();
 
-        public ExpressionEvaluator()
-            : this(new WildCardValueMatcher(), new CompileResultFactory())
+        public ExpressionEvaluator(ParsingContext ctx)
+            : this(new WildCardValueMatcher(), new CompileResultFactory(), ctx)
         {
 
         }
 
-        public ExpressionEvaluator(WildCardValueMatcher wildCardValueMatcher, CompileResultFactory compileResultFactory)
+        public ExpressionEvaluator(WildCardValueMatcher wildCardValueMatcher, CompileResultFactory compileResultFactory, ParsingContext ctx)
         {
             _wildCardValueMatcher = wildCardValueMatcher;
             _compileResultFactory = compileResultFactory;
+            _parsingContext = ctx;
         }
 
         private string GetNonAlphanumericStartChars(string expr)
@@ -65,7 +67,7 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
         {
             var leftResult = _compileResultFactory.Create(left);
             var rightResult = _compileResultFactory.Create(right);
-            var result = op.Apply(leftResult, rightResult);
+            var result = op.Apply(leftResult, rightResult, _parsingContext);
             if (result.DataType != DataType.Boolean)
             {
                 throw new ArgumentException("Illegal operator in expression");

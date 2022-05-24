@@ -20,6 +20,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     internal interface IExpressionGraphBuilder
     {
-        ExpressionGraph Build(IEnumerable<Token> tokens);
+        ExpressionGraph Build(IEnumerable<Token> tokens, IDictionary<int, TokenInfo> tokenInfo=null);
     }
 }

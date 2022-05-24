@@ -19,13 +19,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     public class EnumerableExpression : Expression
     {
-        public EnumerableExpression()
-            : this(new ExpressionCompiler())
+        public EnumerableExpression(ParsingContext ctx)
+            : this(new ExpressionCompiler(ctx), ctx)
         {
 
         }
 
-        public EnumerableExpression(IExpressionCompiler expressionCompiler)
+        public EnumerableExpression(IExpressionCompiler expressionCompiler, ParsingContext ctx)
+            : base(ctx)
         {
             _expressionCompiler = expressionCompiler;
         }

@@ -29,22 +29,11 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
         Description = "Adds the cells in a supplied range, that satisfy a given criteria")]
     internal class SumIf : HiddenValuesHandlingFunction
     {
-        private readonly ExpressionEvaluator _evaluator;
-
-        public SumIf()
-            : this(new ExpressionEvaluator())
-        {
-
-        }
-
-        public SumIf(ExpressionEvaluator evaluator)
-        {
-            Require.That(evaluator).Named("evaluator").IsNotNull();
-            _evaluator = evaluator;
-        }
+        private ExpressionEvaluator _evaluator;
 
         public override CompileResult Execute(IEnumerable<FunctionArgument> arguments, ParsingContext context)
         {
+            _evaluator = new ExpressionEvaluator(context);
             ValidateArguments(arguments, 2);
             var argRange = ArgToRangeInfo(arguments, 0);
 

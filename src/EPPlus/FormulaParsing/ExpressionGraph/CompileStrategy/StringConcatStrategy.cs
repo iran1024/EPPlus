@@ -19,15 +19,15 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.CompileStrategy
 {
     public class StringConcatStrategy : CompileStrategy
     {
-        public StringConcatStrategy(Expression expression)
-            : base(expression)
+        public StringConcatStrategy(Expression expression, ParsingContext ctx)
+            : base(expression, ctx)
         {
            
         }
 
         public override Expression Compile()
         {
-            var newExp = _expression is ExcelAddressExpression ? _expression : ExpressionConverter.Instance.ToStringExpression(_expression);
+            var newExp = _expression is ExcelAddressExpression ? _expression : ExpressionConverter.GetInstance(Context).ToStringExpression(_expression);
             newExp.Prev = _expression.Prev;
             newExp.Next = _expression.Next;
             if (_expression.Prev != null)
