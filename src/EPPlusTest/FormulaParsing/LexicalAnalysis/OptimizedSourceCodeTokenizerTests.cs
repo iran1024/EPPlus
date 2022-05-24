@@ -524,15 +524,17 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
         {
             var input = @"A1:B3  B2:C5";
             var tokens = _tokenizer.Tokenize(input);
-            Assert.AreEqual(TokenType.ExcelAddress, tokens[2].TokenType);
-            Assert.AreEqual(TokenType.ExcelAddress, tokens[3].TokenType);
-            Assert.AreEqual(6, tokens.Count);
+            Assert.AreEqual(TokenType.CellAddress, tokens[2].TokenType);
+            Assert.AreEqual(TokenType.Operator, tokens[3].TokenType);
+            Assert.AreEqual(TokenType.CellAddress, tokens[4].TokenType);
+            Assert.AreEqual(7, tokens.Count);
 
             input = "=( A1:B3 )   (B2:C3)";
             tokens = _tokenizer.Tokenize(input);
-            Assert.AreEqual(11, tokens.Count);
+            Assert.AreEqual(12, tokens.Count);
             Assert.AreEqual(TokenType.ClosingParenthesis, tokens[5].TokenType);
-            Assert.AreEqual(TokenType.OpeningParenthesis, tokens[6].TokenType);
+            Assert.AreEqual(TokenType.Operator, tokens[6].TokenType);
+            Assert.AreEqual(TokenType.OpeningParenthesis, tokens[7].TokenType);
 
             input = "=( A1:B3 )( B2:C3  )  ";
             tokens = _tokenizer.Tokenize(input);
@@ -540,6 +542,5 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(TokenType.ClosingParenthesis, tokens[5].TokenType);
             Assert.AreEqual(TokenType.OpeningParenthesis, tokens[6].TokenType);
         }
-
     }
 }

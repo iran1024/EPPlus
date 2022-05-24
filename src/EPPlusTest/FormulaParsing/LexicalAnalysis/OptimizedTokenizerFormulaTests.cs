@@ -423,12 +423,5 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             var f = "SUM(OFFSET(A3, -1, 0):A1:OFFSET(A3, 1, 0))";
             var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
         }
-        [TestMethod]
-        public void VerifyFormulaTokens_Intersect()
-        {
-            var f = "SUM(A1:A3 A2:A4)";
-            var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
-        }
-
     }
 }

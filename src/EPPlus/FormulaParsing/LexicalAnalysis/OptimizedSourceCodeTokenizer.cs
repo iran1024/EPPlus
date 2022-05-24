@@ -102,7 +102,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
            isNegator = 0x80,
            isColon =   0x100,
            isTableRef= 0x200,
-           isExtRef =  0x400
+           isExtRef =  0x400,
+           isIntersect= 0x800,
         }
         public IList<Token> Tokenize(string input, string worksheet)
         {
@@ -230,6 +231,15 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                                     {
                                         wsCnt++;
                                     }
+                                    var pt = GetLastToken(l);
+                                    if(pt.TokenType==TokenType.CellAddress || 
+                                       pt.TokenType == TokenType.ClosingParenthesis ||
+                                       pt.TokenType == TokenType.NameValue ||
+                                       pt.TokenType == TokenType.InvalidReference)
+                                    {
+                                        flags |= statFlags.isIntersect;
+                                    }
+
                                     if (_keepWhitespace)
                                     {
                                         l.Add(new Token(new string(c, wsCnt), TokenType.WhiteSpace));
@@ -396,7 +406,16 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             }
             if (current.Length == 0)
             {
-                if((flags & statFlags.isString) == statFlags.isString)
+                if ((flags & statFlags.isIntersect) == statFlags.isIntersect)
+                {                    
+                    if (c == '[' ||
+                        c == '(')
+                    {
+                        l.Add(new Token("isc", TokenType.Operator));
+                    }
+                }
+
+                if ((flags & statFlags.isString) == statFlags.isString)
                 {
                     l.Add(new Token("", TokenType.StringContent));
                 }
@@ -405,6 +424,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 return;
             }
             var currentString = current.ToString();
+
             if ((flags & statFlags.isString) == statFlags.isString)
             {
                 l.Add(new Token(currentString, TokenType.StringContent));
@@ -521,6 +541,17 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                     l.Add(new Token(currentString, TokenType.Integer));
                 }
             }
+
+            if ((flags & statFlags.isIntersect) == statFlags.isIntersect)
+            {
+                var pt = GetLastToken(l);
+                if (pt.TokenType == TokenType.CellAddress ||
+                   pt.TokenType == TokenType.NameValue)
+                {
+                    l.Insert(l.Count - 1, new Token("isc", TokenType.Operator));
+                }
+            }
+
             flags &= statFlags.isTableRef;
             
             //Clear sb
