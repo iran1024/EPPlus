@@ -57,6 +57,11 @@ namespace OfficeOpenXml.FormulaParsing
                 SetAddress(ws, address);
             }
 
+            public RangeInfo(ExcelWorksheet ws)
+            {
+                RangeNew = new FormulaRangeAddress(null) { WorksheetIx = (short)ws.PositionId };
+            }
+
             /// <summary>
             /// Constructor
             /// </summary>
@@ -153,6 +158,8 @@ namespace OfficeOpenXml.FormulaParsing
                     return false;
                 }
             }
+
+            public bool IsInMemoryRange => false;
 
             /// <summary>
             /// Current cell

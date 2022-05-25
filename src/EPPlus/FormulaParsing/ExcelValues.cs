@@ -158,6 +158,11 @@ namespace OfficeOpenXml
             throw new ArgumentException("Not a valid error value: " + val);
         }
 
+        internal static bool IsErrorValue(string val)
+        {
+            return Values.StringIsErrorValue(val);
+        }
+
         private ExcelErrorValue(eErrorType type)
         {
             Type=type; 

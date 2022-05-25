@@ -20,9 +20,14 @@ using OfficeOpenXml.Utils;
 using OfficeOpenXml.FormulaParsing;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using static OfficeOpenXml.ExcelAddressBase;
+using System.Diagnostics;
 
 namespace OfficeOpenXml.FormulaParsing.Excel.Operators
 {
+    /// <summary>
+    /// Implementation of operators in formula calculation.
+    /// </summary>
+    [DebuggerDisplay("Operator: {GetOperator()}")]
     public class Operator : IOperator
     {
         private const int PrecedenceExclamation = 0;
@@ -59,6 +64,11 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         Operators IOperator.Operator
         {
             get { return _operator; }
+        }
+
+        internal Operators GetOperator()
+        {
+            return _operator;
         }
 
 
@@ -104,6 +114,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     {
                         return new CompileResult(l.ResultNumeric + r.ResultNumeric, DataType.Integer);
                     }
+                    if(l.DataType == DataType.ExcelRange && r.DataType == DataType.ExcelRange)
+                    {
+                        return RangeOperationsOperator.Apply(l, r, Operators.Plus, ctx);
+                    }
                     else if (CanDoNumericOperation(l, r))
                     {
                         return new CompileResult(l.ResultNumeric + r.ResultNumeric, DataType.Decimal);
@@ -125,6 +139,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     if (l.DataType == DataType.Integer && r.DataType == DataType.Integer)
                     {
                         return new CompileResult(l.ResultNumeric - r.ResultNumeric, DataType.Integer);
+                    }
+                    if (l.DataType == DataType.ExcelRange && r.DataType == DataType.ExcelRange)
+                    {
+                        return RangeOperationsOperator.Apply(l, r, Operators.Minus, ctx);
                     }
                     else if (CanDoNumericOperation(l, r))
                     {
@@ -148,6 +166,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     if (l.DataType == DataType.Integer && r.DataType == DataType.Integer)
                     {
                         return new CompileResult(l.ResultNumeric*r.ResultNumeric, DataType.Integer);
+                    }
+                    if (l.DataType == DataType.ExcelRange && r.DataType == DataType.ExcelRange)
+                    {
+                        return RangeOperationsOperator.Apply(l, r, Operators.Multiply, ctx);
                     }
                     else if (CanDoNumericOperation(l, r))
                     {
@@ -175,6 +197,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     if (Math.Abs(right - 0d) < double.Epsilon)
                     {
                         return new CompileResult(eErrorType.Div0);
+                    }
+                    if (l.DataType == DataType.ExcelRange && r.DataType == DataType.ExcelRange)
+                    {
+                        return RangeOperationsOperator.Apply(l, r, Operators.Divide, ctx);
                     }
                     else if (CanDoNumericOperation(l, r))
                     {

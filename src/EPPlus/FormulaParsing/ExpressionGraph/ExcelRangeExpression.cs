@@ -19,7 +19,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public override CompileResult Compile()
         {
-            return new CompileResult(_rangeInfo, DataType.Enumerable);
+            return new CompileResult(_rangeInfo, DataType.ExcelRange);
         }
     }
 }

@@ -587,7 +587,7 @@ namespace OfficeOpenXml
 			{
 				if (_formulaParser == null)
 				{
-					_formulaParser = new FormulaParser(new EpplusExcelDataProvider(_package));
+					_formulaParser = new FormulaParser(new EpplusExcelDataProvider(_package), _package);
 				}
 				return _formulaParser;
 			}

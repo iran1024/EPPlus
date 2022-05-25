@@ -134,6 +134,8 @@ namespace OfficeOpenXml.FormulaParsing
             }
         }
 
+        public bool IsInMemoryRange => false;
+
         /// <summary>
         /// Return the current object in the enumeration
         /// </summary>

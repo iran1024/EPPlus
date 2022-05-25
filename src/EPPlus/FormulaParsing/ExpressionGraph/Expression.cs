@@ -79,10 +79,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 var result = default(CompileResult);
                 var left = Compile();
                 var right = Next.Compile();
-                if(left.DataType == DataType.ExcelRange && right.DataType == DataType.ExcelRange && Operator == null)
-                {
-                    Operator = OfficeOpenXml.FormulaParsing.Excel.Operators.Operator.Intersect;
-                }
                 result = Operator.Apply(left, right, Context);
                 expression = ExpressionConverter.GetInstance(Context).FromCompileResult(result);
                 if (expression is ExcelErrorExpression)

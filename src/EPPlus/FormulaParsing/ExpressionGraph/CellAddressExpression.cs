@@ -1,8 +1,10 @@
 ﻿using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System;
+using System.Diagnostics;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
+    [DebuggerDisplay("CellAddressExpression: {ExpressionString}")]
     internal class CellAddressExpression : Expression
     {
         public CellAddressExpression(Token token, ParsingContext ctx) : base(token.Value, ctx)

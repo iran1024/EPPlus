@@ -28,6 +28,11 @@ namespace OfficeOpenXml.FormulaParsing
         /// If the contains more than one cell  with a value.
         /// </summary>
         bool IsMulti { get; }
+
+        /// <summary>
+        /// Returns true if the range is not referring to the cell store, but rather keeps the data in memory.
+        /// </summary>
+        bool IsInMemoryRange { get; }
         /// <summary>
         /// Get number of cells
         /// </summary>

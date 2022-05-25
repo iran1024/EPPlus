@@ -546,7 +546,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             {
                 var pt = GetLastToken(l);
                 if (pt.TokenType == TokenType.CellAddress ||
-                   pt.TokenType == TokenType.NameValue)
+                   pt.TokenType == TokenType.NameValue ||
+                   pt.TokenType == TokenType.Function)
                 {
                     l.Insert(l.Count - 1, new Token("isc", TokenType.Operator));
                 }

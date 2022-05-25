@@ -12,6 +12,7 @@
  *************************************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     /// <summary>
     /// Expression that handles execution of a function.
     /// </summary>
+    [DebuggerDisplay("FunctionExpression: {ExpressionString}")]
     internal class FunctionExpression : AtomicExpression
     {
         /// <summary>

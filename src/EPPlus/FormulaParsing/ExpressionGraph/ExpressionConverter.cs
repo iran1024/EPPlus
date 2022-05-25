@@ -86,9 +86,17 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                     }
                     break;
                 case DataType.ExcelRange:
-                    if(compileResult.ResultValue is FormulaRangeAddress f)
+                    if(compileResult.Result is FormulaRangeAddress f)
                     {
                         return new ExcelRangeExpression(_ctx.ExcelDataProvider.GetRange(_ctx.Package.Workbook.Worksheets[f.WorksheetIx]?.Name, f.FromRow, f.FromCol, f.ToRow, f.ToCol), _ctx);
+                    }
+                    else if (compileResult.Result is IRangeInfo ri)
+                    {
+                        if(ri.IsInMemoryRange)
+                        {
+                            return new ExcelRangeExpression(ri, _ctx);
+                        }
+                        return new ExcelRangeExpression(_ctx.ExcelDataProvider.GetRange(ri.Worksheet?.Name, ri.Address._fromRow, ri.Address._fromCol, ri.Address._toRow, ri.Address._toRow), _ctx);
                     }
                     break;
                 case DataType.ExcelCellAddress:
