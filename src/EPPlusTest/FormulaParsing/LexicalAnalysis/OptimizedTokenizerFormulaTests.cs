@@ -230,6 +230,28 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(FixedFlag.All, fr.Ranges[0].FixedFlag);
         }
         [TestMethod]
+        public void VerifyFormulaTokensTable_AsNameOnWorksheet()
+        {
+            //Setup
+            var f = @"SUM(Sheet1!MyTable)";
+            var formula = new SharedFormula(_ws.Cells["A4:A105"], f);
+
+            //Assert
+            Assert.AreEqual(4, formula.Tokens.Count);
+            Assert.AreEqual(1, formula.TokenInfos.Count);
+
+            Assert.AreEqual(TokenType.NameValue, formula.Tokens[2].TokenType);
+            Assert.IsInstanceOfType(formula.TokenInfos[2], typeof(FormulaRange));
+
+            var fr = (FormulaRange)formula.TokenInfos[2];
+            Assert.AreEqual(2, fr.Ranges[0].FromRow);
+            Assert.AreEqual(1, fr.Ranges[0].FromCol);
+            Assert.AreEqual(101, fr.Ranges[0].ToRow);
+            Assert.AreEqual(5, fr.Ranges[0].ToCol);
+            Assert.IsTrue(fr.IsFixed);
+            Assert.AreEqual(FixedFlag.All, fr.Ranges[0].FixedFlag);
+        }
+        [TestMethod]
         public void VerifyFormulaTokens_FixedCellFormula()
         {
             //Setup
@@ -421,6 +443,12 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
         public void VerifyFormulaTokens_OffsetFirst()
         {
             var f = "SUM(OFFSET(A3, -1, 0):A1:OFFSET(A3, 1, 0))";
+            var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
+        }
+        [TestMethod]
+        public void VerifyFormulaTokens_ExternalReference()
+        {
+            var f = "SUM([1]'Sheet1'!A5:A8)";
             var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
         }
 
