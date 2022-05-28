@@ -3256,12 +3256,33 @@ namespace EPPlusTest
             }
         }
         [TestMethod]
-        public void AddImage()
+        public void i654()
         {
-            using (var p = OpenPackage("test.xlsx"))
+            using (var p = OpenTemplatePackage("i654.xlsx"))
             {
-                var ws = p.Workbook.Worksheets.Add("image");
-                ws.Drawings.AddPicture("Image1",new FileInfo($@"c:\temp\EPPlus20211018.jpg"));
+                var ws = p.Workbook.Worksheets[0];
+                for (int i = 0; i < 10; i++)
+                {
+                    ws.InsertRow(5, 1);
+                }
+                SaveWorkbook("i654-saved.xlsx", p);
+            }
+        }
+        [TestMethod]
+        public void I653()
+        {
+            using (var p = OpenTemplatePackage("i653.xlsx"))
+            {
+                ExcelWorksheet sheet = p.Workbook.Worksheets[0];
+                for (int i = 3; i < 1003; i++)
+                {
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+                    sheet.InsertRow(i, 1);
+                    sw.Stop();
+                    sheet.Cells[i, 2].Value = sw.ElapsedTicks;
+                }
+                SaveAndCleanup(p);
             }
         }
     }

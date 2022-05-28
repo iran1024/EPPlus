@@ -12,6 +12,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         internal int StartRow, StartCol;
         internal static ISourceCodeTokenizer _tokenizer = OptimizedSourceCodeTokenizer.Default;
         internal IList<Token> Tokens;
+        internal ExpressionGraph.ExpressionGraph _graph;
         public Formula(ExcelWorksheet ws, string formula)
         {
             _ws = ws;
@@ -25,11 +26,11 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             var ctx = ParsingContext.Create(ws._package);
             ctx.ExcelDataProvider = new EpplusExcelDataProvider(ws._package);
             var graphBuilder = new ExpressionGraphBuilder(ctx.ExcelDataProvider, ctx);
-            var graph = graphBuilder.Build(Tokens, TokenInfos);
+            _graph = graphBuilder.Build(Tokens, TokenInfos);
             using (var s = ctx.Scopes.NewScope(new ExcelUtilities.RangeAddress() { FromCol=StartCol, FromRow=StartRow, ToCol=StartCol, ToRow=StartRow, Worksheet=ws.Name}))
             {
                 var compiler = new ExpressionCompiler(ctx);
-                var result = compiler.Compile(graph.Expressions);
+                var result = compiler.Compile(_graph.Expressions);
             }
         }
 
@@ -246,8 +247,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 else
                 {
                     var wsRef = _ws.Workbook.Worksheets[ws];
-                    if (wsRef != null)
-                    {
+                    if (wsRef != null && wsRef.Names.ContainsKey(t.Value))
+                    {                        
                         n = wsRef.Names[t.Value];
                     }
                 }

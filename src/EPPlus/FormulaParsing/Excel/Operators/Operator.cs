@@ -342,6 +342,18 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                                                return new CompileResult(cellAddress, DataType.ExcelCellAddress);
                                            }
                                        }
+                                       else if (l.DataType == DataType.WorksheetName && r.DataType == DataType.Enumerable)
+                                       {
+                                           var wsName = l.Result?.ToString();
+                                           var rangeInfo = r.Result as IRangeInfo;
+                                           if (rangeInfo != null)
+                                           {
+                                               rangeInfo.Address._ws = wsName;                                               
+                                               var wsIndex = ctx.Package.Workbook.Worksheets[wsName]?.PositionId;
+                                               rangeInfo.RangeNew.WorksheetIx = (short)(wsIndex.HasValue ? wsIndex.Value : -1);
+                                               return new CompileResult(rangeInfo, DataType.ExcelRange);
+                                           }
+                                       }
                                        return new CompileResult(eErrorType.Ref);
                                    });
                 }
