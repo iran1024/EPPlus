@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml.FormulaParsing.ExpressionGraph;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using OfficeOpenXml.Utils;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,16 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 currentAdr._toCol = currentAdr._fromCol + sizeW - 1;
                 currentAdr._toRow = currentAdr._fromRow + sizeH - 1;
                 var currentWs = context.Package.Workbook.Worksheets[context.Scopes.Current.Address.Worksheet];
-                var resultRange = new InMemoryRange(currentWs.PositionId, currentAdr._fromRow, currentAdr._fromCol, currentAdr._toRow, currentAdr._toCol, context);
+                var rangeAdr = new FormulaRangeAddress(context)
+                {
+                    WorksheetIx = (short)currentWs.PositionId,
+                    FromRow = currentAdr._fromRow,
+                    FromCol = currentAdr._fromCol,
+                    ToRow = currentAdr._toRow,
+                    ToCol = currentAdr._toCol,
+                };
+                var rangeDef = new RangeDefinition((short)sizeW, sizeH);
+                var resultRange = new InMemoryRange(rangeAdr, rangeDef, context);
                 for(var row = 0; row < sizeH; row++)
                 {
                     var rowLeft = lr.Address._fromRow + row;
@@ -66,7 +76,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                             return new CompileResult(eErrorType.Value);
                         }
                         var result = ApplyOperator(ConvertUtil.GetValueDouble(leftVal), ConvertUtil.GetValueDouble(rightVal), op);
-                        resultRange.SetValue(row, col, result);
+                        resultRange.SetValue(col, row, result);
                     }
                 }
                 return new CompileResult(resultRange, DataType.ExcelRange);
