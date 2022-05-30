@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using OfficeOpenXml.FormulaParsing.Utilities;
 using OfficeOpenXml.FormulaParsing.ExcelUtilities;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
 {
@@ -24,7 +25,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
         private int _currentRow;
         private int _currentCol;
         private object _currentValue;
-        private RangeAddress _rangeAddress;
+        private FormulaRangeAddress _rangeAddress;
         private int _index;
 
         public ExcelLookupNavigator(LookupDirection direction, LookupArguments arguments, ParsingContext parsingContext)
@@ -36,7 +37,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
         private void Initialize()
         {
             _index = 0;
-            var factory = new RangeAddressFactory(ParsingContext.ExcelDataProvider);
+            var factory = new RangeAddressFactory(ParsingContext.ExcelDataProvider, ParsingContext);
             if (Arguments.RangeInfo == null)
             {
                 _rangeAddress = factory.Create(ParsingContext.Scopes.Current.Address.Worksheet, Arguments.RangeAddress);

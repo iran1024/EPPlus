@@ -50,6 +50,7 @@ namespace OfficeOpenXml.FormulaParsing
         /// Constructor
         /// </summary>
         /// <param name="excelDataProvider">An instance of <see cref="ExcelDataProvider"/> which provides access to a workbook</param>
+        /// <param name="package">The package to calculate</param>
         internal FormulaParser(ExcelDataProvider excelDataProvider, ExcelPackage package = null)
             : this(excelDataProvider, ParsingContext.Create(package))
         {
@@ -66,7 +67,7 @@ namespace OfficeOpenXml.FormulaParsing
             parsingContext.Parser = this;
             parsingContext.ExcelDataProvider = excelDataProvider;
             parsingContext.NameValueProvider = new EpplusNameValueProvider(excelDataProvider);
-            parsingContext.RangeAddressFactory = new RangeAddressFactory(excelDataProvider);
+            parsingContext.RangeAddressFactory = new RangeAddressFactory(excelDataProvider, parsingContext);
             _parsingContext = parsingContext;
             _excelDataProvider = excelDataProvider;
             Configure(configuration =>
@@ -103,7 +104,7 @@ namespace OfficeOpenXml.FormulaParsing
         /// </summary>
         internal FilterInfo FilterInfo { get; private set; }
 
-        internal virtual object Parse(string formula, RangeAddress rangeAddress)
+        internal virtual object Parse(string formula, FormulaRangeAddress rangeAddress)
         {
             using (var scope = _parsingContext.Scopes.NewScope(rangeAddress))
             {
@@ -203,7 +204,7 @@ namespace OfficeOpenXml.FormulaParsing
         /// <returns>The result of the calculation</returns>
         public virtual object Parse(string formula)
         {
-            return Parse(formula, RangeAddress.Empty);
+            return Parse(formula, FormulaRangeAddress.Empty);
         }
 
         /// <summary>

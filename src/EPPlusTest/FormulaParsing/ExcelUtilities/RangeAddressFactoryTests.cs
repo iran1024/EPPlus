@@ -48,7 +48,7 @@ namespace EPPlusTest.ExcelUtilities
         {
             var provider = A.Fake<ExcelDataProvider>();
             A.CallTo(() => provider.ExcelMaxRows).Returns(ExcelMaxRows);
-            _factory = new RangeAddressFactory(provider);
+            _factory = new RangeAddressFactory(provider, ParsingContext.Create());
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentException))]

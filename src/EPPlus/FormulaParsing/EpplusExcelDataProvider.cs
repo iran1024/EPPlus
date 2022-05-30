@@ -395,17 +395,23 @@ namespace OfficeOpenXml.FormulaParsing
         private RangeAddressFactory _rangeAddressFactory;
         private Dictionary<ulong, INameInfo> _names=new Dictionary<ulong,INameInfo>();
 
-        internal EpplusExcelDataProvider()
-            : this(new ExcelPackage())
+        internal EpplusExcelDataProvider(ParsingContext ctx)
+            : this(new ExcelPackage(), ctx)
         {
 
         }
 
         public EpplusExcelDataProvider(ExcelPackage package)
+            : this(package, ParsingContext.Create(package))
+        {
+
+        }
+
+        public EpplusExcelDataProvider(ExcelPackage package, ParsingContext ctx)
         {
             _package = package;
 
-            _rangeAddressFactory = new RangeAddressFactory(this);
+            _rangeAddressFactory = new RangeAddressFactory(this, ctx);
         }
 
         public override IEnumerable<string> GetWorksheets()

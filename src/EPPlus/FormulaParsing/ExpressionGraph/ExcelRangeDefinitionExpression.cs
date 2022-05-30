@@ -20,7 +20,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public override CompileResult Compile()
         {
-            var dp = new EpplusExcelDataProvider(Context.Package);
+            var dp = new EpplusExcelDataProvider(Context.Package, Context);
             return new CompileResult(dp.GetRange(_range), DataType.Enumerable);
         }
     }

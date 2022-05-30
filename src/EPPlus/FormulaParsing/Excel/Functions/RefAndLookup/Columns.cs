@@ -41,7 +41,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 var range = ArgToAddress(arguments, 0, context);
                 if (ExcelAddressUtil.IsValidAddress(range))
                 {
-                    var factory = new RangeAddressFactory(context.ExcelDataProvider);
+                    var factory = new RangeAddressFactory(context.ExcelDataProvider, context);
                     var address = factory.Create(range);
                     return CreateResult(address.ToCol - address.FromCol + 1, DataType.Integer);
                 }
