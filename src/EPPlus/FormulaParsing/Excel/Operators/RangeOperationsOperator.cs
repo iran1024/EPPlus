@@ -46,7 +46,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     return new CompileResult(eErrorType.NA);
                 }
 
-                var currentAdr = new ExcelAddress(context.Scopes.Current.Address.Worksheet, context.Scopes.Current.Address.Address);
+                var scopeAdr = context.Scopes.Current.Address;
+                var currentAdr = new ExcelAddress(scopeAdr.Worksheet, scopeAdr.FromRow, scopeAdr.FromCol, scopeAdr.ToRow, scopeAdr.ToCol);
                 currentAdr._toCol = currentAdr._fromCol + sizeW - 1;
                 currentAdr._toRow = currentAdr._fromRow + sizeH - 1;
                 var currentWs = context.Package.Workbook.Worksheets[context.Scopes.Current.Address.Worksheet];

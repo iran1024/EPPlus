@@ -95,7 +95,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         private CompileResult CompileRangeValues()
         {
             var c = this._parsingContext.Scopes.Current;
-            var resultRange = _excelDataProvider.GetRange(c.Address.Worksheet, c.Address.FromRow, c.Address.FromCol, ExpressionString);
+            var resultRange = _excelDataProvider.GetRange(c.Address);
             if (resultRange == null)
             {
                 return CompileResult.Empty;

@@ -581,13 +581,15 @@ namespace OfficeOpenXml
 		#region Workbook Properties
 		decimal _standardFontWidth = decimal.MinValue;
 		string _fontID = "";
+		ParsingContext _parsingContext;
 		internal FormulaParser FormulaParser
 		{
 			get
 			{
 				if (_formulaParser == null)
 				{
-					_formulaParser = new FormulaParser(new EpplusExcelDataProvider(_package), _package);
+					_parsingContext = ParsingContext.Create(_package);
+					_formulaParser = new FormulaParser(new EpplusExcelDataProvider(_package, _parsingContext),_package);
 				}
 				return _formulaParser;
 			}

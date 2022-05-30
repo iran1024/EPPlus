@@ -49,12 +49,12 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             {
                 return new BooleanExpression(token.Value, _parsingContext);
             }
-            if (token.TokenTypeIsSet(TokenType.ExcelAddress))
-            {
-                var exp = new ExcelAddressExpression(token.Value, _excelDataProvider, _parsingContext, token.IsNegated);
-                exp.HasCircularReference = token.TokenTypeIsSet(TokenType.CircularReference);
-                return exp;
-            }
+            //if (token.TokenTypeIsSet(TokenType.ExcelAddress))
+            //{
+            //    var exp = new ExcelAddressExpression(token.Value, _excelDataProvider, _parsingContext, token.IsNegated);
+            //    exp.HasCircularReference = token.TokenTypeIsSet(TokenType.CircularReference);
+            //    return exp;
+            //}
             if(token.TokenTypeIsSet(TokenType.WorksheetNameContent))
             {
                 return new WorksheetNameExpression(token.Value, _parsingContext);

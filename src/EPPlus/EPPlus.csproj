@@ -335,8 +335,11 @@
 
   <ItemGroup>
     <Compile Remove="Core\Worksheet\Fonts\Tables\**" />
+    <Compile Remove="FormulaParsing\ExpressionGraph\v2\**" />
     <EmbeddedResource Remove="Core\Worksheet\Fonts\Tables\**" />
+    <EmbeddedResource Remove="FormulaParsing\ExpressionGraph\v2\**" />
     <None Remove="Core\Worksheet\Fonts\Tables\**" />
+    <None Remove="FormulaParsing\ExpressionGraph\v2\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -358,6 +361,13 @@
     <Compile Remove="Export\HtmlExport\ExcelHtmlTableExportSetting.cs" />
     <Compile Remove="Export\HtmlExport\HtmlExporterBase.async.cs" />
     <Compile Remove="Export\HtmlExport\HtmlExporterBase.cs" />
+    <Compile Remove="FormulaParsing\ExcelUtilities\CellReferenceProvider.cs" />
+    <Compile Remove="FormulaParsing\ExcelUtilities\FormulaDependencies.cs" />
+    <Compile Remove="FormulaParsing\ExcelUtilities\FormulaDependency.cs" />
+    <Compile Remove="FormulaParsing\ExcelUtilities\FormulaDependencyFactory.cs" />
+    <Compile Remove="FormulaParsing\ExpressionGraph\ColonExpression.cs" />
+    <Compile Remove="FormulaParsing\ExpressionGraph\ExcelAddressExpression.cs" />
+    <Compile Remove="FormulaParsing\ExpressionGraph\RangeOffsetExpression.cs" />
     <Compile Remove="Packaging\DotNetZip\ZipFile.SaveSelfExtractor.cs" />
   
   </ItemGroup>

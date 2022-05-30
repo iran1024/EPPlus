@@ -3,6 +3,7 @@ using OfficeOpenXml.Table;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static OfficeOpenXml.ExcelAddressBase;
 
 namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 {
@@ -24,10 +25,10 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             Tokens = _tokenizer.Tokenize(formula);
             SetTokenInfos();
             var ctx = ParsingContext.Create(ws._package);
-            ctx.ExcelDataProvider = new EpplusExcelDataProvider(ws._package);
+            ctx.ExcelDataProvider = new EpplusExcelDataProvider(ws._package, ctx);
             var graphBuilder = new ExpressionGraphBuilder(ctx.ExcelDataProvider, ctx);
             _graph = graphBuilder.Build(Tokens, TokenInfos);
-            using (var s = ctx.Scopes.NewScope(new ExcelUtilities.RangeAddress() { FromCol=StartCol, FromRow=StartRow, ToCol=StartCol, ToRow=StartRow, Worksheet=ws.Name}))
+            using (var s = ctx.Scopes.NewScope(new FormulaRangeAddress(ctx){ FromCol=StartCol, FromRow=StartRow, ToCol=StartCol, ToRow=StartRow, WorksheetIx=(short)ws.PositionId}))
             {
                 var compiler = new ExpressionCompiler(ctx);
                 var result = compiler.Compile(_graph.Expressions);
@@ -608,6 +609,11 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
     public class FormulaRangeAddress
     {
         public ParsingContext _context;
+
+        private FormulaRangeAddress()
+        {
+
+        }
         internal FormulaRangeAddress(ParsingContext ctx)
         {            
             _context = ctx;
@@ -615,5 +621,48 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         public short ExternalReferenceIx, WorksheetIx;
         public int FromRow, FromCol, ToRow, ToCol;
         internal FixedFlag FixedFlag;
+
+        public static FormulaRangeAddress Empty
+        {
+            get { return new FormulaRangeAddress(); }
+        }
+
+        internal eAddressCollition CollidesWith(FormulaRangeAddress other)
+        {
+            var util = new ExcelAddressCollideUtility(this, _context);
+            return util.Collide(other, _context);
+        }
+
+        /// <summary>
+        /// ToString() returns the full address as a string
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            var ws = Worksheet;
+            if(!string.IsNullOrEmpty(ws))
+            {
+                return new ExcelAddress(ws, FromRow, FromCol, ToRow, ToCol).FullAddress;
+            }
+            return new ExcelAddress(FromRow, FromCol, ToRow, ToCol).FullAddress;
+        }
+
+        /// <summary>
+        /// Address worksheet
+        /// </summary>
+        public string Worksheet
+        {
+            get
+            {
+                if(WorksheetIx > -1 && _context != null && _context.Package != null)
+                {
+                    if(_context.Package.Workbook.Worksheets[WorksheetIx] != null)
+                    {
+                        return _context.Package.Workbook.Worksheets[WorksheetIx].Name;
+                    }
+                }
+                return string.Empty;
+            }
+        }
     }
 }

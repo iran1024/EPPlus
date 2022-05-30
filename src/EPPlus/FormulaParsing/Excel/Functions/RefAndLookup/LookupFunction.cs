@@ -17,6 +17,7 @@ using System.Text;
 using OfficeOpenXml.FormulaParsing.ExcelUtilities;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using OfficeOpenXml.FormulaParsing.Exceptions;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
 {
@@ -50,7 +51,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             return _valueMatcher.IsMatch(searchedValue, candidate);
         }
 
-        protected LookupDirection GetLookupDirection(RangeAddress rangeAddress)
+        protected LookupDirection GetLookupDirection(FormulaRangeAddress rangeAddress)
         {
             var nRows = rangeAddress.ToRow - rangeAddress.FromRow;
             var nCols = rangeAddress.ToCol - rangeAddress.FromCol;

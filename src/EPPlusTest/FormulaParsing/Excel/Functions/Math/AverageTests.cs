@@ -33,6 +33,7 @@ using OfficeOpenXml.FormulaParsing;
 using OfficeOpenXml.FormulaParsing.Excel.Functions;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using OfficeOpenXml.FormulaParsing.Exceptions;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 namespace EPPlusTest.FormulaParsing.Excel.Functions.Math
 {
@@ -89,7 +90,7 @@ namespace EPPlusTest.FormulaParsing.Excel.Functions.Math
 			var rangeInfo2 = new EpplusExcelDataProvider.RangeInfo(worksheet, 1, 4, 1, 4);
 			var rangeInfo3 = new EpplusExcelDataProvider.RangeInfo(worksheet, 1, 5, 1, 6);
 			var context = ParsingContext.Create();
-			var address = new OfficeOpenXml.FormulaParsing.ExcelUtilities.RangeAddress();
+			var address = new FormulaRangeAddress(context);
 			address.FromRow = address.ToRow = address.FromCol = address.ToCol = 2;
 			context.Scopes.NewScope(address);
 			var result = average.Execute(new FunctionArgument[]

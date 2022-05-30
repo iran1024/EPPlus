@@ -2,6 +2,7 @@
 using OfficeOpenXml;
 using OfficeOpenXml.FormulaParsing;
 using OfficeOpenXml.FormulaParsing.ExcelUtilities;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace EPPlusTest.FormulaParsing
             _package = new ExcelPackage();
             _package.Workbook.Worksheets.Add("test");
             _context = ParsingContext.Create(_package);
-            var address = new RangeAddress() { FromCol = 1, ToCol = 1, FromRow = 1, ToRow = 1, Worksheet = "test" };
+            var address = new FormulaRangeAddress(_context) { FromCol = 1, ToCol = 1, FromRow = 1, ToRow = 1, WorksheetIx = 0 };
             _context.Scopes.NewScope(address);
         }
 

@@ -321,7 +321,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             };
 
             var result = _graphBuilder.Build(tokens);
-            Assert.IsInstanceOfType(result.Expressions.First(), typeof(ExcelAddressExpression));
+            Assert.IsInstanceOfType(result.Expressions.First(), typeof(CellAddressExpression));
         }
     }
 }
