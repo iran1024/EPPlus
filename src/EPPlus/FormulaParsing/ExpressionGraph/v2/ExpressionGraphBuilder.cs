@@ -44,7 +44,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.v2
             _parsingContext = parsingContext;
         }
 
-        public ExpressionGraph Build(IEnumerable<Token> tokens, IDictionary<int, TokenInfo> tokenInfo=null)
+        public ExpressionGraph Build(IEnumerable<Token> tokens)
         {
             _tokenIndex = 0;
             _graph.Reset();
@@ -200,7 +200,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.v2
                 }
                 else if (token.TokenTypeIsSet(TokenType.ExcelAddress))
                 {
-                    _rangeOffsetExpression.AddressExpression2 = _expressionFactory.Create(token) as ExcelAddressExpression;
+                    _rangeOffsetExpression.AddressExpression2 = _expressionFactory.Create(token, _) as ExcelAddressExpression;
                 }
             }
         }

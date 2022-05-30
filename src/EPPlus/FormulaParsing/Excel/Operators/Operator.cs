@@ -321,45 +321,45 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 return _colon;
             }
         }
-        static IOperator _exclamation = null;
-        public static IOperator Exclamation
-        {
-            get
-            {
-                if(_exclamation==null)
-                {
-                    _exclamation = new Operator(Operators.Exclamation, PrecedenceExclamation,
-                                   (l, r, ctx) => 
-                                   {
-                                       if(l.DataType == DataType.WorksheetName && r.DataType == DataType.ExcelCellAddress)
-                                       {
-                                           var wsName = l.Result?.ToString();
-                                           var cellAddress = r.Result as FormulaCellAddress;
-                                           if(cellAddress != null)
-                                           {
-                                               var wsIndex = ctx.Package.Workbook.Worksheets[wsName]?.PositionId;
-                                               cellAddress.WorksheetIx = (short)(wsIndex.HasValue ? wsIndex.Value : -1);
-                                               return new CompileResult(cellAddress, DataType.ExcelCellAddress);
-                                           }
-                                       }
-                                       else if (l.DataType == DataType.WorksheetName && r.DataType == DataType.Enumerable)
-                                       {
-                                           var wsName = l.Result?.ToString();
-                                           var rangeInfo = r.Result as IRangeInfo;
-                                           if (rangeInfo != null)
-                                           {
-                                               rangeInfo.Address._ws = wsName;                                               
-                                               var wsIndex = ctx.Package.Workbook.Worksheets[wsName]?.PositionId;
-                                               rangeInfo.RangeNew.WorksheetIx = (short)(wsIndex.HasValue ? wsIndex.Value : -1);
-                                               return new CompileResult(rangeInfo, DataType.ExcelRange);
-                                           }
-                                       }
-                                       return new CompileResult(eErrorType.Ref);
-                                   });
-                }
-                return _exclamation;
-            }
-        }
+        //static IOperator _exclamation = null;
+        //public static IOperator Exclamation
+        //{
+        //    get
+        //    {
+        //        if(_exclamation==null)
+        //        {
+        //            _exclamation = new Operator(Operators.Exclamation, PrecedenceExclamation,
+        //                           (l, r, ctx) => 
+        //                           {
+        //                               if(l.DataType == DataType.WorksheetName && r.DataType == DataType.ExcelCellAddress)
+        //                               {
+        //                                   var wsName = l.Result?.ToString();
+        //                                   var cellAddress = r.Result as FormulaCellAddress;
+        //                                   if(cellAddress != null)
+        //                                   {
+        //                                       var wsIndex = ctx.Package.Workbook.Worksheets[wsName]?.PositionId;
+        //                                       cellAddress.WorksheetIx = (short)(wsIndex.HasValue ? wsIndex.Value : -1);
+        //                                       return new CompileResult(cellAddress, DataType.ExcelCellAddress);
+        //                                   }
+        //                               }
+        //                               else if (l.DataType == DataType.WorksheetName && r.DataType == DataType.Enumerable)
+        //                               {
+        //                                   var wsName = l.Result?.ToString();
+        //                                   var rangeInfo = r.Result as IRangeInfo;
+        //                                   if (rangeInfo != null)
+        //                                   {
+        //                                       rangeInfo.Address._ws = wsName;                                               
+        //                                       var wsIndex = ctx.Package.Workbook.Worksheets[wsName]?.PositionId;
+        //                                       rangeInfo.RangeNew.WorksheetIx = (short)(wsIndex.HasValue ? wsIndex.Value : -1);
+        //                                       return new CompileResult(rangeInfo, DataType.ExcelRange);
+        //                                   }
+        //                               }
+        //                               return new CompileResult(eErrorType.Ref);
+        //                           });
+        //        }
+        //        return _exclamation;
+        //    }
+        //}
 
         static IOperator _intersect = null;
         public static IOperator Intersect

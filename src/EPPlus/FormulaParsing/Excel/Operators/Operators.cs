@@ -36,7 +36,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         IntegerDivision,
         Exponentiation,
         Colon,
-        Exclamation,
         Intersect
     }
 }

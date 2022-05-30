@@ -41,24 +41,24 @@ namespace OfficeOpenXml.FormulaParsing
         /// The constructor
         /// </summary>
         /// <param name="externalWb">The external workbook</param>
-        /// <param name="wb">The workbook having the external reference</param>
-        /// <param name="address">The address within the external workbook including the worksheet name</param>
-        public EpplusExcelExternalRangeInfo(ExcelExternalWorkbook externalWb, ExcelWorkbook wb, ExcelAddressBase address)
+        /// <param name="wsName">The external worksheet name</param>
+        /// <param name="fromRow">The from row of the address</param>
+        /// <param name="fromCol">The from column of the address</param>
+        /// <param name="toRow">The to row of the address</param>
+        /// <param name="toCol">The to column of the address</param>
+        public EpplusExcelExternalRangeInfo(ExcelExternalWorkbook externalWb, string wsName, int fromRow, int fromCol, int toRow, int toCol)
         {
-            SetAddress(wb, address, externalWb);
-        }
-        private void SetAddress(ExcelWorkbook wb, ExcelAddressBase address, ExcelExternalWorkbook externalWb)
-        {
+            _fromRow = fromRow;
+            _fromCol = fromCol;
+            _toRow = toRow;
+            _toCol = toCol;
             if (externalWb != null)
             {
-                _externalWs = externalWb.CachedWorksheets[address.WorkSheetName];
-                _fromRow = address._fromRow;
-                _fromCol = address._fromCol;
-                _toRow = address._toRow;
-                _toCol = address._toCol;
-                _address = address;
+                _externalWs = externalWb.CachedWorksheets[wsName];
+                _address = new ExcelAddress(fromRow, fromCol, toRow, toCol);
                 if (_externalWs != null)
                 {
+                    _address._ws = wsName;
                     _values = _externalWs.CellValues.GetCellStore(_fromRow, _fromCol, _toRow, _toCol);
                     _cell = new ExternalCellInfo(_externalWs, _values);
                 }

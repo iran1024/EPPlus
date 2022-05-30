@@ -31,7 +31,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         }
 
 
-        public Expression Create(Token token, TokenInfo tokenInfo)
+        public Expression Create(Token token, FormulaRangeAddress addressInfo)
         {
             if(token.TokenTypeIsSet(TokenType.Integer))
             {
@@ -55,13 +55,13 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 exp.HasCircularReference = token.TokenTypeIsSet(TokenType.CircularReference);
                 return exp;
             }
-            if(token.TokenTypeIsSet(TokenType.WorksheetNameContent))
-            {
-                return new WorksheetNameExpression(token.Value, _parsingContext);
-            }
+            //if(token.TokenTypeIsSet(TokenType.WorksheetNameContent))
+            //{
+            //    return new WorksheetNameExpression(token.Value, _parsingContext);
+            //}
             if(token.TokenTypeIsSet(TokenType.CellAddress))
             {
-                return new CellAddressExpression(token, _parsingContext);
+                return new CellAddressExpression(token, _parsingContext, addressInfo);
             }
             if (token.TokenTypeIsSet(TokenType.InvalidReference))
             {

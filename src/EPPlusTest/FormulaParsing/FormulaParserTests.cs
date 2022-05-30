@@ -77,7 +77,7 @@ namespace EPPlusTest.FormulaParsing
             var tokens = new List<Token>();
             A.CallTo(() => lexer.Tokenize("ABC")).Returns(tokens);
             var graphBuilder = A.Fake<IExpressionGraphBuilder>();
-            A.CallTo(() => graphBuilder.Build(tokens,null)).Returns(new ExGraph());
+            A.CallTo(() => graphBuilder.Build(tokens)).Returns(new ExGraph());
 
             _parser.Configure(config =>
                 {
@@ -88,7 +88,7 @@ namespace EPPlusTest.FormulaParsing
 
             _parser.Parse("ABC");
 
-            A.CallTo(() => graphBuilder.Build(tokens,null)).MustHaveHappened();
+            A.CallTo(() => graphBuilder.Build(tokens)).MustHaveHappened();
         }
 
         [TestMethod]
@@ -101,7 +101,7 @@ namespace EPPlusTest.FormulaParsing
             var expectedGraph = new ExGraph();
             expectedGraph.Add(new StringExpression("asdf", ctx));
             var graphBuilder = A.Fake<IExpressionGraphBuilder>();
-            A.CallTo(() => graphBuilder.Build(tokens, null)).Returns(expectedGraph);
+            A.CallTo(() => graphBuilder.Build(tokens)).Returns(expectedGraph);
             var compiler = A.Fake<IExpressionCompiler>();
             A.CallTo(() => compiler.Compile(expectedGraph.Expressions)).Returns(new CompileResult(0, DataType.Integer));
 

@@ -56,7 +56,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         public void ShouldReturnIntegerExpressionWhenTokenIsInteger()
         {
             var token = new Token("2", TokenType.Integer);
-            var expression = _factory.Create(token);
+            var expression = _factory.Create(token, null);
             Assert.IsInstanceOfType(expression, typeof(IntegerExpression));
         }
 
@@ -64,7 +64,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         public void ShouldReturnBooleanExpressionWhenTokenIsBoolean()
         {
             var token = new Token("true", TokenType.Boolean);
-            var expression = _factory.Create(token);
+            var expression = _factory.Create(token, null);
             Assert.IsInstanceOfType(expression, typeof(BooleanExpression));
         }
 
@@ -72,7 +72,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         public void ShouldReturnDecimalExpressionWhenTokenIsDecimal()
         {
             var token = new Token("2.5", TokenType.Decimal);
-            var expression = _factory.Create(token);
+            var expression = _factory.Create(token, null);
             Assert.IsInstanceOfType(expression, typeof(DecimalExpression));
         }
 
@@ -80,7 +80,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         public void ShouldReturnExcelRangeExpressionWhenTokenIsExcelAddress()
         {
             var token = new Token("A1", TokenType.ExcelAddress);
-            var expression = _factory.Create(token);
+            var expression = _factory.Create(token, null);
             Assert.IsInstanceOfType(expression, typeof(ExcelAddressExpression));
         }
 
@@ -88,7 +88,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         public void ShouldReturnNamedValueExpressionWhenTokenIsNamedValue()
         {
             var token = new Token("NamedValue", TokenType.NameValue);
-            var expression = _factory.Create(token);
+            var expression = _factory.Create(token, null);
             Assert.IsInstanceOfType(expression, typeof(NamedValueExpression));
         }
     }

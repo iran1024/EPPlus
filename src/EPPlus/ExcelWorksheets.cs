@@ -89,6 +89,13 @@ namespace OfficeOpenXml
             }
         }
 
+        internal short GetPositionByToken(string tokenValue)
+        {
+            var name = tokenValue.TrimStart('\'').TrimEnd('\'').Replace("''", "'");
+            var ws = _worksheets.Where(x => x.Name.Equals(name)).FirstOrDefault();
+            return (short)(ws == null ? -1 : ws.PositionId);
+        }
+
         private eWorkSheetHidden TranslateHidden(string value)
         {
             switch (value)

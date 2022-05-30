@@ -358,6 +358,7 @@
     <Compile Remove="Export\HtmlExport\ExcelHtmlTableExportSetting.cs" />
     <Compile Remove="Export\HtmlExport\HtmlExporterBase.async.cs" />
     <Compile Remove="Export\HtmlExport\HtmlExporterBase.cs" />
+    <Compile Remove="FormulaParsing\ExpressionGraph\v2\ExpressionGraphBuilder.cs" />
     <Compile Remove="Packaging\DotNetZip\ZipFile.SaveSelfExtractor.cs" />
   
   </ItemGroup>
@@ -462,5 +463,8 @@
   <ItemGroup>
 	  <ProjectReference Include="..\EPPlus.System.Drawing\EPPlus.System.Drawing.csproj" />
 	  <ProjectReference Include="..\EPPlus.Interfaces\EPPlus.Interfaces.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="FormulaParsing\ExpressionGraph\v2\" />
   </ItemGroup>
 </Project>

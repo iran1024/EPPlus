@@ -24,7 +24,6 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             {'>', new Token(">", TokenType.Operator)},
             {'<', new Token("<", TokenType.Operator)},
             {'=', new Token("=", TokenType.Operator)},
-            {'!', new Token("!", TokenType.Operator) },
             {':', new Token(":", TokenType.Operator)},
             {'(', new Token("(", TokenType.OpeningParenthesis)},
             {')', new Token(")", TokenType.ClosingParenthesis)},
@@ -36,7 +35,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             {'%', new Token("%", TokenType.Percent) },
             {' ', new Token(" ", TokenType.WhiteSpace) },
             {'[', new Token("[", TokenType.OpeningBracket)},
-            {']', new Token("]", TokenType.ClosingBracket)}
+            {']', new Token("]", TokenType.ClosingBracket) },
+            {'!', new Token("!", TokenType.WorksheetName) }
         };
         private static readonly Dictionary<string, Token> _stringTokens = new Dictionary<string, Token>
         {

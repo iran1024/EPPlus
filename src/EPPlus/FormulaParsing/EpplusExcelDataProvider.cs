@@ -466,7 +466,15 @@ namespace OfficeOpenXml.FormulaParsing
             }
             else
             {
-                return new RangeInfo(_currentWorksheet, range.FromRow, range.FromCol, range.ToRow, range.ToCol);
+                if(range.ExternalReferenceIx>0)
+                {
+                    var externalWb = _package.Workbook.ExternalLinks[range.ExternalReferenceIx].As.ExternalWorkbook;                    
+                    return new EpplusExcelExternalRangeInfo(externalWb, externalWb.CachedWorksheets[range.WorksheetIx]?.Name, range.FromRow, range.FromCol, range.ToRow, range.ToCol);
+                }
+                else
+                {
+                    return new RangeInfo(_currentWorksheet, range.FromRow, range.FromCol, range.ToRow, range.ToCol);
+                }
             }
         }
 
@@ -542,7 +550,7 @@ namespace OfficeOpenXml.FormulaParsing
                 {
                     throw new ExcelErrorValueException(eErrorType.Ref);
                 }
-                return new EpplusExcelExternalRangeInfo(externalWb, wb, addr);
+                return new EpplusExcelExternalRangeInfo(externalWb, wsName, addr._fromRow, addr._fromCol, addr._toRow, addr._toCol);
             }
             else
             {
@@ -634,7 +642,7 @@ namespace OfficeOpenXml.FormulaParsing
                 }
                 else
                 {
-                    value = new EpplusExcelExternalRangeInfo(externalWorkbook, null, address);
+                    value = new EpplusExcelExternalRangeInfo(externalWorkbook, null, -1,-1,-1,-1);
                 }
             }
             else

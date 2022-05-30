@@ -26,7 +26,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             var ctx = ParsingContext.Create(ws._package);
             ctx.ExcelDataProvider = new EpplusExcelDataProvider(ws._package);
             var graphBuilder = new ExpressionGraphBuilder(ctx.ExcelDataProvider, ctx);
-            _graph = graphBuilder.Build(Tokens, TokenInfos);
+            _graph = graphBuilder.Build(Tokens);
             using (var s = ctx.Scopes.NewScope(new ExcelUtilities.RangeAddress() { FromCol=StartCol, FromRow=StartRow, ToCol=StartCol, ToRow=StartRow, Worksheet=ws.Name}))
             {
                 var compiler = new ExpressionCompiler(ctx);
@@ -607,13 +607,106 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
     }
     public class FormulaRangeAddress
     {
-        public ParsingContext _context;
+        //public ParsingContext _context;
+        internal FormulaRangeAddress()
+        {
+
+        }
         internal FormulaRangeAddress(ParsingContext ctx)
         {            
-            _context = ctx;
+          //  _context = ctx;
         }
         public short ExternalReferenceIx, WorksheetIx;
         public int FromRow, FromCol, ToRow, ToCol;
         internal FixedFlag FixedFlag;
+    }
+    public class FormulaTableAddress : FormulaRangeAddress
+    {
+        public string TableName = "", ColumnName1 = "", ColumnName2 = "", TablePart1 = "", TablePart2="";
+        internal void SetTableAddress(ExcelPackage package)
+        {
+            var table = package.Workbook.GetTable(TableName);
+            if (table != null)
+            {
+                SetRowFromTablePart(TablePart1, table, ref FromRow, ref ToRow, ref FixedFlag);
+                if(string.IsNullOrEmpty(TablePart2)==false) SetRowFromTablePart(TablePart2, table, ref FromRow, ref ToRow, ref FixedFlag);
+                
+                SetColFromTablePart(ColumnName1, table, ref FromCol, ref ToCol, false);
+                if (string.IsNullOrEmpty(ColumnName2) == false) SetColFromTablePart(ColumnName2, table, ref FromCol, ref ToCol, true);
+            }
+        }
+        private void SetColFromTablePart(string value, ExcelTable table, ref int fromCol, ref int toCol, bool lastColon)
+        {
+            var col = table.Columns[value];
+            if (col == null) return;
+            if (lastColon)
+            {
+                toCol = table.Range._fromCol + col.Position;
+            }
+            else
+            {
+                fromCol = toCol = table.Range._fromCol + col.Position;
+            }
+        }
+        private void SetRowFromTablePart(string value, ExcelTable table, ref int fromRow, ref int toRow, ref FixedFlag fixedFlag)
+        {
+            switch (value.ToLower())
+            {
+                case "#all":
+                    fromRow = table.Address._fromRow;
+                    toRow = table.Address._toRow;
+                    break;
+                case "#headers":
+                    if (table.ShowHeader)
+                    {
+                        fromRow = table.Address._fromRow;
+                        if (toRow == 0)
+                        {
+                            toRow = table.Address._fromRow;
+                        }
+                    }
+                    else if (fromRow == 0)
+                    {
+                        fromRow = toRow = -1;
+                    }
+                    break;
+                case "#data":
+                    if (fromRow == 0 || table.DataRange._fromRow < fromRow)
+                    {
+                        fromRow = table.DataRange._fromRow;
+                    }
+                    if (table.DataRange._toRow > toRow)
+                    {
+                        toRow = table.DataRange._toRow;
+                    }
+                    break;
+                case "#totals":
+                    if (table.ShowTotal)
+                    {
+                        if (fromRow == 0)
+                            fromRow = table.Range._toRow;
+                        toRow = table.Range._toRow;
+                    }
+                    else if (fromRow == 0)
+                    {
+                        fromRow = toRow = -1;
+                    }
+                    break;
+                case "#this row":
+                    var dr = table.DataRange;
+                    if (WorksheetIx != table.WorkSheet.PositionId || FromRow < dr._fromRow || FromRow > dr._toRow)
+                    {
+                        fromRow = toRow = -1;
+                    }
+                    else
+                    {
+                        fromRow = FromRow;
+                        toRow = FromRow;
+                        fixedFlag = FixedFlag.FromColFixed | FixedFlag.ToColFixed;
+                    }
+                    break;
+            }
+        }
+
     }
 }
