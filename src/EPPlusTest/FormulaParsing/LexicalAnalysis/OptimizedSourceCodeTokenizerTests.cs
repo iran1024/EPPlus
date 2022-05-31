@@ -135,7 +135,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             var input = "Text(A1)";
             var tokens = _tokenizer.Tokenize(input);
 
-            Assert.IsTrue(tokens.ElementAt(2).TokenTypeIsSet(TokenType.ExcelAddress));
+            Assert.IsTrue(tokens.ElementAt(2).TokenTypeIsSet(TokenType.CellAddress));
         }
 
         [TestMethod]
@@ -177,7 +177,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             var input = "'A-B'!A1";
             var tokens = _tokenizer.Tokenize(input);
             Assert.AreEqual(3, tokens.Count);
-            Assert.IsTrue(tokens[2].TokenTypeIsSet(TokenType.ExcelAddress));
+            Assert.IsTrue(tokens[2].TokenTypeIsSet(TokenType.CellAddress));
         }
         [TestMethod]
         public void OffsetInAddressTokensFirst()
@@ -460,9 +460,9 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             var input = @"=VLOOKUP(J7;'Sheet 1''21'!$Q$4:$R$28;2;0)";
             var tokens = _tokenizer.Tokenize(input).ToArray();
             Assert.AreEqual(15, tokens.Count());
-            Assert.IsTrue(tokens[3].TokenTypeIsSet(TokenType.ExcelAddress));
-            Assert.IsTrue(tokens[7].TokenTypeIsSet(TokenType.ExcelAddress));
-            Assert.IsTrue(tokens[9].TokenTypeIsSet(TokenType.ExcelAddress));
+            Assert.IsTrue(tokens[3].TokenTypeIsSet(TokenType.CellAddress));
+            Assert.IsTrue(tokens[7].TokenTypeIsSet(TokenType.CellAddress));
+            Assert.IsTrue(tokens[9].TokenTypeIsSet(TokenType.CellAddress));
         }
         [TestMethod]
         public void TokenizeWorksheetAddress()
@@ -498,11 +498,11 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             var tokenizer = new OptimizedSourceCodeTokenizer(null, null, false, true);
             var tokens = tokenizer.Tokenize(input);
             Assert.AreEqual(TokenType.WhiteSpace, tokens[3].TokenType);
-            Assert.AreEqual(7, tokens.Count);
+            Assert.AreEqual(8, tokens.Count);
             
             input = "=( A1:B3 )   (B2:C3)";
             tokens = tokenizer.Tokenize(input);
-            Assert.AreEqual(14, tokens.Count);
+            Assert.AreEqual(15, tokens.Count);
             Assert.AreEqual(TokenType.WhiteSpace, tokens[2].TokenType);
             Assert.AreEqual(TokenType.WhiteSpace, tokens[6].TokenType);
             Assert.AreEqual(TokenType.WhiteSpace, tokens[8].TokenType);
