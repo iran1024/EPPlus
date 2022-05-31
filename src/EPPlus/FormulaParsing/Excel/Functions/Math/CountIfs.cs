@@ -48,7 +48,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
                 {
                     var addressString = ArgToAddress(arguments, ix, context);
                     var address = new ExcelAddress(addressString);
-                    var ws = string.IsNullOrEmpty(address.WorkSheetName) ? context.Scopes.Current.Address.Worksheet : address.WorkSheetName;
+                    var ws = string.IsNullOrEmpty(address.WorkSheetName) ? context.Scopes.Current.Address.WorksheetName : address.WorkSheetName;
                     rangeInfo = context.ExcelDataProvider.GetRange(ws, context.Scopes.Current.Address.FromRow, context.Scopes.Current.Address.FromCol, address.Address);
                     argRanges.Add(new RangeOrValue { Range = rangeInfo });
                 }

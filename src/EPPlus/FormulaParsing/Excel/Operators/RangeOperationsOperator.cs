@@ -1,5 +1,6 @@
 ﻿using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using OfficeOpenXml.FormulaParsing.Ranges;
 using OfficeOpenXml.Utils;
 using System;
 using System.Collections.Generic;
@@ -35,22 +36,22 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 var rr = right.Result as IRangeInfo;
 
                 // size of the ranges must be same...
-                var sizeH = lr.Address._toRow - lr.Address._fromCol + 1;
-                if(sizeH != (rr.Address._toRow - rr.Address._fromRow + 1))
+                var sizeH = lr.Address.ToRow - lr.Address.FromRow + 1;
+                if(sizeH != (rr.Address.ToRow - rr.Address.FromRow + 1))
                 {
                     return new CompileResult(eErrorType.NA);
                 }
-                var sizeW = lr.Address._toCol - lr.Address._fromCol + 1;
-                if (sizeW != (rr.Address._toCol - rr.Address._fromCol + 1))
+                var sizeW = lr.Address.ToCol - lr.Address.FromCol + 1;
+                if (sizeW != (rr.Address.ToCol - rr.Address.FromCol + 1))
                 {
                     return new CompileResult(eErrorType.NA);
                 }
 
                 var scopeAdr = context.Scopes.Current.Address;
-                var currentAdr = new ExcelAddress(scopeAdr.Worksheet, scopeAdr.FromRow, scopeAdr.FromCol, scopeAdr.ToRow, scopeAdr.ToCol);
+                var currentAdr = new ExcelAddress(scopeAdr.WorksheetName, scopeAdr.FromRow, scopeAdr.FromCol, scopeAdr.ToRow, scopeAdr.ToCol);
                 currentAdr._toCol = currentAdr._fromCol + sizeW - 1;
                 currentAdr._toRow = currentAdr._fromRow + sizeH - 1;
-                var currentWs = context.Package.Workbook.Worksheets[context.Scopes.Current.Address.Worksheet];
+                var currentWs = context.Package.Workbook.Worksheets[context.Scopes.Current.Address.WorksheetName];
                 var rangeAdr = new FormulaRangeAddress(context)
                 {
                     WorksheetIx = (short)currentWs.PositionId,
@@ -63,12 +64,12 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 var resultRange = new InMemoryRange(rangeAdr, rangeDef, context);
                 for(var row = 0; row < sizeH; row++)
                 {
-                    var rowLeft = lr.Address._fromRow + row;
-                    var rowRight = rr.Address._fromRow + row;
+                    var rowLeft = lr.Address.FromRow + row;
+                    var rowRight = rr.Address.FromRow + row;
                     for(var col = 0; col < sizeW; col++)
                     {
-                        var colLeft = lr.Address._fromCol + col;
-                        var colRight = rr.Address._fromCol + col;
+                        var colLeft = lr.Address.FromCol + col;
+                        var colRight = rr.Address.FromCol + col;
 
                         var leftVal = lr.GetValue(rowLeft, colLeft);
                         var rightVal = rr.GetValue(rowRight, colRight);

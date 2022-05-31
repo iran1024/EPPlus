@@ -278,10 +278,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                           else if (l.Result is IRangeInfo lri)
                           {
                               result.WorksheetIx = (short)lri.Worksheet.PositionId;
-                              result.FromRow = lri.Address._fromRow;
-                              result.FromCol = lri.Address._fromCol;
-                              result.ToRow = lri.Address._toRow;
-                              result.ToCol = lri.Address._toCol;
+                              result.FromRow = lri.Address.FromRow;
+                              result.FromCol = lri.Address.FromCol;
+                              result.ToRow = lri.Address.ToRow;
+                              result.ToCol = lri.Address.ToCol;
                           }
 
                           if (r.Result is FormulaCellAddress rr)
@@ -308,10 +308,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                           }
                           else if (r.Result is IRangeInfo rri)
                           {
-                              result.FromRow = result.FromRow < rri.Address._fromRow ? result.FromRow : rri.Address._fromRow;
-                              result.FromCol = result.FromCol < rri.Address._fromCol ? result.FromCol : rri.Address._fromCol;
-                              result.ToRow = result.ToRow > rri.Address._toRow ? result.ToRow : rri.Address._toRow;
-                              result.ToCol = result.ToCol > rri.Address._toCol ? result.ToCol : rri.Address._toCol;
+                              result.FromRow = result.FromRow < rri.Address.FromRow ? result.FromRow : rri.Address.FromRow;
+                              result.FromCol = result.FromCol < rri.Address.FromCol ? result.FromCol : rri.Address.FromCol;
+                              result.ToRow = result.ToRow > rri.Address.ToRow ? result.ToRow : rri.Address.ToRow;
+                              result.ToCol = result.ToCol > rri.Address.ToCol ? result.ToCol : rri.Address.ToCol;
                           }
 
                           return new CompileResult(result, DataType.ExcelRange);
@@ -362,6 +362,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         //}
 
         static IOperator _intersect = null;
+        /// <summary>
+        /// Intersect operator
+        /// </summary>
         public static IOperator Intersect
         {
             get
@@ -378,7 +381,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                                            {
                                                return new CompileResult(eErrorType.Null);
                                            }
-                                           var intersectRange = ctx.ExcelDataProvider.GetRange(left.Worksheet.Name, iA._fromRow, iA._fromCol, iA._toRow, iA._toCol);
+                                           var intersectRange = ctx.ExcelDataProvider.GetRange(left.Worksheet.Name, iA.FromRow, iA.FromCol, iA.ToRow, iA.ToCol);
                                            return new CompileResult(intersectRange, DataType.ExcelRange);
                                            
                                        }

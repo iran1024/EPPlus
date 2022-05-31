@@ -96,7 +96,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                         {
                             return new ExcelRangeExpression(ri, _ctx);
                         }
-                        return new ExcelRangeExpression(_ctx.ExcelDataProvider.GetRange(ri.Worksheet?.Name, ri.Address._fromRow, ri.Address._fromCol, ri.Address._toRow, ri.Address._toRow), _ctx);
+                        return new ExcelRangeExpression(_ctx.ExcelDataProvider.GetRange(ri.Worksheet?.Name, ri.Address.FromRow, ri.Address.FromCol, ri.Address.ToRow, ri.Address.ToRow), _ctx);
                     }
                     break;
                 case DataType.ExcelCellAddress:

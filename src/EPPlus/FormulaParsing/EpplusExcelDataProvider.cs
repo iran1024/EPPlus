@@ -22,6 +22,7 @@ using OfficeOpenXml.Table;
 using System;
 using OfficeOpenXml.FormulaParsing.Exceptions;
 using OfficeOpenXml.ExternalReferences;
+using OfficeOpenXml.FormulaParsing.Ranges;
 
 namespace OfficeOpenXml.FormulaParsing
 {
@@ -30,367 +31,9 @@ namespace OfficeOpenXml.FormulaParsing
     /// </summary>
     internal class EpplusExcelDataProvider : ExcelDataProvider
     {
-        /// <summary>
-        /// EPPlus implementation of the <see cref="IRangeInfo"/> interface
-        /// </summary>
-        public class RangeInfo : IRangeInfo
-        {
-            internal ExcelWorksheet _ws;
-            CellStoreEnumerator<ExcelValue> _values = null;
-            //int _fromRow, _toRow, _fromCol, _toCol;
-            int _cellCount = 0;
-            ExcelAddressBase _address;
-            ICellInfo _cell;
-
-            /// <summary>
-            /// Constructor
-            /// </summary>
-            /// <param name="ws">The worksheet</param>
-            /// <param name="fromRow"></param>
-            /// <param name="fromCol"></param>
-            /// <param name="toRow"></param>
-            /// <param name="toCol"></param>
-            public RangeInfo(ExcelWorksheet ws, int fromRow, int fromCol, int toRow, int toCol)
-            {
-                var address = new ExcelAddressBase(fromRow, fromCol, toRow, toCol);
-                address._ws = ws.Name;                
-                SetAddress(ws, address);
-            }
-
-            public RangeInfo(ExcelWorksheet ws)
-            {
-                RangeNew = new FormulaRangeAddress(null) { WorksheetIx = (short)ws.PositionId };
-            }
-
-            /// <summary>
-            /// Constructor
-            /// </summary>
-            /// <param name="ws"></param>
-            /// <param name="address"></param>
-            public RangeInfo(ExcelWorksheet ws, ExcelAddressBase address)
-            {
-                SetAddress(ws, address);
-            }
-            private void SetAddress(ExcelWorksheet ws, ExcelAddressBase address)
-            {
-                _ws = ws;
-                RangeNew = new FormulaRangeAddress(null) { FromRow = address._fromRow, FromCol = address._fromCol, ToRow = address._toRow, ToCol = address._toCol, WorksheetIx = (short)ws.PositionId };
-                //_fromRow = address._fromRow;
-                //_fromCol = address._fromCol;
-                //_toRow = address._toRow;
-                //_toCol = address._toCol;
-                _address = address;
-                if (_ws != null && _ws.IsDisposed == false)
-                {
-                    _values = new CellStoreEnumerator<ExcelValue>(_ws._values, address._fromRow, address._fromCol, address._toRow, address._toCol);
-                    _cell = new CellInfo(_ws, _values);
-                }
-            }
-
-            /// <summary>
-            /// The total number of cells (including empty) of the range
-            /// </summary>
-            /// <returns></returns>
-            public int GetNCells()
-            {
-                return ((RangeNew.ToRow - RangeNew.FromRow) + 1) * ((RangeNew.ToCol - RangeNew.FromCol) + 1);
-            }
-
-            /// <summary>
-            /// Returns true if the range represents a reference
-            /// </summary>
-            public bool IsRef
-            {
-                get
-                {
-                    return _ws == null || RangeNew.FromRow < 0 || RangeNew.ToRow < 0;
-                }
-            }
-            /// <summary>
-            /// Returns true if the range is empty
-            /// </summary>
-            public bool IsEmpty
-            {
-                get
-                {
-                    if (_cellCount > 0)
-                    {
-                        return false;
-                    }
-                    else if (_values == null) return true;
-                    else if (_values.Next())
-                    {
-                        _values.Reset();
-                        return false;
-                    }
-                    else
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            /// <summary>
-            /// Returns true if more than one cell
-            /// </summary>
-            public bool IsMulti
-            {
-                get
-                {
-                    if (_cellCount == 0)
-                    {
-                        if (_values == null) return false;
-                        if (_values.Next() && _values.Next())
-                        {
-                            _values.Reset();
-                            return true;
-                        }
-                        else
-                        {
-                            _values.Reset();
-                            return false;
-                        }
-                    }
-                    else if (_cellCount > 1)
-                    {
-                        return true;
-                    }
-                    return false;
-                }
-            }
-
-            public bool IsInMemoryRange => false;
-
-            /// <summary>
-            /// Current cell
-            /// </summary>
-            public ICellInfo Current
-            {
-                get { return _cell; }
-            }
-
-            /// <summary>
-            /// The worksheet
-            /// </summary>
-            public ExcelWorksheet Worksheet
-            {
-                get { return _ws; }
-            }
-
-            /// <summary>
-            /// Runs at dispose of this instance
-            /// </summary>
-            public void Dispose()
-            {
-                //_values = null;
-                //_ws = null;
-                //_cell = null;
-            }
-
-            /// <summary>
-            /// IEnumerator.Current
-            /// </summary>
-            object System.Collections.IEnumerator.Current
-            {
-                get
-                {
-                    return this;
-                }
-            }
-
-            /// <summary>
-            /// Moves to next cell
-            /// </summary>
-            /// <returns></returns>
-            public bool MoveNext()
-            {
-                if (_values == null) return false;
-                _cellCount++;
-                return _values.MoveNext();
-            }
-
-            /// <summary>
-            /// 
-            /// </summary>
-            public void Reset()
-            {
-                _cellCount = 0;
-                _values?.Init();
-            }
-
-
-            /// <summary>
-            /// Moves to next cell
-            /// </summary>
-            /// <returns></returns>
-            public bool NextCell()
-            {
-                if (_values == null) return false;
-                _cellCount++;
-                return _values.MoveNext();
-            }
-
-            /// <summary>
-            /// Returns enumerator for cells
-            /// </summary>
-            /// <returns></returns>
-            public IEnumerator<ICellInfo> GetEnumerator()
-            {
-                Reset();
-                return this;
-            }
-
-            /// <summary>
-            /// Returns enumerator for cells
-            /// </summary>
-            /// <returns></returns>
-            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-            {
-                return this;
-            }
-            
-            /// <summary>
-            /// Address of the range
-            /// </summary>
-            public ExcelAddressBase Address
-            {
-                get { return _address; }
-            }
-
-            public FormulaRangeAddress RangeNew { get; private set; }
-
-            /// <summary>
-            /// Returns the cell value 
-            /// </summary>
-            /// <param name="row"></param>
-            /// <param name="col"></param>
-            /// <returns></returns>
-            public object GetValue(int row, int col)
-            {
-                return _ws?.GetValue(row, col);
-            }
-
-            public object GetOffset(int rowOffset, int colOffset)
-            {
-                if (_values == null) return null;
-                if (_values.Row < RangeNew.FromRow || _values.Column < RangeNew.FromCol)
-                {
-                    return _ws.GetValue(RangeNew.FromRow + rowOffset, RangeNew.FromCol + colOffset);
-                }
-                else
-                {
-                    return _ws.GetValue(_values.Row + rowOffset, _values.Column + colOffset);
-                }
-            }
-        }
-        public class CellInfo : ICellInfo
-        {
-            ExcelWorksheet _ws;
-            CellStoreEnumerator<ExcelValue> _values;
-            internal CellInfo(ExcelWorksheet ws, CellStoreEnumerator<ExcelValue> values)
-            {
-                _ws = ws;
-                _values = values;
-            }
-            public string Address
-            {
-                get { return _values.CellAddress; }
-            }
-
-            public int Row
-            {
-                get { return _values.Row; }
-            }
-
-            public int Column
-            {
-                get { return _values.Column; }
-            }
-
-            public string Formula
-            {
-                get 
-                {
-                    return _ws.GetFormula(_values.Row, _values.Column);
-                }
-            }
-
-            public object Value
-            {
-                get 
-                { 
-                    if(_ws._flags.GetFlagValue(_values.Row, _values.Column, CellFlags.RichText))
-                    {
-                        return _ws.GetRichText(_values.Row, _values.Column, null).Text;
-                    }
-                    else
-                    {
-                        return _values.Value._value;
-                    }
-                }
-            }
-            
-            public double ValueDouble
-            {
-                get { return ConvertUtil.GetValueDouble(_values.Value._value, true); }
-            }
-            public double ValueDoubleLogical
-            {
-                get { return ConvertUtil.GetValueDouble(_values.Value._value, false); }
-            }
-            public bool IsHiddenRow
-            {
-                get 
-                { 
-                    var row=_ws.GetValueInner(_values.Row, 0) as RowInternal;
-                    if(row != null)
-                    {
-                        return row.Hidden || row.Height==0;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            public bool IsExcelError
-            {
-                get { return ExcelErrorValue.Values.IsErrorValue(_values.Value._value); }
-            }
-
-            public IList<Token> Tokens
-            {
-                get 
-                {
-                    return _ws._formulaTokens.GetValue(_values.Row, _values.Column);
-                }
-            }
-
-            public ulong Id
-            {
-                get
-                {
-                    return ExcelCellBase.GetCellId(_ws.IndexInList, _values.Row, _values.Column);
-                }
-            }
-
-            public string WorksheetName
-            {
-                get { return _ws.Name; }
-            }
-        }
-        public class NameInfo : INameInfo
-        {
-            public ulong Id { get; set; }
-            public string Worksheet { get; set; }
-            public string Name { get; set; }
-            public string Formula { get; set; }
-            public IList<Token> Tokens { get; internal set; }
-            public object Value { get; set; }
-        }
 
         private readonly ExcelPackage _package;
+        private readonly ParsingContext _context;
         private ExcelWorksheet _currentWorksheet;
         private RangeAddressFactory _rangeAddressFactory;
         private Dictionary<ulong, INameInfo> _names=new Dictionary<ulong,INameInfo>();
@@ -398,7 +41,7 @@ namespace OfficeOpenXml.FormulaParsing
         internal EpplusExcelDataProvider(ParsingContext ctx)
             : this(new ExcelPackage(), ctx)
         {
-
+           
         }
 
         public EpplusExcelDataProvider(ExcelPackage package)
@@ -410,9 +53,11 @@ namespace OfficeOpenXml.FormulaParsing
         public EpplusExcelDataProvider(ExcelPackage package, ParsingContext ctx)
         {
             _package = package;
-
+            _context = ctx;
             _rangeAddressFactory = new RangeAddressFactory(this, ctx);
         }
+
+        protected ParsingContext ParsingContext => _context;
 
         public override IEnumerable<string> GetWorksheets()
         {
@@ -473,13 +118,12 @@ namespace OfficeOpenXml.FormulaParsing
             else
             {
                 if(range.ExternalReferenceIx>0)
-                {
-                    var externalWb = _package.Workbook.ExternalLinks[range.ExternalReferenceIx].As.ExternalWorkbook;                    
-                    return new EpplusExcelExternalRangeInfo(externalWb, externalWb.CachedWorksheets[range.WorksheetIx]?.Name, range.FromRow, range.FromCol, range.ToRow, range.ToCol);
+                {                 
+                    return new EpplusExcelExternalRangeInfo(range.ExternalReferenceIx, range.WorksheetIx, range.FromRow, range.FromCol, range.ToRow, range.ToCol, ParsingContext);
                 }
                 else
                 {
-                    return new RangeInfo(_currentWorksheet, range.FromRow, range.FromCol, range.ToRow, range.ToCol);
+                    return new RangeInfo(_currentWorksheet, range.FromRow, range.FromCol, range.ToRow, range.ToCol, ParsingContext);
                 }
             }
         }
@@ -495,7 +139,7 @@ namespace OfficeOpenXml.FormulaParsing
             }
             else
             {
-                return new RangeInfo(ws, fromRow, fromCol, toRow, toCol);
+                return new RangeInfo(ws, fromRow, fromCol, toRow, toCol, ParsingContext);
             }
         }
         public override IRangeInfo GetRange(string worksheet, int row, int column, string address)
@@ -538,7 +182,7 @@ namespace OfficeOpenXml.FormulaParsing
             }
         }
 
-        private static IRangeInfo GetExternalRangeInfo(ExcelAddressBase addr, string wsName, ExcelWorkbook wb)
+        private IRangeInfo GetExternalRangeInfo(ExcelAddressBase addr, string wsName, ExcelWorkbook wb)
         {
             ExcelExternalWorkbook externalWb;
             var ix = wb.ExternalLinks.GetExternalLink(addr._wb);
@@ -556,7 +200,8 @@ namespace OfficeOpenXml.FormulaParsing
                 {
                     throw new ExcelErrorValueException(eErrorType.Ref);
                 }
-                return new EpplusExcelExternalRangeInfo(externalWb, wsName, addr._fromRow, addr._fromCol, addr._toRow, addr._toCol);
+                var ws = externalWb.Package.Workbook.Worksheets[wsName];
+                return new EpplusExcelExternalRangeInfo(ix, ws.SheetId, addr._fromRow, addr._fromCol, addr._toRow, addr._toCol, ParsingContext);
             }
             else
             {
@@ -588,15 +233,15 @@ namespace OfficeOpenXml.FormulaParsing
         {
             if(ExcelCellBase.IsExternalAddress(name))
             {
-                return GetExternalName(name);
+                return GetExternalName(name, ParsingContext);
             }
             else
             {
-                return GetLocalName(_package, worksheet, name);
+                return GetLocalName(_package, worksheet, name, ParsingContext);
             }
         }
 
-        private INameInfo GetExternalName(string name)
+        private INameInfo GetExternalName(string name, ParsingContext ctx)
         {
             var extRef = ExcelCellBase.GetWorkbookFromAddress(name);
             var ix = _package.Workbook.ExternalLinks.GetExternalLink(extRef);
@@ -607,20 +252,20 @@ namespace OfficeOpenXml.FormulaParsing
                 {
                     if (externalWorkbook.Package == null)
                     {
-                        return GetNameFromCache(externalWorkbook, name);
+                        return GetNameFromCache(externalWorkbook, name, ctx);
                     }
                     else
                     {
                         name = name.Substring(name.IndexOf("]") + 1);
                         if (name.StartsWith("!")) name = name.Substring(1);
-                        return GetLocalName(externalWorkbook.Package, "", name);
+                        return GetLocalName(externalWorkbook.Package, "", name, ctx);
                     }
                 }
             }
             return null;
         }
 
-        private static INameInfo GetNameFromCache(ExcelExternalWorkbook externalWorkbook, string name)
+        private static INameInfo GetNameFromCache(ExcelExternalWorkbook externalWorkbook, string name, ParsingContext ctx)
         {
             ExcelExternalDefinedName nameItem;
 
@@ -648,7 +293,7 @@ namespace OfficeOpenXml.FormulaParsing
                 }
                 else
                 {
-                    value = new EpplusExcelExternalRangeInfo(externalWorkbook, null, -1,-1,-1,-1);
+                    value = new EpplusExcelExternalRangeInfo(ix, nameItem.SheetId, -1,-1,-1,-1, ctx);
                 }
             }
             else
@@ -662,7 +307,7 @@ namespace OfficeOpenXml.FormulaParsing
             };
         }
 
-        private INameInfo GetLocalName(ExcelPackage package, string worksheet, string name)
+        private INameInfo GetLocalName(ExcelPackage package, string worksheet, string name, ParsingContext ctx)
         {
             ExcelNamedRange nameItem;
             ulong id;
@@ -735,7 +380,7 @@ namespace OfficeOpenXml.FormulaParsing
                 };
                 if (nameItem._fromRow > 0)
                 {
-                    ni.Value = new RangeInfo(nameItem.Worksheet ?? ws, nameItem._fromRow, nameItem._fromCol, nameItem._toRow, nameItem._toCol);
+                    ni.Value = new RangeInfo(nameItem.Worksheet ?? ws, nameItem._fromRow, nameItem._fromCol, nameItem._toRow, nameItem._toCol, ctx);
                 }
                 else
                 {

@@ -20,6 +20,7 @@ using OfficeOpenXml.FormulaParsing.ExcelUtilities;
 using System.Text.RegularExpressions;
 using static OfficeOpenXml.FormulaParsing.EpplusExcelDataProvider;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Metadata;
+using OfficeOpenXml.FormulaParsing.Ranges;
 
 namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
 {

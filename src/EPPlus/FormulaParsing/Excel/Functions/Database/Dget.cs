@@ -31,9 +31,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
         {
             ValidateArguments(arguments, 3);
             var rowMatcher = new RowMatcher(context);
-            var dbAddress = arguments.ElementAt(0).ValueAsRangeInfo.Address.Address;
+            var dbAddress = arguments.ElementAt(0).ValueAsRangeInfo.Address.ToString();
             var field = ArgToString(arguments, 1).ToLower(CultureInfo.InvariantCulture);
-            var criteriaRange = arguments.ElementAt(2).ValueAsRangeInfo.Address.Address;
+            var criteriaRange = arguments.ElementAt(2).ValueAsRangeInfo.Address.ToString();
 
             var db = new ExcelDatabase(context.ExcelDataProvider, dbAddress);
             var criteria = new ExcelDatabaseCriteria(context.ExcelDataProvider, criteriaRange);

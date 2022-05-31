@@ -47,14 +47,14 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             if (rangeOrValue.Range != null)
             {
                 var rangeInfo = rangeOrValue.Range;
-                var toRow = rangeInfo.Address._toRow;
+                var toRow = rangeInfo.Address.ToRow;
                 if (rangeInfo.Worksheet.Dimension.End.Row < toRow)
                 {
                     toRow = rangeInfo.Worksheet.Dimension.End.Row;
                 }
-                for (var row = rangeInfo.Address._fromRow; row <= toRow; row++)
+                for (var row = rangeInfo.Address.FromRow; row <= toRow; row++)
                 {
-                    for (var col = rangeInfo.Address._fromCol; col <= rangeInfo.Address._toCol; col++)
+                    for (var col = rangeInfo.Address.FromCol; col <= rangeInfo.Address.ToCol; col++)
                     {
                         var candidate = rangeInfo.GetValue(row, col);
                         if (searched != null && Evaluate(candidate, searched, ctx, convertNumericString))

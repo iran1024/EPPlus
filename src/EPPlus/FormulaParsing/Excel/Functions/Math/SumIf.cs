@@ -102,10 +102,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Math
             {
                 if (_evaluator.Evaluate(cell.Value, criteria))
                 {
-                    var rowOffset = cell.Row - range.Address._fromRow;
-                    var columnOffset = cell.Column - range.Address._fromCol;
-                    if (sumRange.Address._fromRow + rowOffset <= sumRange.Address._toRow &&
-                       sumRange.Address._fromCol + columnOffset <= sumRange.Address._toCol)
+                    var rowOffset = cell.Row - range.Address.FromRow;
+                    var columnOffset = cell.Column - range.Address.FromCol;
+                    if (sumRange.Address.FromRow + rowOffset <= sumRange.Address.ToRow &&
+                       sumRange.Address.FromCol + columnOffset <= sumRange.Address.ToCol)
                     {
                         var val = sumRange.GetOffset(rowOffset, columnOffset);
                         if (val is ExcelErrorValue)

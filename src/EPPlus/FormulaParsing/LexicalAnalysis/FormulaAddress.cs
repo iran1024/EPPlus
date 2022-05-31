@@ -638,7 +638,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         /// <returns></returns>
         public override string ToString()
         {
-            var ws = Worksheet;
+            var ws = WorksheetName;
             if(!string.IsNullOrEmpty(ws))
             {
                 return new ExcelAddress(ws, FromRow, FromCol, ToRow, ToCol).FullAddress;
@@ -647,9 +647,20 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         }
 
         /// <summary>
-        /// Address worksheet
+        /// Address of the range on the worksheet (i.e. worksheet name is excluded).
         /// </summary>
-        public string Worksheet
+        public string WorksheetAddress
+        {
+            get
+            {
+                return new ExcelAddress(FromRow, FromCol, ToRow, ToCol).Address;
+            }
+        }
+
+        /// <summary>
+        /// Worksheet name of the address
+        /// </summary>
+        public string WorksheetName
         {
             get
             {
@@ -662,7 +673,77 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 }
                 return string.Empty;
             }
-        }        
+        }
+
+        internal FormulaRangeAddress Intersect(FormulaRangeAddress address)
+        {
+            if (address.FromRow > ToRow || ToRow < address.FromRow ||
+               address.FromCol > ToCol || ToCol < address.FromCol ||
+               address.WorksheetIx != WorksheetIx)
+            {
+                return null;
+            }
+
+            var fromRow = Math.Max(address.FromRow, FromRow);
+            var toRow = Math.Min(address.ToRow, ToRow);
+            var fromCol = Math.Max(address.FromCol, FromCol);
+            var toCol = Math.Min(address.ToCol, ToCol);
+
+            return new FormulaRangeAddress(_context)
+            {
+                WorksheetIx = WorksheetIx,
+                FromRow = fromRow,
+                FromCol = fromCol,
+                ToRow = toRow,
+                ToCol = toCol
+            };
+        }
+
+        /// <summary>
+        /// Returns this address as a <see cref="ExcelAddressBase"/>
+        /// </summary>
+        /// <returns></returns>
+        internal ExcelAddressBase ToExcelAddressBase()
+        {
+            if(ExternalReferenceIx > 0)
+            {
+                return new ExcelAddressBase(ExternalReferenceIx, WorksheetName, FromRow, FromCol, ToRow, ToCol);
+            }
+            return new ExcelAddressBase(WorksheetName, FromRow, FromCol, ToRow, ToCol);
+        }
+
+        internal ExcelCellAddress _start = null;
+        /// <summary>
+        /// Gets the row and column of the top left cell.
+        /// </summary>
+        /// <value>The start row column.</value>
+        public ExcelCellAddress Start
+        {
+            get
+            {
+                if (_start == null)
+                {
+                    _start = new ExcelCellAddress(FromRow, FromCol);
+                }
+                return _start;
+            }
+        }
+        internal ExcelCellAddress _end = null;
+        /// <summary>
+        /// Gets the row and column of the bottom right cell.
+        /// </summary>
+        /// <value>The end row column.</value>
+        public ExcelCellAddress End
+        {
+            get
+            {
+                if (_end == null)
+                {
+                    _end = new ExcelCellAddress(ToRow, ToCol);
+                }
+                return _end;
+            }
+        }
     }
     public class FormulaTableAddress : FormulaRangeAddress
     {

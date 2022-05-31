@@ -46,7 +46,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis.TokenSeparatorHandlers
                         {
                             if (nameValue is IRangeInfo rangeInfo)
                             {
-                                var address = part1 + ":" + rangeInfo.Address.Address;
+                                var address = part1 + ":" + rangeInfo.Address.WorksheetAddress;
                                 var addressToken = new Token(address, TokenType.ExcelAddress);
                                 context.AddToken(addressToken);
                                 context.AddToken(tokenSeparator);

@@ -103,7 +103,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 }
                 else
                 {
-                    return r.GetValue(r.Address._fromRow, r.Address._fromCol);
+                    return r.GetValue(r.Address.FromRow, r.Address.FromCol);
                 }
             }
         }

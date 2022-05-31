@@ -115,8 +115,8 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
             {
                 var a = _excelDataProvider.GetRange(adr.WorkSheetName, range).Address;
                 //Convert the Table-style Address to an A1C1 address
-                adr = new ExcelAddressBase(a._fromRow, a._fromCol, a._toRow, a._toCol);
-                adr._ws = a._ws;                
+                adr = new ExcelAddressBase(a.FromRow, a.FromCol, a.ToRow, a.ToCol);
+                adr._ws = a.WorksheetName;                
             }
             short worksheetIx = -1;
             if (!string.IsNullOrEmpty(adr._ws) && _context.Package != null && _context.Package.Workbook.Worksheets[adr._ws] != null)

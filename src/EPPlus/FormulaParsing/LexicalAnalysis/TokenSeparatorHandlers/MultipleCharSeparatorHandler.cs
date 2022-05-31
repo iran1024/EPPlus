@@ -69,7 +69,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis.TokenSeparatorHandlers
                         if(nameValue is IRangeInfo rangeInfo)
                         {
                             context.IsInDefinedNameAddress = true;
-                            context.OverwriteCurrentToken(rangeInfo.Address.Address + ":");
+                            context.OverwriteCurrentToken(rangeInfo.Address.WorksheetAddress + ":");
                             return true;
                         }
                     }

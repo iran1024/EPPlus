@@ -40,11 +40,11 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             var factory = new RangeAddressFactory(ParsingContext.ExcelDataProvider, ParsingContext);
             if (Arguments.RangeInfo == null)
             {
-                _rangeAddress = factory.Create(ParsingContext.Scopes.Current.Address.Worksheet, Arguments.RangeAddress);
+                _rangeAddress = factory.Create(ParsingContext.Scopes.Current.Address.WorksheetName, Arguments.RangeAddress);
             }
             else
             {
-                _rangeAddress = factory.Create(Arguments.RangeInfo.Address.WorkSheetName, Arguments.RangeInfo.Address.Address);
+                _rangeAddress = factory.Create(Arguments.RangeInfo.Address.WorksheetName, Arguments.RangeInfo.Address.WorksheetAddress);
             }
             _currentCol = _rangeAddress.FromCol;
             _currentRow = _rangeAddress.FromRow;
@@ -53,7 +53,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
 
         private void SetCurrentValue()
         {
-            _currentValue = ParsingContext.ExcelDataProvider.GetCellValue(_rangeAddress.Worksheet, _currentRow, _currentCol);
+            _currentValue = ParsingContext.ExcelDataProvider.GetCellValue(_rangeAddress.WorksheetName, _currentRow, _currentCol);
         }
 
         private bool HasNext()
@@ -108,7 +108,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 row += Arguments.LookupIndex - 1;
                 col += Arguments.LookupOffset;
             }
-            return ParsingContext.ExcelDataProvider.GetCellValue(_rangeAddress.Worksheet, row, col); 
+            return ParsingContext.ExcelDataProvider.GetCellValue(_rangeAddress.WorksheetName, row, col); 
         }
     }
 }

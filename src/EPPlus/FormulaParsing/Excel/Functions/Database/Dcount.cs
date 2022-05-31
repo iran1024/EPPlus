@@ -32,17 +32,17 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
         {
             ValidateArguments(arguments, 2);
             var rowMatcher = new RowMatcher(context);
-            var dbAddress = arguments.ElementAt(0).ValueAsRangeInfo.Address.Address;
+            var dbAddress = arguments.ElementAt(0).ValueAsRangeInfo.Address.ToString();
             string field = null;
             string criteriaRange = null;
             if (arguments.Count() == 2)
             {
-                criteriaRange = arguments.ElementAt(1).ValueAsRangeInfo.Address.Address;
+                criteriaRange = arguments.ElementAt(1).ValueAsRangeInfo.Address.ToString();
             }
             else
             {
                 field = ArgToString(arguments, 1).ToLower(CultureInfo.InvariantCulture);
-                criteriaRange = arguments.ElementAt(2).ValueAsRangeInfo.Address.Address;
+                criteriaRange = arguments.ElementAt(2).ValueAsRangeInfo.Address.ToString();
             } 
             var db = new ExcelDatabase(context.ExcelDataProvider, dbAddress);
             var criteria = new ExcelDatabaseCriteria(context.ExcelDataProvider, criteriaRange);
