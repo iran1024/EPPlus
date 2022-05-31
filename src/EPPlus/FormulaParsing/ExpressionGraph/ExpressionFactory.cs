@@ -63,6 +63,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             {
                 return new CellAddressExpression(token, _parsingContext, addressInfo);
             }
+            if((token.TokenTypeIsSet(TokenType.ClosingBracket) && addressInfo is FormulaTableAddress ti))
+            {
+                return new TableAddressExpression(_parsingContext, ti);
+            }
             if (token.TokenTypeIsSet(TokenType.InvalidReference))
             {
                 return new ExcelErrorExpression(token.Value, ExcelErrorValue.Create(eErrorType.Ref), _parsingContext);

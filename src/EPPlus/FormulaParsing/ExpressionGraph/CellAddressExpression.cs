@@ -10,7 +10,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         FormulaRangeAddress _addressInfo;
         public CellAddressExpression(Token token, ParsingContext ctx, FormulaRangeAddress addressInfo) : base(token.Value, ctx)
         {
-            _addressInfo = addressInfo;
+            if(addressInfo== null)
+            {
+                _addressInfo = new FormulaRangeAddress(ctx);
+            }
+            else
+            {
+                _addressInfo = addressInfo;
+            }
         }
         public override bool IsGroupedExpression => false;
 

@@ -56,17 +56,30 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         private void BuildUp(Token[] tokens, Expression parent)
         {
+            int bracketCount = 0;
             while (_tokenIndex < tokens.Length)
             {
                 var token = tokens[_tokenIndex];
                 IOperator op = null;
-                if (token.TokenTypeIsSet(TokenType.OpeningBracket) || token.TokenTypeIsSet(TokenType.ClosingBracket) || token.TokenTypeIsSet(TokenType.WhiteSpace))
+                if (token.TokenTypeIsSet(TokenType.OpeningBracket))
+                {
+                    bracketCount++;
+                }
+                else if (token.TokenTypeIsSet(TokenType.ClosingBracket))
+                {
+                    bracketCount--;
+                    if(bracketCount==0 && _currentAddress is FormulaTableAddress ta)
+                    {
+                        ta.SetTableAddress(_parsingContext.Package);
+                        CreateAndAppendExpression(ref parent, ref token, ta);
+                    }
+                }
+                else if (token.TokenTypeIsSet(TokenType.WhiteSpace))
                 {
                     _tokenIndex++;
-                    continue;
                 }
 
-                if(token.TokenTypeIsSet(TokenType.ExternalReference))
+                else if (token.TokenTypeIsSet(TokenType.ExternalReference))
                 {
                     _currentAddress = new FormulaRangeAddress() { ExternalReferenceIx = (short)_parsingContext.Package.Workbook.ExternalLinks.GetExternalLink(token.Value) };
                 }
@@ -119,14 +132,17 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 }
                 else if (token.TokenTypeIsSet(TokenType.Operator) && OperatorsDict.Instance.TryGetValue(token.Value, out op))
                 {
-                    SetOperatorOnExpression(parent, op);
+                    if(!(bracketCount > 0 && op.Operator==Operators.Colon))
+                    {
+                        SetOperatorOnExpression(parent, op);
+                    }
                 }
                 //else if (token.TokenTypeIsSet(TokenType.RangeOffset))
                 //{
                 //    BuildRangeOffsetExpression(tokens, parent, token, tokenInfo);
                 //}
                 else if (token.TokenTypeIsSet(TokenType.Function))
-                {
+                {                    
                     BuildFunctionExpression(tokens, parent, token.Value);
                 }
                 else if (token.TokenTypeIsSet(TokenType.OpeningEnumerable))
@@ -159,7 +175,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                         parent.AddChild(ConstantExpressions.Percent);
                     }
                 }
-                else
+                else if(!(token.TokenTypeIsSet(TokenType.Comma) && bracketCount > 0))
                 {
                     CreateAndAppendExpression(ref parent, ref token, _currentAddress);
                 }

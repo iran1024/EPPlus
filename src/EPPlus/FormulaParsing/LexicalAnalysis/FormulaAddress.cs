@@ -672,6 +672,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             var table = package.Workbook.GetTable(TableName);
             if (table != null)
             {
+                FixedFlag = FixedFlag.All;
                 SetRowFromTablePart(TablePart1, table, ref FromRow, ref ToRow, ref FixedFlag);
                 if(string.IsNullOrEmpty(TablePart2)==false) SetRowFromTablePart(TablePart2, table, ref FromRow, ref ToRow, ref FixedFlag);
                 

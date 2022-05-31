@@ -27,7 +27,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
         public void VerifyFormulaTokensTable_Performance()
         {
             var r = _ws.Cells["A4:A105"];
-            for (int i = 0; i < 1000000; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 var f = @"SUM(MyTable[[#This Row],[Date]])";
                 var formula = new SharedFormula(r, f);
@@ -237,10 +237,10 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             var formula = new SharedFormula(_ws.Cells["A4:A105"], f);
 
             //Assert
-            Assert.AreEqual(4, formula.Tokens.Count);
+            Assert.AreEqual(6, formula.Tokens.Count);
             Assert.AreEqual(1, formula.TokenInfos.Count);
 
-            Assert.AreEqual(TokenType.NameValue, formula.Tokens[2].TokenType);
+            Assert.AreEqual(TokenType.NameValue, formula.Tokens[4].TokenType);
             Assert.IsInstanceOfType(formula.TokenInfos[2], typeof(FormulaRange));
 
             var fr = (FormulaRange)formula.TokenInfos[2];
@@ -262,7 +262,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(6, formula.Tokens.Count);
             Assert.AreEqual(2, formula.TokenInfos.Count);
 
-            Assert.AreEqual(TokenType.ExcelAddress, formula.Tokens[2].TokenType);
+            Assert.AreEqual(TokenType.CellAddress, formula.Tokens[2].TokenType);
             Assert.IsInstanceOfType(formula.TokenInfos[2], typeof(FormulaCellAddress));
 
             var c1 = (FormulaCellAddress)formula.TokenInfos[2];
@@ -294,7 +294,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(6, formula.Tokens.Count);
             Assert.AreEqual(2, formula.TokenInfos.Count);
 
-            Assert.AreEqual(TokenType.ExcelAddress, formula.Tokens[2].TokenType);
+            Assert.AreEqual(TokenType.CellAddress, formula.Tokens[2].TokenType);
             Assert.IsInstanceOfType(formula.TokenInfos[2], typeof(FormulaCellAddress));
 
             var c1 = (FormulaCellAddress)formula.TokenInfos[2];
@@ -347,7 +347,7 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(6, formula.Tokens.Count);
             Assert.AreEqual(2, formula.TokenInfos.Count);
 
-            Assert.AreEqual(TokenType.ExcelAddress, formula.Tokens[2].TokenType);
+            Assert.AreEqual(TokenType.CellAddress, formula.Tokens[2].TokenType);
             Assert.IsInstanceOfType(formula.TokenInfos[2], typeof(FormulaCellAddress));
 
             var c1 = (FormulaCellAddress)formula.TokenInfos[2];
