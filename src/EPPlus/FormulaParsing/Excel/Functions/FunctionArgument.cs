@@ -100,7 +100,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
                 }
                 else
                 {
-                    return v.GetValue(v.Address._fromRow, v.Address._fromCol);
+                    return v.GetValue(v.Address.FromRow, v.Address.FromCol);
                 }
             }
         }

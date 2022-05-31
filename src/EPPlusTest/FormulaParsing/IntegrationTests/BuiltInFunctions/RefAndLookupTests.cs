@@ -35,6 +35,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
 using OfficeOpenXml.FormulaParsing;
 using FakeItEasy;
+using OfficeOpenXml.FormulaParsing.Ranges;
 
 namespace EPPlusTest.FormulaParsing.IntegrationTests.BuiltInFunctions
 {
@@ -210,7 +211,7 @@ namespace EPPlusTest.FormulaParsing.IntegrationTests.BuiltInFunctions
         public void RowsShouldReturnNbrOfRows()
         {
             A.CallTo(() => _excelDataProvider.GetRangeFormula("", 4, 1)).Returns("Rows(A5:B7)");
-            A.CallTo(() => _excelDataProvider.GetRange("", 4, 1, "A5:B7")).Returns(new EpplusExcelDataProvider.RangeInfo(_worksheet, 1, 2, 3, 3));
+            A.CallTo(() => _excelDataProvider.GetRange("", 4, 1, "A5:B7")).Returns(new RangeInfo(_worksheet, 1, 2, 3, 3));
             var result = _parser.ParseAt("A4");
             Assert.AreEqual(3, result);
         }
@@ -219,7 +220,7 @@ namespace EPPlusTest.FormulaParsing.IntegrationTests.BuiltInFunctions
         public void ColumnsShouldReturnNbrOfCols()
         {
             A.CallTo(() => _excelDataProvider.GetRangeFormula("", 4, 1)).Returns("Columns(A5:B7)");
-            A.CallTo(() => _excelDataProvider.GetRange("", 4, 1, "A5:B7")).Returns(new EpplusExcelDataProvider.RangeInfo(_worksheet, 1, 2, 1, 3));
+            A.CallTo(() => _excelDataProvider.GetRange("", 4, 1, "A5:B7")).Returns(new RangeInfo(_worksheet, 1, 2, 1, 3));
             var result = _parser.ParseAt("A4");
             Assert.AreEqual(2, result);
         }

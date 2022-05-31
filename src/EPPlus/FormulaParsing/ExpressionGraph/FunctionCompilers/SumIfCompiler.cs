@@ -40,7 +40,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers
                 lastExp.IgnoreCircularReference = true;
                 var currentAdr = Context.Scopes.Current.Address;
                 var sumRangeAdr = new ExcelAddress(lastExp.ExpressionString);
-                var sumRangeWs = string.IsNullOrEmpty(sumRangeAdr.WorkSheetName) ? currentAdr.Worksheet : sumRangeAdr.WorkSheetName;
+                var sumRangeWs = string.IsNullOrEmpty(sumRangeAdr.WorkSheetName) ? currentAdr.WorksheetName : sumRangeAdr.WorkSheetName;
                 //if(currentAdr.Worksheet == sumRangeWs && sumRangeAdr.Collide(new ExcelAddress(currentAdr.Address)) != ExcelAddressBase.eAddressCollition.No)
                 //{
                 //    var candidateArg = children.ElementAt(1)?.Children.FirstOrDefault()?.Compile().Result;

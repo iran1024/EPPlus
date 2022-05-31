@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using static OfficeOpenXml.FormulaParsing.EpplusExcelDataProvider;
 using OfficeOpenXml.FormulaParsing;
+using OfficeOpenXml.FormulaParsing.Ranges;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
@@ -32,7 +33,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         public override CompileResult Compile()
         {
             var c = this._parsingContext.Scopes.Current;
-            var name = _parsingContext.ExcelDataProvider.GetName(c.Address.Worksheet, ExpressionString);
+            var name = _parsingContext.ExcelDataProvider.GetName(c.Address.WorksheetName, ExpressionString);
             
             var cache = _parsingContext.AddressCache;
             var cacheId = cache.GetNewId();
@@ -44,7 +45,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 if(table != null)
                 {
                     var ri = new RangeInfo(table.WorkSheet, table.Address);
-                    cache.Add(cacheId, ri.Address.FullAddress);
+                    cache.Add(cacheId, ri.Address.ToString());
                     return new CompileResult(ri, DataType.Enumerable, cacheId);
                 }
 
@@ -57,7 +58,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             if (name.Value is IRangeInfo)
             {
                 var range = (IRangeInfo)name.Value;
-                cache.Add(cacheId, range.Address.FullAddress);
+                cache.Add(cacheId, range.Address.ToString());
                 if (range.IsMulti)
                 {
                     return new CompileResult(name.Value, DataType.Enumerable, cacheId);

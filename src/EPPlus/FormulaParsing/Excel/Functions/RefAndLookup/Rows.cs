@@ -34,7 +34,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             var r=arguments.ElementAt(0).ValueAsRangeInfo;
             if (r != null)
             {
-                return CreateResult(r.Address._toRow - r.Address._fromRow + 1, DataType.Integer);
+                return CreateResult(r.Address.ToRow - r.Address.FromRow + 1, DataType.Integer);
             }
             else
             {

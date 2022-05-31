@@ -54,8 +54,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 var row = ArgToInt(arguments, 1, RoundingMethod.Floor);                 
                 var col = arguments.Count()>2 ? ArgToInt(arguments, 2, RoundingMethod.Floor) : 1;
                 var ri=arg1.ValueAsRangeInfo;
-                if (row > ri.Address._toRow - ri.Address._fromRow + 1 ||
-                    col > ri.Address._toCol - ri.Address._fromCol + 1)
+                if (row > ri.Address.ToRow - ri.Address.FromRow + 1 ||
+                    col > ri.Address.ToCol - ri.Address.FromCol + 1)
                 {
                     ThrowExcelErrorValueException(eErrorType.Ref);
                 }

@@ -216,7 +216,7 @@ namespace OfficeOpenXml.FormulaParsing
         {
             Require.That(address).Named("address").IsNotNullOrEmpty();
             var rangeAddress = _parsingContext.RangeAddressFactory.Create(address);
-            return ParseAt(rangeAddress.Worksheet, rangeAddress.FromRow, rangeAddress.FromCol);
+            return ParseAt(rangeAddress.WorksheetName, rangeAddress.FromRow, rangeAddress.FromCol);
         }
 
         /// <summary>

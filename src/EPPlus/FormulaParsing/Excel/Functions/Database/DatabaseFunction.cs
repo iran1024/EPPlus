@@ -24,10 +24,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
         protected IEnumerable<double> GetMatchingValues(IEnumerable<FunctionArgument> arguments, ParsingContext context)
         {
             var rowMatcher = new RowMatcher(context);
-            var dbAddress = arguments.ElementAt(0).ValueAsRangeInfo.Address.Address;
+            var dbAddress = arguments.ElementAt(0).ValueAsRangeInfo.Address.ToString();
             //var field = ArgToString(arguments, 1).ToLower(CultureInfo.InvariantCulture);
             var field = arguments.ElementAt(1).Value;
-            var criteriaRange = arguments.ElementAt(2).ValueAsRangeInfo.Address.Address;
+            var criteriaRange = arguments.ElementAt(2).ValueAsRangeInfo.Address.ToString();
 
             var db = new ExcelDatabase(context.ExcelDataProvider, dbAddress);
             var criteria = new ExcelDatabaseCriteria(context.ExcelDataProvider, criteriaRange);

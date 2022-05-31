@@ -41,8 +41,8 @@ namespace OfficeOpenXml.FormulaParsing
         /// <summary>
         /// The address.
         /// </summary>
-        ExcelAddressBase Address { get; }
-        FormulaRangeAddress RangeNew { get; }
+        //ExcelAddressBase Address { get; }
+        FormulaRangeAddress Address { get; }
         /// <summary>
         /// Get the value from a cell
         /// </summary>

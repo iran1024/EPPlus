@@ -96,7 +96,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
             {
                 //var r=((ExcelDataProvider.IRangeInfo)arg);
                 var r = arg.ValueAsRangeInfo;
-                return r.GetValue(r.Address._fromRow, r.Address._fromCol);
+                return r.GetValue(r.Address.FromRow, r.Address.FromCol);
             }
             else
             {
@@ -169,7 +169,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         }
         protected string ArgToAddress(IEnumerable<FunctionArgument> arguments, int index)
         {            
-            return arguments.ElementAt(index).IsExcelRange ? arguments.ElementAt(index).ValueAsRangeInfo.Address.FullAddress : ArgToString(arguments, index);
+            return arguments.ElementAt(index).IsExcelRange ? arguments.ElementAt(index).ValueAsRangeInfo.Address.ToString() : ArgToString(arguments, index);
         }
 
         protected string ArgToAddress(IEnumerable<FunctionArgument> arguments, int index, ParsingContext context)
@@ -527,7 +527,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
             var endRow = rangeInfo.Address.End.Row > rangeInfo.Worksheet.Dimension._toRow ? rangeInfo.Worksheet.Dimension._toRow : rangeInfo.Address.End.Row;
             var startCol = rangeInfo.Address.Start.Column;
             var endCol = rangeInfo.Address.End.Column > rangeInfo.Worksheet.Dimension._toCol ? rangeInfo.Worksheet.Dimension._toCol : rangeInfo.Address.End.Column;
-            var horizontal = (startRow == endRow && rangeInfo.Address._fromCol < rangeInfo.Address._toCol);
+            var horizontal = (startRow == endRow && rangeInfo.Address.FromCol < rangeInfo.Address.ToCol);
             var funcArg = new FunctionArgument(rangeInfo);
             var result = ArgsToDoubleEnumerable(ignoreHiddenCells, new List<FunctionArgument> { funcArg }, context);
             var dict = new Dictionary<int, double>();

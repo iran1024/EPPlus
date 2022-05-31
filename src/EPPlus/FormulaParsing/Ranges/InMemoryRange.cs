@@ -1,12 +1,27 @@
-﻿using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+﻿/*************************************************************************************************
+  Required Notice: Copyright (C) EPPlus Software AB. 
+  This software is licensed under PolyForm Noncommercial License 1.0.0 
+  and may only be used for noncommercial purposes 
+  https://polyformproject.org/licenses/noncommercial/1.0.0/
+
+  A commercial license to use this software can be purchased at https://epplussoftware.com
+ *************************************************************************************************
+  Date               Author                       Change
+ *************************************************************************************************
+  05/31/2022         EPPlus Software AB           EPPlus 6.1
+ *************************************************************************************************/
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OfficeOpenXml.FormulaParsing
+namespace OfficeOpenXml.FormulaParsing.Ranges
 {
+    /// <summary>
+    /// EPPlus implementation of a range that keeps its data in memory
+    /// </summary>
     internal class InMemoryRange : IRangeInfo
     {
         public InMemoryRange(RangeDefinition rangeDef)
@@ -17,16 +32,21 @@ namespace OfficeOpenXml.FormulaParsing
         }
         public InMemoryRange(FormulaRangeAddress address, RangeDefinition rangeDef, ParsingContext ctx)
         {
-            _ws = ctx.Package.Workbook.Worksheets[ctx.Scopes.Current.Address.Worksheet];
-            _address = new ExcelAddressBase(_ws.Name, address.FromRow, address.FromCol, address.ToRow, address.ToCol);
-            _rangeNew = address;
+            _ws = ctx.Package.Workbook.Worksheets[ctx.Scopes.Current.Address.WorksheetName];
+            _address = new FormulaRangeAddress(ctx) 
+            { 
+                WorksheetIx = (short)_ws.PositionId, 
+                FromRow = address.FromRow,
+                FromCol = address.FromCol, 
+                ToRow = address.ToRow, 
+                ToCol = address.ToCol 
+            };
             _nRows = rangeDef.NumberOfRows;
             _nCols = rangeDef.NumberOfCols;
             _cells = new ICellInfo[_nRows, _nCols];
         }
 
-        private readonly ExcelAddressBase _address;
-        private readonly FormulaRangeAddress _rangeNew;
+        private readonly FormulaRangeAddress _address;
         private readonly ExcelWorksheet _ws;
         private readonly ICellInfo[,] _cells;
         private int _colIx = -1;
@@ -46,9 +66,7 @@ namespace OfficeOpenXml.FormulaParsing
 
         public bool IsInMemoryRange => true;
 
-        public ExcelAddressBase Address => _address;
-
-        public FormulaRangeAddress RangeNew => _rangeNew;
+        public FormulaRangeAddress Address => _address;
 
         public ExcelWorksheet Worksheet => _ws;
 
@@ -70,7 +88,7 @@ namespace OfficeOpenXml.FormulaParsing
 
         public void Dispose()
         {
-            
+
         }
 
         public IEnumerator<ICellInfo> GetEnumerator()
@@ -88,7 +106,7 @@ namespace OfficeOpenXml.FormulaParsing
         public object GetOffset(int rowOffset, int colOffset)
         {
             var c = _cells[rowOffset, colOffset];
-            if(c == null)
+            if (c == null)
             {
                 return null;
             }
@@ -104,7 +122,7 @@ namespace OfficeOpenXml.FormulaParsing
 
         public bool MoveNext()
         {
-            if(_colIx < _nCols - 1)
+            if (_colIx < _nCols - 1)
             {
                 _colIx++;
                 return true;

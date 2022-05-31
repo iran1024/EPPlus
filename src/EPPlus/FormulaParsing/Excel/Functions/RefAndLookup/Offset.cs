@@ -47,16 +47,16 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 width = ArgToInt(functionArguments, 4);
                 if (width == 0) return new CompileResult(eErrorType.Ref);
             }
-            var ws = context.Scopes.Current.Address.Worksheet;            
+            var ws = context.Scopes.Current.Address.WorksheetName;            
             //var r =context.ExcelDataProvider.GetRange(ws, context.Scopes.Current.Address.FromRow, context.Scopes.Current.Address.FromCol, startRange);
             var adr = r.Address;
 
-            var fromRow = adr._fromRow + rowOffset;
-            var fromCol = adr._fromCol + colOffset;
-            var toRow = (height != 0 ? adr._fromRow + height - 1 : adr._toRow) + rowOffset;
-            var toCol = (width != 0 ? adr._fromCol + width - 1 : adr._toCol) + colOffset;
+            var fromRow = adr.FromRow + rowOffset;
+            var fromCol = adr.FromCol + colOffset;
+            var toRow = (height != 0 ? adr.FromRow + height - 1 : adr.ToRow) + rowOffset;
+            var toCol = (width != 0 ? adr.FromCol + width - 1 : adr.ToCol) + colOffset;
 
-            var newRange = context.ExcelDataProvider.GetRange(adr.WorkSheetName, fromRow, fromCol, toRow, toCol);
+            var newRange = context.ExcelDataProvider.GetRange(adr.WorksheetName, fromRow, fromCol, toRow, toCol);
             
             return CreateResult(newRange, DataType.Enumerable);
         }
