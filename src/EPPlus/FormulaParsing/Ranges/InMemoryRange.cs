@@ -29,24 +29,20 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
             _nRows = rangeDef.NumberOfRows;
             _nCols = rangeDef.NumberOfCols;
             _cells = new ICellInfo[_nRows, _nCols];
+            _size = rangeDef;
         }
         public InMemoryRange(FormulaRangeAddress address, RangeDefinition rangeDef, ParsingContext ctx)
         {
             _ws = ctx.Package.Workbook.Worksheets[ctx.Scopes.Current.Address.WorksheetName];
-            _address = new FormulaRangeAddress(ctx) 
-            { 
-                WorksheetIx = (short)_ws.PositionId, 
-                FromRow = address.FromRow,
-                FromCol = address.FromCol, 
-                ToRow = address.ToRow, 
-                ToCol = address.ToCol 
-            };
+            _address = address;
             _nRows = rangeDef.NumberOfRows;
             _nCols = rangeDef.NumberOfCols;
             _cells = new ICellInfo[_nRows, _nCols];
+            _size = rangeDef;
         }
 
         private readonly FormulaRangeAddress _address;
+        private readonly RangeDefinition _size;
         private readonly ExcelWorksheet _ws;
         private readonly ICellInfo[,] _cells;
         private int _colIx = -1;
@@ -65,6 +61,8 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         public bool IsMulti => _cells.Length > 0 && _cells.GetUpperBound(1) > 1;
 
         public bool IsInMemoryRange => true;
+
+        public RangeDefinition Size => _size;
 
         public FormulaRangeAddress Address => _address;
 

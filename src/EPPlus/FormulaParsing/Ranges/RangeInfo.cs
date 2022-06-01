@@ -26,16 +26,12 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
     {
         internal ExcelWorksheet _ws;
         CellStoreEnumerator<ExcelValue> _values = null;
+        private RangeDefinition _size;
         ParsingContext _context;
         //int _fromRow, _toRow, _fromCol, _toCol;
         int _cellCount = 0;
         FormulaRangeAddress _address;
         ICellInfo _cell;
-        private ExcelWorksheet worksheet;
-        private int v1;
-        private int v2;
-        private int v3;
-        private int v4;
 
         /// <summary>
         /// Constructor
@@ -74,15 +70,6 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
             SetAddress(ws, address);
         }
 
-        public RangeInfo(ExcelWorksheet worksheet, int v1, int v2, int v3, int v4)
-        {
-            this.worksheet = worksheet;
-            this.v1 = v1;
-            this.v2 = v2;
-            this.v3 = v3;
-            this.v4 = v4;
-        }
-
         private void SetAddress(ExcelWorksheet ws, ExcelAddressBase address)
         {
             _ws = ws;
@@ -92,6 +79,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
                 _values = new CellStoreEnumerator<ExcelValue>(_ws._values, address._fromRow, address._fromCol, address._toRow, address._toCol);
                 _cell = new CellInfo(_ws, _values);
             }
+            _size = new RangeDefinition((short)(address._toCol - address._fromCol + 1), address._toRow - address._fromRow + 1);
         }
 
         /// <summary>
@@ -165,6 +153,11 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
                 return false;
             }
         }
+
+        /// <summary>
+        /// Size of the range
+        /// </summary>
+        public RangeDefinition Size => _size;
 
         /// <summary>
         /// Returns true if the range is an <see cref="InMemoryRange"/>

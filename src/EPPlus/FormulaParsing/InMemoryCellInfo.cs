@@ -2,11 +2,13 @@
 using OfficeOpenXml.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 namespace OfficeOpenXml.FormulaParsing
 {
+    [DebuggerDisplay("Value: {Value}")]
     internal class InMemoryCellInfo : ICellInfo
     {
         public InMemoryCellInfo(object value)

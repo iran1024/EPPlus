@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using OfficeOpenXml.FormulaParsing.Ranges;
 using System;
 using System.Collections.Generic;
 /*************************************************************************************************
@@ -43,6 +44,10 @@ namespace OfficeOpenXml.FormulaParsing
         /// </summary>
         //ExcelAddressBase Address { get; }
         FormulaRangeAddress Address { get; }
+        /// <summary>
+        /// Size of the range, i.e. number of Cols and number of Rows
+        /// </summary>
+        RangeDefinition Size { get; }
         /// <summary>
         /// Get the value from a cell
         /// </summary>

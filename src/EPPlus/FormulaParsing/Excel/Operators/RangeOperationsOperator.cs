@@ -12,8 +12,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
 {
     internal static class RangeOperationsOperator
     {
-        private static double ApplyOperator(double l, double r, Operators op)
+        private static object ApplyOperator(double l, double r, Operators op, out bool error)
         {
+            error = false;
             switch(op)
             {
                 case Operators.Plus:
@@ -24,10 +25,162 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     return l * r;
                 case Operators.Divide:
                     return l / r;
+                case Operators.LessThan:
+                    return l < r;
+                case Operators.LessThanOrEqual:
+                    return l <= r;
+                case Operators.GreaterThan:
+                    return l > r;
+                case Operators.GreaterThanOrEqual:
+                    return l >= r;
                 default:
-                    throw new InvalidOperationException($"Operator {op} cannot be applied on ranges");
+                    error = true;
+                    return default;
             }
         }
+
+        private static object ApplyOperator(string l, string r, Operators op, out bool error)
+        {
+            error = false;
+            switch(op)
+            {
+                case Operators.Concat:
+                    return string.Concat(l, r);
+                case Operators.LessThan:
+                    if(l == null && r != null)
+                    {
+                        return true;
+                    }
+                    if(l != null && r == null)
+                    {
+                        return false;
+                    }
+                    if (l == null && r == null)
+                        return false;
+                    return l.CompareTo(r) < 0;
+                case Operators.LessThanOrEqual:
+                    if (l == null && r != null)
+                    {
+                        return true;
+                    }
+                    if (l != null && r == null)
+                    {
+                        return false;
+                    }
+                    if (l == null && r == null)
+                        return true;
+                    return l.CompareTo(r) <= 0;
+                case Operators.GreaterThan:
+                    if (l == null && r != null)
+                    {
+                        return false;
+                    }
+                    if (l != null && r == null)
+                    {
+                        return true;
+                    }
+                    if (l == null && r == null)
+                        return false;
+                    return l.CompareTo(r) > 0;
+                case Operators.GreaterThanOrEqual:
+                    if (l == null && r != null)
+                    {
+                        return false;
+                    }
+                    if (l != null && r == null)
+                    {
+                        return true;
+                    }
+                    if (l == null && r == null)
+                        return true;
+                    return l.CompareTo(r) >= 0;
+                default:
+                    error = true;
+                    return null;
+            }
+        }
+
+        private static FormulaRangeAddress GetScopeAddress(ParsingContext ctx)
+        {
+            if(ctx != null && ctx.Scopes.Current != null && ctx.Scopes.Current.Address != null)
+            {
+                return ctx.Scopes.Current.Address;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private static InMemoryRange CreateRange(IRangeInfo l, IRangeInfo r, ParsingContext ctx)
+        {
+            var width = Math.Max(l.Size.NumberOfCols, r.Size.NumberOfCols);
+            var height = Math.Max(l.Size.NumberOfRows, r.Size.NumberOfRows);
+            var rangeDef = new RangeDefinition(width, height);
+            var adr = GetScopeAddress(ctx);
+            if(adr != null)
+            {
+                return new InMemoryRange(adr, rangeDef, ctx);
+            }
+            else
+            {
+                return new InMemoryRange(rangeDef);
+            }
+        }
+
+        private static void SetValue(InMemoryRange resultRange, int col, int row, object value, bool error)
+        {
+            if (!error)
+            {
+                resultRange.SetValue(col, row, value);
+            }
+            else
+            {
+                resultRange.SetValue(col, row, ExcelErrorValue.Create(eErrorType.Value));
+            }
+        }
+
+        private static void SetValue(Operators op, InMemoryRange resultRange, int row, int col, object leftVal, object rightVal)
+        {
+            if (!ConvertUtil.IsNumeric(leftVal) || !ConvertUtil.IsNumeric(rightVal))
+            {
+                var sResult = ApplyOperator(leftVal?.ToString(), rightVal?.ToString(), op, out bool error);
+                SetValue(resultRange, col, row, sResult, error);
+            }
+            else
+            {
+                var result = ApplyOperator(ConvertUtil.GetValueDouble(leftVal), ConvertUtil.GetValueDouble(rightVal), op, out bool error);
+                SetValue(resultRange, col, row, result, error);
+            }
+        }
+
+        private static bool ShouldUseSingleRow(RangeDefinition lSize, RangeDefinition rSize)
+        {
+            if((lSize.NumberOfRows == 1 || rSize.NumberOfRows == 1) && lSize.NumberOfCols == rSize.NumberOfCols)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool ShouldUseSingleCol(RangeDefinition lSize, RangeDefinition rSize)
+        {
+            if ((lSize.NumberOfCols == 1 || rSize.NumberOfCols == 1) && lSize.NumberOfRows == rSize.NumberOfRows)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool AddressIsNotAvailable(RangeDefinition lSize, RangeDefinition rSize, int row, int col)
+        {
+            if(row >= lSize.NumberOfRows || row >=rSize.NumberOfRows)
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static CompileResult Apply(CompileResult left, CompileResult right, Operators op, ParsingContext context)
         {
             if(left.DataType == DataType.ExcelRange && right.DataType == DataType.ExcelRange)
@@ -35,50 +188,51 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 var lr = left.Result as IRangeInfo;
                 var rr = right.Result as IRangeInfo;
 
-                // size of the ranges must be same...
-                var sizeH = lr.Address.ToRow - lr.Address.FromRow + 1;
-                if(sizeH != (rr.Address.ToRow - rr.Address.FromRow + 1))
+                var resultRange = CreateRange(lr, rr, context);
+                for(var row = 0; row < resultRange.Size.NumberOfRows; row++)
                 {
-                    return new CompileResult(eErrorType.NA);
-                }
-                var sizeW = lr.Address.ToCol - lr.Address.FromCol + 1;
-                if (sizeW != (rr.Address.ToCol - rr.Address.FromCol + 1))
-                {
-                    return new CompileResult(eErrorType.NA);
-                }
-
-                var scopeAdr = context.Scopes.Current.Address;
-                var currentAdr = new ExcelAddress(scopeAdr.WorksheetName, scopeAdr.FromRow, scopeAdr.FromCol, scopeAdr.ToRow, scopeAdr.ToCol);
-                currentAdr._toCol = currentAdr._fromCol + sizeW - 1;
-                currentAdr._toRow = currentAdr._fromRow + sizeH - 1;
-                var currentWs = context.Package.Workbook.Worksheets[context.Scopes.Current.Address.WorksheetName];
-                var rangeAdr = new FormulaRangeAddress(context)
-                {
-                    WorksheetIx = (short)currentWs.PositionId,
-                    FromRow = currentAdr._fromRow,
-                    FromCol = currentAdr._fromCol,
-                    ToRow = currentAdr._toRow,
-                    ToCol = currentAdr._toCol,
-                };
-                var rangeDef = new RangeDefinition((short)sizeW, sizeH);
-                var resultRange = new InMemoryRange(rangeAdr, rangeDef, context);
-                for(var row = 0; row < sizeH; row++)
-                {
-                    var rowLeft = lr.Address.FromRow + row;
-                    var rowRight = rr.Address.FromRow + row;
-                    for(var col = 0; col < sizeW; col++)
+                    for(var col = 0; col < resultRange.Size.NumberOfCols; col++)
                     {
-                        var colLeft = lr.Address.FromCol + col;
-                        var colRight = rr.Address.FromCol + col;
-
-                        var leftVal = lr.GetValue(rowLeft, colLeft);
-                        var rightVal = rr.GetValue(rowRight, colRight);
-                        if(!ConvertUtil.IsNumeric(leftVal) || !ConvertUtil.IsNumeric(rightVal))
+                        if(ShouldUseSingleRow(lr.Size, rr.Size))
                         {
-                            return new CompileResult(eErrorType.Value);
+                            if(lr.Size.NumberOfRows == 1)
+                            {
+                                var leftVal = lr.GetValue(0, col);
+                                var rightVal = rr.GetValue(row, col);
+                                SetValue(op, resultRange, row, col, leftVal, rightVal);
+                            }
+                            else if (rr.Size.NumberOfRows == 1)
+                            {
+                                var leftVal = lr.GetValue(row, col);
+                                var rightVal = rr.GetValue(0, col);
+                                SetValue(op, resultRange, row, col, leftVal, rightVal);
+                            }
                         }
-                        var result = ApplyOperator(ConvertUtil.GetValueDouble(leftVal), ConvertUtil.GetValueDouble(rightVal), op);
-                        resultRange.SetValue(col, row, result);
+                        else if (ShouldUseSingleCol(lr.Size, rr.Size))
+                        {
+                            if (lr.Size.NumberOfCols == 1)
+                            {
+                                var leftVal = lr.GetValue(row, 0);
+                                var rightVal = rr.GetValue(row, col);
+                                SetValue(op, resultRange, row, col, leftVal, rightVal);
+                            }
+                            else if (rr.Size.NumberOfCols == 1)
+                            {
+                                var leftVal = lr.GetValue(row, col);
+                                var rightVal = rr.GetValue(row, 0);
+                                SetValue(op, resultRange, row, col, leftVal, rightVal);
+                            }
+                        }
+                        else if(AddressIsNotAvailable(lr.Size, rr.Size, row, col))
+                        {
+                            resultRange.SetValue(col, row, ExcelErrorValue.Create(eErrorType.NA));
+                        }
+                        else
+                        {
+                            var leftVal = lr.GetValue(row, col);
+                            var rightVal = rr.GetValue(row, col);
+                            SetValue(op, resultRange, row, col, leftVal, rightVal);
+                        }
                     }
                 }
                 return new CompileResult(resultRange, DataType.ExcelRange);

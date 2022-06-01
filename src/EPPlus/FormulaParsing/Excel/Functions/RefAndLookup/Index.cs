@@ -57,7 +57,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 if (row > ri.Address.ToRow - ri.Address.FromRow + 1 ||
                     col > ri.Address.ToCol - ri.Address.FromCol + 1)
                 {
-                    ThrowExcelErrorValueException(eErrorType.Ref);
+                    return new CompileResult(eErrorType.Ref);
                 }
                 var candidate = ri.GetOffset(row-1, col-1);
                 //Commented JK-Can be any data type
@@ -67,7 +67,11 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 //}
                 return crf.Create(candidate);
             }
-            throw new NotImplementedException();
+            if(arg1.ValueIsExcelError)
+            {
+                return new CompileResult(arg1.ValueAsExcelErrorValue.Type);
+            }
+            return new CompileResult(eErrorType.Value);
         }
     }
 }

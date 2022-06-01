@@ -31,6 +31,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
     {
         internal ExcelExternalWorksheet _externalWs;
         internal CellStoreEnumerator<object> _values = null;
+        private RangeDefinition _size;
         int _fromRow, _toRow, _fromCol, _toCol;
         int _cellCount = 0;
         FormulaRangeAddress _address;
@@ -59,6 +60,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
                 ToRow = toRow,
                 ToCol = toCol
             };
+            _size = new RangeDefinition((short)(toCol - fromCol + 1), toRow + fromCol + 1);
             if (externalReferenceIx > 0 && ctx.Package != null && ctx.Package.Workbook.ExternalLinks.Count < externalReferenceIx)
             {
                 var externalWb = ctx.Package.Workbook.ExternalLinks[externalReferenceIx].As.ExternalWorkbook;
@@ -150,6 +152,14 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
             }
         }
 
+        /// <summary>
+        /// Size of the range
+        /// </summary>
+        public RangeDefinition Size => _size;
+
+        /// <summary>
+        /// True if this is a range that doesn't is connected to a worksheet.
+        /// </summary>
         public bool IsInMemoryRange => false;
 
         /// <summary>

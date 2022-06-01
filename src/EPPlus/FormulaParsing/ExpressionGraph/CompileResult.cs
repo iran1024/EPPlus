@@ -97,7 +97,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             get
             {
                 var r = Result as IRangeInfo;
-                if (r == null)
+                if (r == null || r.Address == null)
                 {
                     return Result;
                 }
