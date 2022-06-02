@@ -79,6 +79,36 @@ namespace EPPlusTest.FormulaParsing
         }
 
         [TestMethod]
+        public void MultiplicationOperatorShouldCalculateRangeAndSingleValueRight()
+        {
+            using (var package = new ExcelPackage())
+            {
+                var sheet = package.Workbook.Worksheets.Add("test");
+                sheet.Cells["A1"].Value = 2;
+                sheet.Cells["A2"].Value = 3;
+                sheet.Cells["B3"].Formula = "SUM(A1:A2 + 1)";
+                sheet.Calculate();
+                var result = sheet.Cells["B3"].Value;
+                Assert.AreEqual(7d, result);
+            }
+        }
+
+        [TestMethod]
+        public void MultiplicationOperatorShouldCalculateRangeAndSingleValueLeft()
+        {
+            using (var package = new ExcelPackage())
+            {
+                var sheet = package.Workbook.Worksheets.Add("test");
+                sheet.Cells["A1"].Value = 2;
+                sheet.Cells["A2"].Value = 3;
+                sheet.Cells["B3"].Formula = "SUM(1 - A1:A2)";
+                sheet.Calculate();
+                var result = sheet.Cells["B3"].Value;
+                Assert.AreEqual(-3d, result);
+            }
+        }
+
+        [TestMethod]
         public void DivisionOperatorShouldCalculate()
         {
             using (var package = new ExcelPackage())

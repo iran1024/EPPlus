@@ -114,7 +114,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     {
                         return new CompileResult(l.ResultNumeric + r.ResultNumeric, DataType.Integer);
                     }
-                    if(l.DataType == DataType.ExcelRange && r.DataType == DataType.ExcelRange)
+                    if(l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
                     {
                         return RangeOperationsOperator.Apply(l, r, Operators.Plus, ctx);
                     }
@@ -140,7 +140,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     {
                         return new CompileResult(l.ResultNumeric - r.ResultNumeric, DataType.Integer);
                     }
-                    if (l.DataType == DataType.ExcelRange && r.DataType == DataType.ExcelRange)
+                    if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
                     {
                         return RangeOperationsOperator.Apply(l, r, Operators.Minus, ctx);
                     }
@@ -167,7 +167,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     {
                         return new CompileResult(l.ResultNumeric*r.ResultNumeric, DataType.Integer);
                     }
-                    if (l.DataType == DataType.ExcelRange && r.DataType == DataType.ExcelRange)
+                    if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
                     {
                         return RangeOperationsOperator.Apply(l, r, Operators.Multiply, ctx);
                     }
@@ -198,7 +198,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     {
                         return new CompileResult(eErrorType.Div0);
                     }
-                    if (l.DataType == DataType.ExcelRange && r.DataType == DataType.ExcelRange)
+                    if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
                     {
                         return RangeOperationsOperator.Apply(l, r, Operators.Divide, ctx);
                     }

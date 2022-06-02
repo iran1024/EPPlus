@@ -50,6 +50,13 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         private readonly short _nCols;
         private readonly int _nRows;
 
+        private static InMemoryRange _empty = new InMemoryRange(new RangeDefinition(0, 0));
+        
+        /// <summary>
+        /// An empty range
+        /// </summary>
+        public static InMemoryRange Empty => _empty;
+
         public void SetValue(int col, int row, object val)
         {
             var c = new InMemoryCellInfo(val);

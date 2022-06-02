@@ -172,9 +172,18 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             return false;
         }
 
+        private static bool ShouldUseSingleCell(RangeDefinition lSize, RangeDefinition rSize)
+        {
+            return (lSize.NumberOfCols == 1 && lSize.NumberOfRows == 1) || (rSize.NumberOfCols == 1 && rSize.NumberOfRows == 1);
+        }
+
         private static bool AddressIsNotAvailable(RangeDefinition lSize, RangeDefinition rSize, int row, int col)
         {
             if(row >= lSize.NumberOfRows || row >=rSize.NumberOfRows)
+            {
+                return true;
+            }
+            else if(col >= lSize.NumberOfCols || col >= rSize.NumberOfCols)
             {
                 return true;
             }
@@ -183,61 +192,142 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
 
         public static CompileResult Apply(CompileResult left, CompileResult right, Operators op, ParsingContext context)
         {
+            if(left.DataType == DataType.ExcelRange && right.DataType != DataType.ExcelRange)
+            {
+                InMemoryRange resultRange = ApplySingleValueRight(left, right, op, context);
+                return new CompileResult(resultRange, DataType.ExcelRange);
+            }
+            else if(left.DataType != DataType.ExcelRange && right.DataType == DataType.ExcelRange)
+            {
+                InMemoryRange resultRange = ApplySingleValueLeft(left, right, op, context);
+                return new CompileResult(resultRange, DataType.ExcelRange);
+            }
             if(left.DataType == DataType.ExcelRange && right.DataType == DataType.ExcelRange)
             {
-                var lr = left.Result as IRangeInfo;
-                var rr = right.Result as IRangeInfo;
-
-                var resultRange = CreateRange(lr, rr, context);
-                for(var row = 0; row < resultRange.Size.NumberOfRows; row++)
-                {
-                    for(var col = 0; col < resultRange.Size.NumberOfCols; col++)
-                    {
-                        if(ShouldUseSingleRow(lr.Size, rr.Size))
-                        {
-                            if(lr.Size.NumberOfRows == 1)
-                            {
-                                var leftVal = lr.GetValue(0, col);
-                                var rightVal = rr.GetValue(row, col);
-                                SetValue(op, resultRange, row, col, leftVal, rightVal);
-                            }
-                            else if (rr.Size.NumberOfRows == 1)
-                            {
-                                var leftVal = lr.GetValue(row, col);
-                                var rightVal = rr.GetValue(0, col);
-                                SetValue(op, resultRange, row, col, leftVal, rightVal);
-                            }
-                        }
-                        else if (ShouldUseSingleCol(lr.Size, rr.Size))
-                        {
-                            if (lr.Size.NumberOfCols == 1)
-                            {
-                                var leftVal = lr.GetValue(row, 0);
-                                var rightVal = rr.GetValue(row, col);
-                                SetValue(op, resultRange, row, col, leftVal, rightVal);
-                            }
-                            else if (rr.Size.NumberOfCols == 1)
-                            {
-                                var leftVal = lr.GetValue(row, col);
-                                var rightVal = rr.GetValue(row, 0);
-                                SetValue(op, resultRange, row, col, leftVal, rightVal);
-                            }
-                        }
-                        else if(AddressIsNotAvailable(lr.Size, rr.Size, row, col))
-                        {
-                            resultRange.SetValue(col, row, ExcelErrorValue.Create(eErrorType.NA));
-                        }
-                        else
-                        {
-                            var leftVal = lr.GetValue(row, col);
-                            var rightVal = rr.GetValue(row, col);
-                            SetValue(op, resultRange, row, col, leftVal, rightVal);
-                        }
-                    }
-                }
+                InMemoryRange resultRange = ApplyRanges(left, right, op, context);
                 return new CompileResult(resultRange, DataType.ExcelRange);
             }
             return CompileResult.Empty;
+        }
+
+        private static object GetCellValue(IRangeInfo range, int colOffset, int rowOffset)
+        {
+            if(range.IsInMemoryRange || range.Address == null)
+            {
+                return range.GetValue(rowOffset, colOffset);
+            }
+            else
+            {
+                var col = range.Address.Start.Column + colOffset;
+                var row = range.Address.Start.Row + rowOffset;
+                return range.GetValue(row, col);
+            }
+        }
+
+        public static InMemoryRange ApplySingleValueRight(CompileResult left, CompileResult right, Operators op, ParsingContext context)
+        {
+            var lr = left.Result as IRangeInfo;
+            var resultRange = CreateRange(lr, InMemoryRange.Empty, context);
+            for (var row = 0; row < resultRange.Size.NumberOfRows; row++)
+            {
+                for (var col = 0; col < resultRange.Size.NumberOfCols; col++)
+                {
+                    var leftVal = GetCellValue(lr, col, row);
+                    var rightVal = right.Result;
+                    SetValue(op, resultRange, row, col, leftVal, rightVal);
+                }
+            }
+            return resultRange;
+        }
+
+        public static InMemoryRange ApplySingleValueLeft(CompileResult left, CompileResult right, Operators op, ParsingContext context)
+        {
+            var rr = right.Result as IRangeInfo;
+            var resultRange = CreateRange(InMemoryRange.Empty, rr, context);
+            for (var row = 0; row < resultRange.Size.NumberOfRows; row++)
+            {
+                for (var col = 0; col < resultRange.Size.NumberOfCols; col++)
+                {
+                    var leftVal = left.Result;
+                    var rightVal = GetCellValue(rr, col, row);
+                    SetValue(op, resultRange, row, col, leftVal, rightVal);
+                }
+            }
+            return resultRange;
+        }
+
+        private static InMemoryRange ApplyRanges(CompileResult left, CompileResult right, Operators op, ParsingContext context)
+        {
+            var lr = left.Result as IRangeInfo;
+            var rr = right.Result as IRangeInfo;
+
+            var resultRange = CreateRange(lr, rr, context);
+            var shouldUseSingleCol = ShouldUseSingleCol(lr.Size, rr.Size);
+            var shouldUseSingleRow = ShouldUseSingleRow(lr.Size, rr.Size);
+            var shouldUseSingleCell = ShouldUseSingleCell(lr.Size, rr.Size);
+            for (var row = 0; row < resultRange.Size.NumberOfRows; row++)
+            {
+                for (var col = 0; col < resultRange.Size.NumberOfCols; col++)
+                {
+                    if (shouldUseSingleRow)
+                    {
+                        if (lr.Size.NumberOfRows == 1)
+                        {
+                            var leftVal = GetCellValue(lr, col, 0);
+                            var rightVal = GetCellValue(rr, col, row);
+                            SetValue(op, resultRange, row, col, leftVal, rightVal);
+                        }
+                        else if (rr.Size.NumberOfRows == 1)
+                        {
+                            var leftVal = GetCellValue(lr, col, row);
+                            var rightVal = GetCellValue(rr, col, 0);
+                            SetValue(op, resultRange, row, col, leftVal, rightVal);
+                        }
+                    }
+                    else if (shouldUseSingleCol)
+                    {
+                        if (lr.Size.NumberOfCols == 1)
+                        {
+                            var leftVal = GetCellValue(lr, 0, row);
+                            var rightVal = GetCellValue(rr, col, row);
+                            SetValue(op, resultRange, row, col, leftVal, rightVal);
+                        }
+                        else if (rr.Size.NumberOfCols == 1)
+                        {
+                            var leftVal = GetCellValue(lr, col, row);
+                            var rightVal = GetCellValue(rr, 0, row);
+                            SetValue(op, resultRange, row, col, leftVal, rightVal);
+                        }
+                    }
+                    else if (shouldUseSingleCell)
+                    {
+                        if (lr.Size.NumberOfCols == 1 && lr.Size.NumberOfRows == 1)
+                        {
+                            var leftVal = GetCellValue(lr, 0, 0);
+                            var rightVal = GetCellValue(rr, col, row);
+                            SetValue(op, resultRange, row, col, leftVal, rightVal);
+                        }
+                        else
+                        {
+                            var leftVal = GetCellValue(lr, col, row);
+                            var rightVal = GetCellValue(rr, 0, 0);
+                            SetValue(op, resultRange, row, col, leftVal, rightVal);
+                        }
+                    }
+                    else if (AddressIsNotAvailable(lr.Size, rr.Size, row, col))
+                    {
+                        resultRange.SetValue(col, row, ExcelErrorValue.Create(eErrorType.NA));
+                    }
+                    else
+                    {
+                        var leftVal = GetCellValue(lr, col, row);
+                        var rightVal = GetCellValue(rr, col, row);
+                        SetValue(op, resultRange, row, col, leftVal, rightVal);
+                    }
+                }
+            }
+
+            return resultRange;
         }
     }
 }
