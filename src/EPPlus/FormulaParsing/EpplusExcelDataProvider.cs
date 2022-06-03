@@ -110,21 +110,13 @@ namespace OfficeOpenXml.FormulaParsing
 
         internal override IRangeInfo GetRange(FormulaRangeAddress range)
         {
-            _currentWorksheet = _package.Workbook.Worksheets[range.WorksheetIx];
-            if (_currentWorksheet == null)
-            {
-                throw new ExcelErrorValueException(eErrorType.Ref);
+            if(range.ExternalReferenceIx > 0)
+            {                 
+                return new EpplusExcelExternalRangeInfo(range.ExternalReferenceIx, range.WorksheetIx, range.FromRow, range.FromCol, range.ToRow, range.ToCol, ParsingContext);
             }
             else
             {
-                if(range.ExternalReferenceIx>0)
-                {                 
-                    return new EpplusExcelExternalRangeInfo(range.ExternalReferenceIx, range.WorksheetIx, range.FromRow, range.FromCol, range.ToRow, range.ToCol, ParsingContext);
-                }
-                else
-                {
-                    return new RangeInfo(_currentWorksheet, range.FromRow, range.FromCol, range.ToRow, range.ToCol, ParsingContext);
-                }
+                return new RangeInfo(range, ParsingContext);
             }
         }
 

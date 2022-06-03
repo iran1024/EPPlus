@@ -317,7 +317,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         {
             var tokens = new List<Token>
             {
-                new Token("A1", TokenType.ExcelAddress)
+                new Token("A1", TokenType.CellAddress)
             };
 
             var result = _graphBuilder.Build(tokens);

@@ -36,6 +36,22 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         /// <summary>
         /// Constructor
         /// </summary>
+        public RangeInfo(FormulaRangeAddress address, ParsingContext ctx)
+        {
+            _context = ctx;
+            _address = address;
+            if (address.WorksheetIx >= 0 && address.WorksheetIx < ctx.Package.Workbook.Worksheets.Count)
+            {
+                _ws = ctx.Package.Workbook.Worksheets[address.WorksheetIx];
+                _values = new CellStoreEnumerator<ExcelValue>(_ws._values, address.FromRow, address.FromCol, address.ToRow, address.ToCol);
+                _cell = new CellInfo(_ws, _values);
+                _size = new RangeDefinition((short)(address.ToCol - address.FromCol + 1), address.ToRow - address.FromRow + 1);
+            }
+        }    
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         /// <param name="ws">The worksheet</param>
         /// <param name="fromRow"></param>
         /// <param name="fromCol"></param>

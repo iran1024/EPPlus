@@ -20,7 +20,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     public class ExpressionGraph
     {
         private List<Expression> _expressions = new List<Expression>();
-        public IEnumerable<Expression> Expressions { get { return _expressions; } }
+        public IList<Expression> Expressions { get { return _expressions; } }
         public Expression Current { get; private set; }
 
         public Expression Add(Expression expression)
