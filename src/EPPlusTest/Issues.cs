@@ -52,6 +52,7 @@ using OfficeOpenXml.ConditionalFormatting.Contracts;
 using Newtonsoft.Json;
 using OfficeOpenXml.Drawing.Chart.Style;
 using OfficeOpenXml.Drawing.Style.Coloring;
+using System.Numerics;
 
 namespace EPPlusTest
 {

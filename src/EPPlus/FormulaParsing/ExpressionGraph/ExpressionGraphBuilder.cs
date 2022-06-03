@@ -71,14 +71,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                     if(bracketCount==0 && _currentAddress is FormulaTableAddress ta)
                     {
                         ta.SetTableAddress(_parsingContext.Package);
-                        CreateAndAppendExpression(ref parent, ref token, ta);
+                        CreateAndAppendExpression(ref parent, ref token);
                     }
                 }
-                else if (token.TokenTypeIsSet(TokenType.WhiteSpace))
-                {
-                    _tokenIndex++;
-                }
-
                 else if (token.TokenTypeIsSet(TokenType.ExternalReference))
                 {
                     _currentAddress = new FormulaRangeAddress() { ExternalReferenceIx = (short)_parsingContext.Package.Workbook.ExternalLinks.GetExternalLink(token.Value) };
@@ -104,7 +99,17 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 }
                 else if (token.TokenTypeIsSet(TokenType.TableName))
                 {
-                    _currentAddress = new FormulaTableAddress() { TableName = token.Value };
+                    if(_currentAddress!=null)
+                    {
+                        _currentAddress = new FormulaTableAddress() { 
+                            WorksheetIx = _currentAddress.WorksheetIx, 
+                            ExternalReferenceIx = _currentAddress.ExternalReferenceIx, 
+                            TableName = token.Value };
+                    }
+                    else
+                    {
+                        _currentAddress = new FormulaTableAddress() { TableName = token.Value };
+                    }
                 }
                 else if(token.TokenTypeIsSet(TokenType.TableColumn))
                 {
@@ -132,7 +137,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 }
                 else if (token.TokenTypeIsSet(TokenType.Operator) && OperatorsDict.Instance.TryGetValue(token.Value, out op))
                 {
-                    if(!(bracketCount > 0 && op.Operator==Operators.Colon))
+                    if(!(bracketCount > 0 && op.Operator==Operators.Colon) && !(_tokenIndex==0 && op==Operator.Eq))
                     {
                         SetOperatorOnExpression(parent, op);
                     }
@@ -175,9 +180,13 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                         parent.AddChild(ConstantExpressions.Percent);
                     }
                 }
-                else if(!(token.TokenTypeIsSet(TokenType.Comma) && bracketCount > 0))
+                else if(!
+                    (token.TokenTypeIsSet(TokenType.Comma) && bracketCount > 0 ||
+                     token.TokenTypeIsSet(TokenType.WhiteSpace) || 
+                     token.TokenTypeIsSet(TokenType.WorksheetName))
+                    )
                 {
-                    CreateAndAppendExpression(ref parent, ref token, _currentAddress);
+                    CreateAndAppendExpression(ref parent, ref token);
                 }
                 _tokenIndex++;
             }
@@ -198,7 +207,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
         }
 
-        private void CreateAndAppendExpression(ref Expression parent, ref Token token, FormulaRangeAddress addressInfo)
+        private void CreateAndAppendExpression(ref Expression parent, ref Token token)
         {
             if (IsWaste(token)) return;
             if (parent != null && 
@@ -212,7 +221,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 token = token.CloneWithNegatedValue(true);
                 _negateNextExpression = false;
             }
-            var expression = _expressionFactory.Create(token, addressInfo);
+            var expression = _expressionFactory.Create(token, _currentAddress);
+            _currentAddress = null;
             if (parent == null)
             {
                 _graph.Add(expression);

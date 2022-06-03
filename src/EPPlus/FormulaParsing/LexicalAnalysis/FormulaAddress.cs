@@ -617,7 +617,13 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         {            
             _context = ctx;
         }
-        public short ExternalReferenceIx, WorksheetIx;
+        public short ExternalReferenceIx;
+        /// <summary>
+        /// Worksheet index in the package.
+        /// -1             - Non-existing worksheet
+        /// short.MinValue - Not set. 
+        /// </summary>
+        public short WorksheetIx = short.MinValue;
         public int FromRow, FromCol, ToRow, ToCol;
         internal FixedFlag FixedFlag;
 
@@ -750,8 +756,28 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         public string TableName = "", ColumnName1 = "", ColumnName2 = "", TablePart1 = "", TablePart2="";
         internal void SetTableAddress(ExcelPackage package)
         {
-            var table = package.Workbook.GetTable(TableName);
-            if (table != null)
+            ExcelTable table;
+            if (WorksheetIx >= 0)
+            {
+                if(WorksheetIx< package.Workbook.Worksheets.Count)
+                {
+                    table = package.Workbook.Worksheets[WorksheetIx].Tables[TableName];
+                }
+                else
+                {
+                    table = null;
+                }
+            }
+            else if(WorksheetIx == short.MinValue)
+            {
+                table = package.Workbook.GetTable(TableName);
+            }
+            else
+            {
+                table = null;
+            }
+
+            if (table != null && ExternalReferenceIx <= 0)
             {
                 FixedFlag = FixedFlag.All;
                 SetRowFromTablePart(TablePart1, table, ref FromRow, ref ToRow, ref FixedFlag);
@@ -762,9 +788,17 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             }
         }
         private void SetColFromTablePart(string value, ExcelTable table, ref int fromCol, ref int toCol, bool lastColon)
-        {
+        {            
             var col = table.Columns[value];
-            if (col == null) return;
+            if (col == null)
+            {
+                if(value.StartsWith("'#"))
+                {
+                    col = table.Columns[value.Substring(1)];
+                }
+                if (col == null)
+                    return;
+            }
             if (lastColon)
             {
                 toCol = table.Range._fromCol + col.Position;
@@ -830,6 +864,12 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                         toRow = FromRow;
                         fixedFlag = FixedFlag.FromColFixed | FixedFlag.ToColFixed;
                     }
+                    break;
+                default:
+                    FromCol = table.Address._fromCol;
+                    ToCol = table.Address._toCol;
+                    fromRow = table.ShowHeader ? table.Address._fromRow + 1 : table.Address._fromRow;
+                    toRow = table.ShowTotal ? table.Address._toRow - 1 : table.Address._toRow;
                     break;
             }
         }

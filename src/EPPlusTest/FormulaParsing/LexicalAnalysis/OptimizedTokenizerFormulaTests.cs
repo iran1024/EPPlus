@@ -230,9 +230,10 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(FixedFlag.All, fr.Ranges[0].FixedFlag);
         }
         [TestMethod]
-        public void VerifyFormulaTokensTable_AsNameOnWorksheet()
+        public void VerifyFormulaTokensTable_TableName_With_SheetReference()
         {
             //Setup
+            _ws.Cells["J1"].Formula = "SUM(Sheet1!MyTable)";
             var f = @"SUM(Sheet1!MyTable)";
             var formula = new SharedFormula(_ws.Cells["A4:A105"], f);
 

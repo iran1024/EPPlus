@@ -106,12 +106,12 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
         }
 
         [TestMethod]
-        public void ShouldSetNegatorOnExcelAddress()
+        public void ShouldSetNegatorOnCellAddress()
         {
             var input = "-A1";
             var tokens = _tokenizer.Tokenize(input);
             Assert.IsTrue(tokens.ElementAt(0).TokenTypeIsSet(TokenType.Negator));
-            Assert.IsTrue(tokens.ElementAt(1).TokenTypeIsSet(TokenType.ExcelAddress));
+            Assert.IsTrue(tokens.ElementAt(1).TokenTypeIsSet(TokenType.CellAddress));
         }
 
         [TestMethod]
