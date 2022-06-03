@@ -25,12 +25,13 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public override CompileResult Compile()
         {
-            ExcelCellBase.GetRowColFromAddress(ExpressionString, out int row, out int col);
+            ExcelCellBase.GetRowColFromAddress(ExpressionString, out int row, out int col, out bool fixedRow, out bool fixedCol);
             _addressInfo.FromRow = row;
             _addressInfo.FromCol = col;
             _addressInfo.ToRow = row;
             _addressInfo.ToCol = col;
-
+            _addressInfo.FixedFlag = fixedRow ? FixedFlag.FromRowFixed | FixedFlag.ToRowFixed:0;
+            _addressInfo.FixedFlag |= fixedCol ? FixedFlag.FromColFixed | FixedFlag.ToColFixed:0;
             var ri = Context.ExcelDataProvider.GetRange(_addressInfo);
             return new CompileResult(ri ,DataType.ExcelCellAddress);
         }
