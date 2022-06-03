@@ -33,6 +33,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     return l > r;
                 case Operators.GreaterThanOrEqual:
                     return l >= r;
+                case Operators.Equals:
+                    return Math.Abs(l - r) < double.Epsilon;
                 default:
                     error = true;
                     return default;
@@ -57,7 +59,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     }
                     if (l == null && r == null)
                         return false;
-                    return l.CompareTo(r) < 0;
+                    return string.Compare(l, r, StringComparison.InvariantCultureIgnoreCase) < 0;
                 case Operators.LessThanOrEqual:
                     if (l == null && r != null)
                     {
@@ -69,7 +71,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     }
                     if (l == null && r == null)
                         return true;
-                    return l.CompareTo(r) <= 0;
+                    return string.Compare(l, r, StringComparison.InvariantCultureIgnoreCase) <= 0;
                 case Operators.GreaterThan:
                     if (l == null && r != null)
                     {
@@ -81,7 +83,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     }
                     if (l == null && r == null)
                         return false;
-                    return l.CompareTo(r) > 0;
+                    return string.Compare(l, r, StringComparison.InvariantCultureIgnoreCase) > 0;
                 case Operators.GreaterThanOrEqual:
                     if (l == null && r != null)
                     {
@@ -93,7 +95,19 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     }
                     if (l == null && r == null)
                         return true;
-                    return l.CompareTo(r) >= 0;
+                    return string.Compare(l, r, StringComparison.InvariantCultureIgnoreCase) >= 0;
+                case Operators.Equals:
+                    if (l == null && r != null)
+                    {
+                        return false;
+                    }
+                    if (l != null && r == null)
+                    {
+                        return true;
+                    }
+                    if (l == null && r == null)
+                        return true;
+                    return string.Compare(l, r, StringComparison.InvariantCultureIgnoreCase) == 0;
                 default:
                     error = true;
                     return null;
@@ -116,7 +130,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         {
             var width = Math.Max(l.Size.NumberOfCols, r.Size.NumberOfCols);
             var height = Math.Max(l.Size.NumberOfRows, r.Size.NumberOfRows);
-            var rangeDef = new RangeDefinition(width, height);
+            var rangeDef = new RangeDefinition(height, width);
             var adr = GetScopeAddress(ctx);
             if(adr != null)
             {
@@ -128,15 +142,15 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             }
         }
 
-        private static void SetValue(InMemoryRange resultRange, int col, int row, object value, bool error)
+        private static void SetValue(InMemoryRange resultRange, int row, int col, object value, bool error)
         {
             if (!error)
             {
-                resultRange.SetValue(col, row, value);
+                resultRange.SetValue(row, col, value);
             }
             else
             {
-                resultRange.SetValue(col, row, ExcelErrorValue.Create(eErrorType.Value));
+                resultRange.SetValue(row, col, ExcelErrorValue.Create(eErrorType.Value));
             }
         }
 
@@ -145,12 +159,12 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             if (!ConvertUtil.IsNumeric(leftVal) || !ConvertUtil.IsNumeric(rightVal))
             {
                 var sResult = ApplyOperator(leftVal?.ToString(), rightVal?.ToString(), op, out bool error);
-                SetValue(resultRange, col, row, sResult, error);
+                SetValue(resultRange, row, col, sResult, error);
             }
             else
             {
                 var result = ApplyOperator(ConvertUtil.GetValueDouble(leftVal), ConvertUtil.GetValueDouble(rightVal), op, out bool error);
-                SetValue(resultRange, col, row, result, error);
+                SetValue(resultRange, row, col, result, error);
             }
         }
 
@@ -210,7 +224,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             return CompileResult.Empty;
         }
 
-        private static object GetCellValue(IRangeInfo range, int colOffset, int rowOffset)
+        private static object GetCellValue(IRangeInfo range, int rowOffset, int colOffset)
         {
             if(range.IsInMemoryRange || range.Address == null)
             {
@@ -232,7 +246,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             {
                 for (var col = 0; col < resultRange.Size.NumberOfCols; col++)
                 {
-                    var leftVal = GetCellValue(lr, col, row);
+                    var leftVal = GetCellValue(lr, row, col);
                     var rightVal = right.Result;
                     SetValue(op, resultRange, row, col, leftVal, rightVal);
                 }
@@ -249,7 +263,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 for (var col = 0; col < resultRange.Size.NumberOfCols; col++)
                 {
                     var leftVal = left.Result;
-                    var rightVal = GetCellValue(rr, col, row);
+                    var rightVal = GetCellValue(rr, row, col);
                     SetValue(op, resultRange, row, col, leftVal, rightVal);
                 }
             }
@@ -273,14 +287,14 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     {
                         if (lr.Size.NumberOfRows == 1)
                         {
-                            var leftVal = GetCellValue(lr, col, 0);
-                            var rightVal = GetCellValue(rr, col, row);
+                            var leftVal = GetCellValue(lr, 0, col);
+                            var rightVal = GetCellValue(rr, row, col);
                             SetValue(op, resultRange, row, col, leftVal, rightVal);
                         }
                         else if (rr.Size.NumberOfRows == 1)
                         {
-                            var leftVal = GetCellValue(lr, col, row);
-                            var rightVal = GetCellValue(rr, col, 0);
+                            var leftVal = GetCellValue(lr, row, col);
+                            var rightVal = GetCellValue(rr, 0, col);
                             SetValue(op, resultRange, row, col, leftVal, rightVal);
                         }
                     }
@@ -288,14 +302,14 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     {
                         if (lr.Size.NumberOfCols == 1)
                         {
-                            var leftVal = GetCellValue(lr, 0, row);
-                            var rightVal = GetCellValue(rr, col, row);
+                            var leftVal = GetCellValue(lr, row, 0);
+                            var rightVal = GetCellValue(rr, row, col);
                             SetValue(op, resultRange, row, col, leftVal, rightVal);
                         }
                         else if (rr.Size.NumberOfCols == 1)
                         {
-                            var leftVal = GetCellValue(lr, col, row);
-                            var rightVal = GetCellValue(rr, 0, row);
+                            var leftVal = GetCellValue(lr, row, col);
+                            var rightVal = GetCellValue(rr, row, 0);
                             SetValue(op, resultRange, row, col, leftVal, rightVal);
                         }
                     }
@@ -304,24 +318,24 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                         if (lr.Size.NumberOfCols == 1 && lr.Size.NumberOfRows == 1)
                         {
                             var leftVal = GetCellValue(lr, 0, 0);
-                            var rightVal = GetCellValue(rr, col, row);
+                            var rightVal = GetCellValue(rr, row, col);
                             SetValue(op, resultRange, row, col, leftVal, rightVal);
                         }
                         else
                         {
-                            var leftVal = GetCellValue(lr, col, row);
+                            var leftVal = GetCellValue(lr, row, col);
                             var rightVal = GetCellValue(rr, 0, 0);
                             SetValue(op, resultRange, row, col, leftVal, rightVal);
                         }
                     }
                     else if (AddressIsNotAvailable(lr.Size, rr.Size, row, col))
                     {
-                        resultRange.SetValue(col, row, ExcelErrorValue.Create(eErrorType.NA));
+                        resultRange.SetValue(row, col, ExcelErrorValue.Create(eErrorType.NA));
                     }
                     else
                     {
-                        var leftVal = GetCellValue(lr, col, row);
-                        var rightVal = GetCellValue(rr, col, row);
+                        var leftVal = GetCellValue(lr, row, col);
+                        var rightVal = GetCellValue(rr, row, col);
                         SetValue(op, resultRange, row, col, leftVal, rightVal);
                     }
                 }

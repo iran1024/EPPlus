@@ -60,7 +60,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
                 ToRow = toRow,
                 ToCol = toCol
             };
-            _size = new RangeDefinition((short)(toCol - fromCol + 1), toRow + fromCol + 1);
+            _size = new RangeDefinition(toRow + fromCol + 1, (short)(toCol - fromCol + 1));
             if (externalReferenceIx > 0 && ctx.Package != null && ctx.Package.Workbook.ExternalLinks.Count < externalReferenceIx)
             {
                 var externalWb = ctx.Package.Workbook.ExternalLinks[externalReferenceIx].As.ExternalWorkbook;

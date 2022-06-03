@@ -79,7 +79,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
                 _values = new CellStoreEnumerator<ExcelValue>(_ws._values, address._fromRow, address._fromCol, address._toRow, address._toCol);
                 _cell = new CellInfo(_ws, _values);
             }
-            _size = new RangeDefinition((short)(address._toCol - address._fromCol + 1), address._toRow - address._fromRow + 1);
+            _size = new RangeDefinition(address._toRow - address._fromRow + 1, (short)(address._toCol - address._fromCol + 1));
         }
 
         /// <summary>

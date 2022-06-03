@@ -13,9 +13,9 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="nCols">Number of columns</param>
         /// <param name="nRows">Number of rows</param>
-        public RangeDefinition(short nCols, int nRows)
+        /// <param name="nCols">Number of columns</param>
+        public RangeDefinition(int nRows, short nCols)
         {
             NumberOfCols = nCols;
             NumberOfRows = nRows;

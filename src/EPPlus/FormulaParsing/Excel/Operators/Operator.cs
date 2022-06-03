@@ -393,6 +393,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         }
 
         private static IOperator _greaterThan;
+        /// <summary>
+        /// Greater than operator
+        /// </summary>
         public static IOperator GreaterThan
         {
             get
@@ -405,14 +408,24 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         }
 
         private static IOperator _eq;
+        /// <summary>
+        /// Equals operator
+        /// </summary>
         public static IOperator Eq
         {
             get
             {
                 return _eq ??
                        (_eq =
-                           new Operator(Operators.Equals, PrecedenceComparison,
-                               (l, r, ctx) => Compare(l, r, (compRes) => compRes == 0)));
+                           new Operator(Operators.Equals, PrecedenceComparison, (l, r, ctx) => 
+                           {
+                               if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
+                               {
+                                   return RangeOperationsOperator.Apply(l, r, Operators.Equals, ctx);
+                               }
+                               return Compare(l, r, (compRes) => compRes == 0); 
+                               
+                           }));
             }
         }
 

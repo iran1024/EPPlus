@@ -43,8 +43,8 @@ namespace EPPlusTest.FormulaParsing
             range.SetValue(0, 1, 2);
             range.SetValue(1, 0, 3);
             var v1 = range.GetValue(0, 0);
-            var v2 = range.GetValue(1, 0);
-            var v3 = range.GetValue(0, 1);
+            var v2 = range.GetValue(0, 1);
+            var v3 = range.GetValue(1, 0);
             var v4 = range.GetValue(1, 1);
             Assert.AreEqual(1, v1);
             Assert.AreEqual(2, v2);
@@ -67,8 +67,8 @@ namespace EPPlusTest.FormulaParsing
             var v3 = lst[2].Value;
             var v4 = lst[3];
             Assert.AreEqual(1, v1);
-            Assert.AreEqual(2, v2);
-            Assert.AreEqual(3, v3);
+            Assert.AreEqual(3, v2);
+            Assert.AreEqual(2, v3);
             Assert.IsNull(v4);
         }
     }

@@ -28,7 +28,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         {
             _nRows = rangeDef.NumberOfRows;
             _nCols = rangeDef.NumberOfCols;
-            _cells = new ICellInfo[_nRows, _nCols];
+            _cells = new ICellInfo[_nCols, _nRows];
             _size = rangeDef;
         }
         public InMemoryRange(FormulaRangeAddress address, RangeDefinition rangeDef, ParsingContext ctx)
@@ -37,7 +37,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
             _address = address;
             _nRows = rangeDef.NumberOfRows;
             _nCols = rangeDef.NumberOfCols;
-            _cells = new ICellInfo[_nRows, _nCols];
+            _cells = new ICellInfo[_nCols, _nRows];
             _size = rangeDef;
         }
 
@@ -57,10 +57,10 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         /// </summary>
         public static InMemoryRange Empty => _empty;
 
-        public void SetValue(int col, int row, object val)
+        public void SetValue(int row, int col, object val)
         {
             var c = new InMemoryCellInfo(val);
-            _cells[row, col] = c;
+            _cells[col, row] = c;
         }
 
         public bool IsEmpty => _cells.Length == 0;
@@ -79,7 +79,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         {
             get
             {
-                return _cells[_rowIndex, _colIx];
+                return _cells[_colIx, _rowIndex];
             }
         }
 
@@ -87,7 +87,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         {
             get
             {
-                return _cells[_rowIndex, _colIx];
+                return _cells[_colIx, _rowIndex];
             }
         }
 
@@ -110,7 +110,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
 
         public object GetOffset(int rowOffset, int colOffset)
         {
-            var c = _cells[rowOffset, colOffset];
+            var c = _cells[colOffset, rowOffset];
             if (c == null)
             {
                 return null;
@@ -120,7 +120,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
 
         public object GetValue(int row, int col)
         {
-            var c = _cells[row, col];
+            var c = _cells[col, row];
             if (c == null) return null;
             return c.Value;
         }
