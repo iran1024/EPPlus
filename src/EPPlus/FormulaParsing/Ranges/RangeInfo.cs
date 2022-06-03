@@ -45,7 +45,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
                 _ws = ctx.Package.Workbook.Worksheets[address.WorksheetIx];
                 _values = new CellStoreEnumerator<ExcelValue>(_ws._values, address.FromRow, address.FromCol, address.ToRow, address.ToCol);
                 _cell = new CellInfo(_ws, _values);
-                _size = new RangeDefinition((short)(address.ToCol - address.FromCol + 1), address.ToRow - address.FromRow + 1);
+                _size = new RangeDefinition(address.ToRow - address.FromRow + 1, (short)(address.ToCol - address.FromCol + 1));
             }
         }    
 
