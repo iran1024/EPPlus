@@ -1,9 +1,23 @@
-﻿using OfficeOpenXml.FormulaParsing.ExpressionGraph;
+﻿/*************************************************************************************************
+  Required Notice: Copyright (C) EPPlus Software AB. 
+  This software is licensed under PolyForm Noncommercial License 1.0.0 
+  and may only be used for noncommercial purposes 
+  https://polyformproject.org/licenses/noncommercial/1.0.0/
+
+  A commercial license to use this software can be purchased at https://epplussoftware.com
+ *************************************************************************************************
+  Date               Author                       Change
+ *************************************************************************************************
+  05/30/2022         EPPlus Software AB       EPPlus 6.1
+ *************************************************************************************************/
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using OfficeOpenXml.FormulaParsing.Ranges;
 using OfficeOpenXml.Utils;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using static OfficeOpenXml.FormulaParsing.EpplusExcelDataProvider;
@@ -12,6 +26,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
 {
     internal static class RangeOperationsOperator
     {
+        private const double DoublePrecision = 0.000000000000001d;
         private static object ApplyOperator(double l, double r, Operators op, out bool error)
         {
             error = false;
@@ -34,7 +49,15 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 case Operators.GreaterThanOrEqual:
                     return l >= r;
                 case Operators.Equals:
-                    return Math.Abs(l - r) < double.Epsilon;
+                    return Math.Abs(l - r) < DoublePrecision;
+                case Operators.NotEqualTo:
+                    return Math.Abs(l - r) > DoublePrecision;
+                case Operators.Exponentiation:
+                    return Math.Pow(l, r);
+                case Operators.Concat:
+                    var lRounded = RoundingHelper.RoundToSignificantFig(l, 15);
+                    var rRounded = RoundingHelper.RoundToSignificantFig(r, 15);
+                    return string.Concat(lRounded.ToString(CultureInfo.CurrentCulture), rRounded.ToString(CultureInfo.CurrentCulture));
                 default:
                     error = true;
                     return default;
@@ -108,6 +131,18 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     if (l == null && r == null)
                         return true;
                     return string.Compare(l, r, StringComparison.InvariantCultureIgnoreCase) == 0;
+                case Operators.NotEqualTo:
+                    if (l == null && r != null)
+                    {
+                        return true;
+                    }
+                    if (l != null && r == null)
+                    {
+                        return true;
+                    }
+                    if (l == null && r == null)
+                        return false;
+                    return string.Compare(l, r, StringComparison.InvariantCultureIgnoreCase) != 0;
                 default:
                     error = true;
                     return null;
@@ -154,16 +189,23 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             }
         }
 
+        private static bool IsNumeric(object val)
+        {
+            return ConvertUtil.IsNumericOrDate(val, true, true);
+        }
+
         private static void SetValue(Operators op, InMemoryRange resultRange, int row, int col, object leftVal, object rightVal)
         {
-            if (!ConvertUtil.IsNumeric(leftVal) || !ConvertUtil.IsNumeric(rightVal))
+            if (!IsNumeric(leftVal) || !IsNumeric(rightVal))
             {
                 var sResult = ApplyOperator(leftVal?.ToString(), rightVal?.ToString(), op, out bool error);
                 SetValue(resultRange, row, col, sResult, error);
             }
             else
             {
-                var result = ApplyOperator(ConvertUtil.GetValueDouble(leftVal), ConvertUtil.GetValueDouble(rightVal), op, out bool error);
+                var l = ConvertUtil.GetValueDouble(leftVal, false, false, true);
+                var r = ConvertUtil.GetValueDouble(rightVal, false, false, true);
+                var result = ApplyOperator(l, r, op, out bool error);
                 SetValue(resultRange, row, col, result, error);
             }
         }

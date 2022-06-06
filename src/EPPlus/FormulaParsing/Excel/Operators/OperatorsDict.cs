@@ -40,6 +40,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
 
         private static IDictionary<string, IOperator> _instance;
 
+        /// <summary>
+        /// Instance of the OperatorsDict
+        /// </summary>
         public static IDictionary<string, IOperator> Instance
         {
             get 

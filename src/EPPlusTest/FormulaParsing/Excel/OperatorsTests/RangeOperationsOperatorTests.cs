@@ -295,6 +295,54 @@ namespace EPPlusTest.FormulaParsing.Excel.OperatorsTests
         }
 
         [TestMethod]
+        public void ShouldCalculateRangesNumericWithNotEqualOperator()
+        {
+            var rd1 = new RangeDefinition(1, 2);
+            var r1 = new InMemoryRange(rd1);
+            r1.SetValue(0, 0, 1);
+            r1.SetValue(0, 1, 2);
+            var c1 = new CompileResult(r1, DataType.ExcelRange);
+
+            var rd2 = new RangeDefinition(1, 2);
+            var r2 = new InMemoryRange(rd1);
+            r2.SetValue(0, 0, 1);
+            r2.SetValue(0, 1, 3);
+
+            var c2 = new CompileResult(r2, DataType.ExcelRange);
+
+            var result = RangeOperationsOperator.Apply(c2, c1, Operators.NotEqualTo, _context);
+            Assert.IsInstanceOfType(result.ResultValue, typeof(InMemoryRange));
+            var range = result.ResultValue as InMemoryRange;
+            Assert.IsNotNull(range);
+            Assert.AreEqual(false, range.GetValue(0, 0));
+            Assert.AreEqual(true, range.GetValue(0, 1));
+        }
+
+        [TestMethod]
+        public void ShouldCalculateRangesStringWithNotEqualOperator()
+        {
+            var rd1 = new RangeDefinition(1, 2);
+            var r1 = new InMemoryRange(rd1);
+            r1.SetValue(0, 0, "A");
+            r1.SetValue(0, 1, "b");
+            var c1 = new CompileResult(r1, DataType.ExcelRange);
+
+            var rd2 = new RangeDefinition(1, 2);
+            var r2 = new InMemoryRange(rd1);
+            r2.SetValue(0, 0, "a");
+            r2.SetValue(0, 1, "C");
+
+            var c2 = new CompileResult(r2, DataType.ExcelRange);
+
+            var result = RangeOperationsOperator.Apply(c2, c1, Operators.NotEqualTo, _context);
+            Assert.IsInstanceOfType(result.ResultValue, typeof(InMemoryRange));
+            var range = result.ResultValue as InMemoryRange;
+            Assert.IsNotNull(range);
+            Assert.AreEqual(false, range.GetValue(0, 0));
+            Assert.AreEqual(true, range.GetValue(0, 1));
+        }
+
+        [TestMethod]
         public void ShouldCalculateRangesStringWithLessThanOrEqualOperator()
         {
             var rd1 = new RangeDefinition(2, 2);
@@ -408,6 +456,78 @@ namespace EPPlusTest.FormulaParsing.Excel.OperatorsTests
             Assert.AreEqual(true, range.GetValue(0, 0), "'1.1' was not greater than or equal to '1.1'");
             Assert.AreEqual(false, range.GetValue(0, 1), "'1' was not greater than or equal to '2'");
             Assert.AreEqual(true, range.GetValue(1, 0), "'2' was considered greater than or equal to '1'");
+        }
+
+        [TestMethod]
+        public void ShouldCalculateRangesDoubleWithConcatenateOperator()
+        {
+            var rd1 = new RangeDefinition(2, 1);
+            var r1 = new InMemoryRange(rd1);
+            r1.SetValue(0, 0, 1d);
+            r1.SetValue(1, 0, 2d);
+            var c1 = new CompileResult(r1, DataType.ExcelRange);
+
+            var rd2 = new RangeDefinition(2, 1);
+            var r2 = new InMemoryRange(rd1);
+            r2.SetValue(0, 0, 3d);
+            r2.SetValue(1, 0, 4d);
+            var c2 = new CompileResult(r2, DataType.ExcelRange);
+
+            var result = RangeOperationsOperator.Apply(c1, c2, Operators.Concat, _context);
+
+            Assert.IsInstanceOfType(result.ResultValue, typeof(InMemoryRange));
+            var range = result.ResultValue as InMemoryRange;
+            Assert.IsNotNull(range);
+            Assert.AreEqual("13", range.GetValue(0, 0));
+            Assert.AreEqual("24", range.GetValue(1, 0));
+        }
+
+        [TestMethod]
+        public void ShouldCalculateRangesStringWithConcatenateOperator()
+        {
+            var rd1 = new RangeDefinition(2, 1);
+            var r1 = new InMemoryRange(rd1);
+            r1.SetValue(0, 0, "a");
+            r1.SetValue(1, 0, "b");
+            var c1 = new CompileResult(r1, DataType.ExcelRange);
+
+            var rd2 = new RangeDefinition(2, 1);
+            var r2 = new InMemoryRange(rd1);
+            r2.SetValue(0, 0, "c");
+            r2.SetValue(1, 0, "d");
+            var c2 = new CompileResult(r2, DataType.ExcelRange);
+
+            var result = RangeOperationsOperator.Apply(c1, c2, Operators.Concat, _context);
+
+            Assert.IsInstanceOfType(result.ResultValue, typeof(InMemoryRange));
+            var range = result.ResultValue as InMemoryRange;
+            Assert.IsNotNull(range);
+            Assert.AreEqual("ac", range.GetValue(0, 0));
+            Assert.AreEqual("bd", range.GetValue(1, 0));
+        }
+
+        [TestMethod]
+        public void ShouldCalculateRangesDoubleWithExpOperator()
+        {
+            var rd1 = new RangeDefinition(2, 1);
+            var r1 = new InMemoryRange(rd1);
+            r1.SetValue(0, 0, 10d);
+            r1.SetValue(1, 0, 2d);
+            var c1 = new CompileResult(r1, DataType.ExcelRange);
+
+            var rd2 = new RangeDefinition(2, 1);
+            var r2 = new InMemoryRange(rd1);
+            r2.SetValue(0, 0, 3d);
+            r2.SetValue(1, 0, 5d);
+            var c2 = new CompileResult(r2, DataType.ExcelRange);
+
+            var result = RangeOperationsOperator.Apply(c1, c2, Operators.Exponentiation, _context);
+
+            Assert.IsInstanceOfType(result.ResultValue, typeof(InMemoryRange));
+            var range = result.ResultValue as InMemoryRange;
+            Assert.IsNotNull(range);
+            Assert.AreEqual(1000d, range.GetValue(0, 0));
+            Assert.AreEqual(32d, range.GetValue(1, 0));
         }
     }
 }

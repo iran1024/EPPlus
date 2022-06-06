@@ -35,7 +35,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         private const int PrecedencePercent = 2;
         private const int PrecedenceIntersect = 3;
         private const int PrecedenceExp = 4;
-        private const int PrecedenceMultiplyDevide = 6;
+        private const int PrecedenceMultiplyDivide = 6;
         private const int PrecedenceIntegerDivision = 8;
         private const int PrecedenceModulus = 10;
         private const int PrecedenceAddSubtract = 12;
@@ -159,7 +159,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         {
             get
             {
-                return _multiply ?? (_multiply = new Operator(Operators.Multiply, PrecedenceMultiplyDevide, (l, r, ctx) =>
+                return _multiply ?? (_multiply = new Operator(Operators.Multiply, PrecedenceMultiplyDivide, (l, r, ctx) =>
                 {
                     l = l ?? CompileResult.ZeroInt;
                     r = r ?? CompileResult.ZeroInt;
@@ -185,7 +185,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         {
             get
             {
-                return _divide ?? (_divide = new Operator(Operators.Divide, PrecedenceMultiplyDevide, (l, r, ctx) =>
+                return _divide ?? (_divide = new Operator(Operators.Divide, PrecedenceMultiplyDivide, (l, r, ctx) =>
                 {
                     if (!(l.IsNumeric || l.IsNumericString || l.IsDateString || l.Result is IRangeInfo) ||
                         !(r.IsNumeric || r.IsNumericString || r.IsDateString || r.Result is IRangeInfo))
