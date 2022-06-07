@@ -73,6 +73,15 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             ExcelAddressReferenceId = excelAddressReferenceId;
         }
 
+        internal void Negate()
+        {
+            if(ResultNumeric!=0)
+            {
+                _resultNumeric *= -1;
+                Result = _resultNumeric;
+            }
+        }
+
         public CompileResult(eErrorType errorType)
         {
             Result = ExcelErrorValue.Create(errorType);

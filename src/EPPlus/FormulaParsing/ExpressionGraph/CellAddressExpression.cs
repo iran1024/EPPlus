@@ -1,6 +1,7 @@
 ﻿using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System;
 using System.Diagnostics;
+using Operators = OfficeOpenXml.FormulaParsing.Excel.Operators.Operators;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
@@ -8,6 +9,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     internal class CellAddressExpression : Expression
     {
         FormulaRangeAddress _addressInfo;
+        bool _negate;
         public CellAddressExpression(Token token, ParsingContext ctx, FormulaRangeAddress addressInfo) : base(token.Value, ctx)
         {
             if(addressInfo== null)
@@ -18,6 +20,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             {
                 _addressInfo = addressInfo;
             }
+            _negate = token.IsNegated;
         }
         public override bool IsGroupedExpression => false;
 
@@ -26,14 +29,31 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         public override CompileResult Compile()
         {
             ExcelCellBase.GetRowColFromAddress(ExpressionString, out int row, out int col, out bool fixedRow, out bool fixedCol);
-            _addressInfo.FromRow = row;
-            _addressInfo.FromCol = col;
-            _addressInfo.ToRow = row;
-            _addressInfo.ToCol = col;
-            _addressInfo.FixedFlag = fixedRow ? FixedFlag.FromRowFixed | FixedFlag.ToRowFixed:0;
-            _addressInfo.FixedFlag |= fixedCol ? FixedFlag.FromColFixed | FixedFlag.ToColFixed:0;
-            var ri = Context.ExcelDataProvider.GetRange(_addressInfo);
-            return new CompileResult(ri ,DataType.ExcelCellAddress);
+            if((Operator!=null && Operator.Operator == Operators.Colon) || (Prev != null && Prev.Operator.Operator == Operators.Colon))
+            {
+                // del av större address
+                _addressInfo.FromRow = row;
+                _addressInfo.FromCol = col;
+                _addressInfo.ToRow = row;
+                _addressInfo.ToCol = col;
+                _addressInfo.FixedFlag = fixedRow ? FixedFlag.FromRowFixed | FixedFlag.ToRowFixed : 0;
+                _addressInfo.FixedFlag |= fixedCol ? FixedFlag.FromColFixed | FixedFlag.ToColFixed : 0;
+                var ri = Context.ExcelDataProvider.GetRange(_addressInfo);
+
+                return new CompileResult(ri, DataType.ExcelCellAddress);
+            }
+            else
+            {
+                // ensam cell adress
+                var wsIx = _addressInfo.WorksheetIx < -1 ? Context.Scopes.Current.Address.WorksheetIx : _addressInfo.WorksheetIx;
+                if (wsIx < 0) return new CompileResult(eErrorType.Ref);
+                var result = CompileResultFactory.Create(Context.Package.Workbook.Worksheets[wsIx].GetValueInner(row, col));
+                if(result.IsNumeric && _negate)
+                {
+                    result.Negate();
+                }
+                return result;
+            }
         }
     }
 }

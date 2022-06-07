@@ -46,12 +46,11 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers
         {
             if (compileResult.Result is IEnumerable<object> && !(compileResult.Result is IRangeInfo))
             {
-                var compileResultFactory = new CompileResultFactory();
                 var argList = new List<FunctionArgument>();
                 var objects = compileResult.Result as IEnumerable<object>;
                 foreach (var arg in objects)
                 {
-                    var cr = compileResultFactory.Create(arg);
+                    var cr = CompileResultFactory.Create(arg);
                     BuildFunctionArguments(cr, dataType, argList);
                 }
                 args.Add(new FunctionArgument(argList));

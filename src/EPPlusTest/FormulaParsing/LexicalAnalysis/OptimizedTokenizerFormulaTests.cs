@@ -420,15 +420,6 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(expectedFormula, fv.Formula);
         }
         [TestMethod]
-        public void TokenizeLongFormula()
-        {
-            var f = "IF(ISNUMBER(MATCH(AG5,uswPerils,0)),\"USW\",IF(ISNUMBER(MATCH(AG5,usqPerils,0)),\"USQ\",IF(ISNUMBER(MATCH(AG5,euwPerils,0)),\"EUW\",IF(ISNUMBER(MATCH(AG5,jpwPerils,0)),\"JPW\",IF(ISNUMBER(MATCH(AG5,jpqPerils,0)),\"JPQ\",IF(ISNUMBER(MATCH(AG5,otherqPerils,0)),\"OtherQ\",IF(ISNUMBER(MATCH(AG5,otherwPerils,0)),\"OtherW\",IF(ISNUMBER(MATCH(AG5,otherOtherPerils,0)),\"OtherOther\",IF(AG5=\"EOF\",\"EOF\",\"FAIL!\")))))))))";
-            var formula = new SharedFormula(_ws.Cells["D4:E12"], f);
-            f = "\"{'entity':'\" & entity & \"', 'effective_date':'\" & effective_date & \"', 'fcm_codes':[],'characteristics':[\" &$O$58 & \"],'target_cell':'E3'}\"";
-            formula = new SharedFormula(_ws.Cells["D4:E12"], f);
-            Assert.AreEqual(13, formula.Tokens.Count);
-        }
-        [TestMethod]
         public void VerifyFormulaTokens_MultiAdresses()
         {
             var f = @"SUM($A1:C$5:B12)";

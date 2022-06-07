@@ -47,8 +47,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
                 _cell = new CellInfo(_ws, _values);
                 _size = new RangeDefinition(address.ToRow - address.FromRow + 1, (short)(address.ToCol - address.FromCol + 1));
             }
-        }    
-
+        }
         /// <summary>
         /// Constructor
         /// </summary>

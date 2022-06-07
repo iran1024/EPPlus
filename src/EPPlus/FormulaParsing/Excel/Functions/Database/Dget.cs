@@ -47,7 +47,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Database
                 if(++nHits > 1) return CreateResult(ExcelErrorValue.Values.Num, DataType.ExcelError);
                 retVal = dataRow[field];
             }
-            return new CompileResultFactory().Create(retVal);
+            return CompileResultFactory.Create(retVal);
         }
     }
 }

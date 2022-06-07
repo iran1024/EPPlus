@@ -24,20 +24,18 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
     internal class ExpressionEvaluator
     {
         private readonly WildCardValueMatcher _wildCardValueMatcher;
-        private readonly CompileResultFactory _compileResultFactory;
         private readonly ParsingContext _parsingContext;
         private readonly TimeStringParser _timeStringParser = new TimeStringParser();
 
         public ExpressionEvaluator(ParsingContext ctx)
-            : this(new WildCardValueMatcher(), new CompileResultFactory(), ctx)
+            : this(new WildCardValueMatcher(), ctx)
         {
 
         }
 
-        public ExpressionEvaluator(WildCardValueMatcher wildCardValueMatcher, CompileResultFactory compileResultFactory, ParsingContext ctx)
+        public ExpressionEvaluator(WildCardValueMatcher wildCardValueMatcher, ParsingContext ctx)
         {
             _wildCardValueMatcher = wildCardValueMatcher;
-            _compileResultFactory = compileResultFactory;
             _parsingContext = ctx;
         }
 
@@ -65,8 +63,8 @@ namespace OfficeOpenXml.FormulaParsing.ExcelUtilities
 
         private bool EvaluateOperator(object left, object right, IOperator op)
         {
-            var leftResult = _compileResultFactory.Create(left);
-            var rightResult = _compileResultFactory.Create(right);
+            var leftResult = CompileResultFactory.Create(left);
+            var rightResult = CompileResultFactory.Create(right);
             var result = op.Apply(leftResult, rightResult, _parsingContext);
             if (result.DataType != DataType.Boolean)
             {

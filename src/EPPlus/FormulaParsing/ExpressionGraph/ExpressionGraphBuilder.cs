@@ -84,14 +84,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                     {
                         _currentAddress = new FormulaRangeAddress();
                     }
-                    if(_currentAddress.ExternalReferenceIx==0)
+                    if(_currentAddress.ExternalReferenceIx == -1)
                     {
                         _currentAddress.WorksheetIx = _parsingContext.Package.Workbook.Worksheets.GetPositionByToken(token.Value);
                     }
                     else if(_currentAddress.ExternalReferenceIx > -1)
                     {
                         var er = _parsingContext.Package.Workbook.ExternalLinks[_currentAddress.ExternalReferenceIx];
-                        if (er.ExternalLinkType == ExternalReferences.eExternalLinkType.ExternalWorkbook)
+                        if (er.ExternalLinkType == eExternalLinkType.ExternalWorkbook)
                         {
                             _currentAddress.WorksheetIx = (short)(((ExcelExternalWorkbook)er).CachedWorksheets[token.Value]?.SheetId ?? -1);
                         }
@@ -101,10 +101,12 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 {
                     if(_currentAddress!=null)
                     {
-                        _currentAddress = new FormulaTableAddress() { 
+                        _currentAddress = new FormulaTableAddress()
+                        {
+                            ExternalReferenceIx = _currentAddress.ExternalReferenceIx,
                             WorksheetIx = _currentAddress.WorksheetIx, 
-                            ExternalReferenceIx = _currentAddress.ExternalReferenceIx, 
-                            TableName = token.Value };
+                            TableName = token.Value 
+                        };
                     }
                     else
                     {

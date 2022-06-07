@@ -261,8 +261,6 @@ namespace OfficeOpenXml
             }
             internal void Add(ExcelAddressBase address, bool doValidate)
             {
-                int ix = 0;
-
                 //Validate
                 if (doValidate && Validate(address) == false)
                 {
@@ -270,7 +268,7 @@ namespace OfficeOpenXml
                 }
                 lock (this)
                 {
-                    ix = _list.Count;
+                    var ix = _list.Count;
                     _list.Add(address.Address);
                     SetIndex(address, ix);
                 }
@@ -1970,7 +1968,7 @@ namespace OfficeOpenXml
         private void UpdateMergedCells(StreamWriter sw, string prefix)
         {
             sw.Write($"<{prefix}mergeCells>");
-            foreach (string address in _mergedCells.Distinct())
+            foreach (string address in _mergedCells.Distinct().OrderBy(x => x))
             {
                 sw.Write($"<{prefix}mergeCell ref=\"{address}\" />");
             }

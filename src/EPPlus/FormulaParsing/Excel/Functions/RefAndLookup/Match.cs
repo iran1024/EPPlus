@@ -34,7 +34,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
         }
 
         public Match()
-            : base(new WildCardValueMatcher(), new CompileResultFactory())
+            : base(new WildCardValueMatcher())
         {
 
         }

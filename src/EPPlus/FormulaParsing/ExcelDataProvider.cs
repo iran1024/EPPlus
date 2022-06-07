@@ -73,6 +73,7 @@ namespace OfficeOpenXml.FormulaParsing
         /// <returns></returns>
         public abstract IRangeInfo GetRange(string worksheetName, string address);
         internal abstract IRangeInfo GetRange(FormulaRangeAddress range);
+        public abstract IRangeInfo GetRange(short wsIx, int row, int column);
         public abstract INameInfo GetName(string worksheet, string name);
 
         public abstract IEnumerable<object> GetRangeValues(string address);

@@ -69,14 +69,12 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                     {
                         return new CompileResult(null, DataType.Empty, cacheId);
                     }
-                    var factory = new CompileResultFactory();
-                    return factory.Create(range.First().Value, cacheId);
+                    return CompileResultFactory.Create(range.First().Value, cacheId);
                 }
             }
             else
             {                
-                var factory = new CompileResultFactory();
-                return factory.Create(name.Value, cacheId);
+                return CompileResultFactory.Create(name.Value, cacheId);
             }
 
             

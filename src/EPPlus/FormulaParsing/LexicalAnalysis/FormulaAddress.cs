@@ -617,7 +617,10 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         {            
             _context = ctx;
         }
-        public short ExternalReferenceIx;
+        /// <summary>
+        /// External reference index. -1 means the current workbook.
+        /// </summary>
+        public short ExternalReferenceIx=-1;
         /// <summary>
         /// Worksheet index in the package.
         /// -1             - Non-existing worksheet

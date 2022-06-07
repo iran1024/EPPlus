@@ -144,6 +144,11 @@ namespace OfficeOpenXml.FormulaParsing
             }
             return GetRangeInternal(addr);
         }
+        public override IRangeInfo GetRange(short wsIx, int row, int column)
+        {
+            if (wsIx < -1) wsIx = ParsingContext.Scopes.Current.Address.WorksheetIx;
+            return new RangeInfo(new FormulaRangeAddress(_context) { WorksheetIx = wsIx, FromRow = row, FromCol = column, ToRow=row, ToCol=column }, _context);
+        }
         public override IRangeInfo GetRange(string worksheet, string address)
         {
             SetCurrentWorksheet(worksheet);

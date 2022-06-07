@@ -32,7 +32,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             ValidateArguments(arguments, 2);
             var arg1 = arguments.ElementAt(0);
             var args = arg1.Value as IEnumerable<FunctionArgument>;
-            var crf = new CompileResultFactory();
             if (args != null)
             {
                 var index = ArgToInt(arguments, 1, RoundingMethod.Floor);
@@ -47,7 +46,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 //    throw new ExcelErrorValueException(eErrorType.Value);
                 //}
                 //return CreateResult(ConvertUtil.GetValueDouble(candidate.Value), DataType.Decimal);
-                return crf.Create(candidate.Value);
+                return CompileResultFactory.Create(candidate.Value);
             }
             if (arg1.IsExcelRange)
             {
@@ -65,7 +64,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 //{
                 //    throw new ExcelErrorValueException(eErrorType.Value);
                 //}
-                return crf.Create(candidate);
+                return CompileResultFactory.Create(candidate);
             }
             if(arg1.ValueIsExcelError)
             {
