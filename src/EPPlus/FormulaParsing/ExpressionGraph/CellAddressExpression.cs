@@ -29,9 +29,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         public override CompileResult Compile()
         {
             ExcelCellBase.GetRowColFromAddress(ExpressionString, out int row, out int col, out bool fixedRow, out bool fixedCol);
-            if((Operator!=null && Operator.Operator == Operators.Colon) || (Prev != null && Prev.Operator.Operator == Operators.Colon))
-            {
-                // del av större address
+            //if((Operator!=null && Operator.Operator == Operators.Colon) || (Prev != null && Prev.Operator.Operator == Operators.Colon) || )
+            //{
+                // Range
                 _addressInfo.FromRow = row;
                 _addressInfo.FromCol = col;
                 _addressInfo.ToRow = row;
@@ -41,19 +41,19 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 var ri = Context.ExcelDataProvider.GetRange(_addressInfo);
 
                 return new CompileResult(ri, DataType.ExcelCellAddress);
-            }
-            else
-            {
-                // ensam cell adress
-                var wsIx = _addressInfo.WorksheetIx < -1 ? Context.Scopes.Current.Address.WorksheetIx : _addressInfo.WorksheetIx;
-                if (wsIx < 0) return new CompileResult(eErrorType.Ref);
-                var result = CompileResultFactory.Create(Context.Package.Workbook.Worksheets[wsIx].GetValueInner(row, col));
-                if(result.IsNumeric && _negate)
-                {
-                    result.Negate();
-                }
-                return result;
-            }
+            //}
+            //else
+            //{
+            //    // Single Cell.
+            //    var wsIx = _addressInfo.WorksheetIx < -1 ? Context.Scopes.Current.Address.WorksheetIx : _addressInfo.WorksheetIx;
+            //    if (wsIx < 0) return new CompileResult(eErrorType.Ref);
+            //    var result = CompileResultFactory.Create(Context.Package.Workbook.Worksheets[wsIx].GetValueInner(row, col));
+            //    if(result.IsNumeric && _negate)
+            //    {
+            //        result.Negate();
+            //    }
+            //    return result;
+            //}
         }
     }
 }

@@ -277,7 +277,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                           }
                           else if (l.Result is IRangeInfo lri)
                           {
-                              result.WorksheetIx = (short)lri.Worksheet.PositionId;
+                              result.WorksheetIx = lri.Address.WorksheetIx < -1 ? ctx.Scopes.Current.Address.WorksheetIx : lri.Address.WorksheetIx;
                               result.FromRow = lri.Address.FromRow;
                               result.FromCol = lri.Address.FromCol;
                               result.ToRow = lri.Address.ToRow;
