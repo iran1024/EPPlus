@@ -283,13 +283,24 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
         public static InMemoryRange ApplySingleValueRight(CompileResult left, CompileResult right, Operators op, ParsingContext context)
         {
             var lr = left.Result as IRangeInfo;
+            object rightVal = default;
+            if(right.DataType == DataType.ExcelCellAddress)
+            {
+                if(right.Result is IRangeInfo rri && rri.Size.NumberOfCols > 0 && rri.Size.NumberOfRows > 0)
+                {
+                    rightVal = rri.GetValue(0, 0);
+                }
+            }
+            else
+            {
+                rightVal = right;
+            }
             var resultRange = CreateRange(lr, InMemoryRange.Empty, context);
             for (var row = 0; row < resultRange.Size.NumberOfRows; row++)
             {
                 for (var col = 0; col < resultRange.Size.NumberOfCols; col++)
                 {
                     var leftVal = GetCellValue(lr, row, col);
-                    var rightVal = right.Result;
                     SetValue(op, resultRange, row, col, leftVal, rightVal);
                 }
             }

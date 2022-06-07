@@ -133,7 +133,7 @@ namespace EPPlusTest.FormulaParsing
                 var sheet = package.Workbook.Worksheets.Add("test");
                 sheet.Cells["A1"].Value = 2;
                 sheet.Cells["A2"].Value = 3;
-                sheet.Cells["B3"].Formula = "SUM(A1:A2 = B2)";
+                sheet.Cells["B3"].Formula = "COUNTIFS(A1:A2 = B2, TRUE())";
                 sheet.Calculate();
                 var result = System.Math.Round((double)sheet.Cells["B3"].Value, 2);
                 Assert.AreEqual(2d, result);

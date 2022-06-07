@@ -589,7 +589,8 @@ namespace OfficeOpenXml
 				if (_formulaParser == null)
 				{
 					_parsingContext = ParsingContext.Create(_package);
-					_formulaParser = new FormulaParser(new EpplusExcelDataProvider(_package, _parsingContext),_package);
+					var dataProvider = new EpplusExcelDataProvider(_package, _parsingContext);
+					_formulaParser = new FormulaParser(dataProvider, _parsingContext);
 				}
 				return _formulaParser;
 			}

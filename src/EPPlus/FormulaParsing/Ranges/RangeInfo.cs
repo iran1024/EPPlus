@@ -40,13 +40,14 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         {
             _context = ctx;
             _address = address;
-            if (address.WorksheetIx >= 0 && address.WorksheetIx < ctx.Package.Workbook.Worksheets.Count)
+            var wsIx = address.WorksheetIx >= 0 ? address.WorksheetIx : ctx.Scopes.Current.Address.WorksheetIx;
+            if (wsIx >= 0 && wsIx < ctx.Package.Workbook.Worksheets.Count)
             {
-                _ws = ctx.Package.Workbook.Worksheets[address.WorksheetIx];
+                _ws = ctx.Package.Workbook.Worksheets[wsIx];
                 _values = new CellStoreEnumerator<ExcelValue>(_ws._values, address.FromRow, address.FromCol, address.ToRow, address.ToCol);
                 _cell = new CellInfo(_ws, _values);
-                _size = new RangeDefinition(address.ToRow - address.FromRow + 1, (short)(address.ToCol - address.FromCol + 1));
             }
+            _size = new RangeDefinition(address.ToRow - address.FromRow + 1, (short)(address.ToCol - address.FromCol + 1));
         }
         /// <summary>
         /// Constructor
@@ -279,14 +280,14 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         public FormulaRangeAddress Address { get { return _address; } }
 
         /// <summary>
-        /// Returns the cell value 
+        /// Returns the cell value by 0-based index
         /// </summary>
-        /// <param name="row"></param>
-        /// <param name="col"></param>
-        /// <returns></returns>
+        /// <param name="row">0-based row index</param>
+        /// <param name="col">0-based col index</param>
+        /// <returns>Cell value</returns>
         public object GetValue(int row, int col)
         {
-            return _ws?.GetValue(row, col);
+            return _ws?.GetValue(row + 1, col + 1);
         }
 
         /// <summary>
