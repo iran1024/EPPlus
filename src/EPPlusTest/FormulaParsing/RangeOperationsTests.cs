@@ -131,15 +131,78 @@ namespace EPPlusTest.FormulaParsing
             using (var package = new ExcelPackage())
             {
                 var sheet = package.Workbook.Worksheets.Add("test");
-                sheet.Cells["A1"].Value = 2;
-                sheet.Cells["A2"].Value = 3;
-                sheet.Cells["B3"].Formula = "COUNTIFS(A1:A2 = B2, TRUE())";
+                sheet.Cells["A1"].Value = 3;
+                sheet.Cells["A2"].Value = 4;
+                sheet.Cells["A3"].Value = 5;
+                sheet.Cells["A4"].Formula = "SUM(IF(A1:A3=3,1,2))";
                 sheet.Calculate();
-                var result = System.Math.Round((double)sheet.Cells["B3"].Value, 2);
-                Assert.AreEqual(2d, result);
+                var result = System.Math.Round((double)sheet.Cells["A4"].Value, 2);
+                Assert.AreEqual(5d, result);
             }
         }
 
+        [TestMethod]
+        public void LessThanOperatorShouldCalculate()
+        {
+            using (var package = new ExcelPackage())
+            {
+                var sheet = package.Workbook.Worksheets.Add("test");
+                sheet.Cells["A1"].Value = 3;
+                sheet.Cells["A2"].Value = 4;
+                sheet.Cells["A3"].Value = 5;
+                sheet.Cells["A4"].Formula = "SUM(IF(A1:A3<5,1,2))";
+                sheet.Calculate();
+                var result = System.Math.Round((double)sheet.Cells["A4"].Value, 2);
+                Assert.AreEqual(4d, result);
+            }
+        }
 
+        [TestMethod]
+        public void LessThanOrEqualOperatorShouldCalculate()
+        {
+            using (var package = new ExcelPackage())
+            {
+                var sheet = package.Workbook.Worksheets.Add("test");
+                sheet.Cells["A1"].Value = 3;
+                sheet.Cells["A2"].Value = 4;
+                sheet.Cells["A3"].Value = 5;
+                sheet.Cells["A4"].Formula = "SUM(IF(A1:A3<=3,1,2))";
+                sheet.Calculate();
+                var result = System.Math.Round((double)sheet.Cells["A4"].Value, 2);
+                Assert.AreEqual(5d, result);
+            }
+        }
+
+        [TestMethod]
+        public void GreaterThanOperatorShouldCalculate()
+        {
+            using (var package = new ExcelPackage())
+            {
+                var sheet = package.Workbook.Worksheets.Add("test");
+                sheet.Cells["A1"].Value = 3;
+                sheet.Cells["A2"].Value = 4;
+                sheet.Cells["A3"].Value = 5;
+                sheet.Cells["A4"].Formula = "SUM(IF(A1:A3>3,1,2))";
+                sheet.Calculate();
+                var result = System.Math.Round((double)sheet.Cells["A4"].Value, 2);
+                Assert.AreEqual(4d, result);
+            }
+        }
+
+        [TestMethod]
+        public void GreaterThanOrEqualOperatorShouldCalculate()
+        {
+            using (var package = new ExcelPackage())
+            {
+                var sheet = package.Workbook.Worksheets.Add("test");
+                sheet.Cells["A1"].Value = 3;
+                sheet.Cells["A2"].Value = 4;
+                sheet.Cells["A3"].Value = 5;
+                sheet.Cells["A4"].Formula = "SUM(IF(A1:A3>=4,1,2))";
+                sheet.Calculate();
+                var result = System.Math.Round((double)sheet.Cells["A4"].Value, 2);
+                Assert.AreEqual(4d, result);
+            }
+        }
     }
 }

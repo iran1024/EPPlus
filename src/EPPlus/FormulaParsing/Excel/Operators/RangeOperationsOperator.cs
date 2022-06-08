@@ -293,7 +293,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             }
             else
             {
-                rightVal = right;
+                rightVal = right.Result;
             }
             var resultRange = CreateRange(lr, InMemoryRange.Empty, context);
             for (var row = 0; row < resultRange.Size.NumberOfRows; row++)

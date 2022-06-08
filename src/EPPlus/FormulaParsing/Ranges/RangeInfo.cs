@@ -287,7 +287,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         /// <returns>Cell value</returns>
         public object GetValue(int row, int col)
         {
-            return _ws?.GetValue(row + 1, col + 1);
+            return _ws?.GetValue(row, col);
         }
 
         /// <summary>

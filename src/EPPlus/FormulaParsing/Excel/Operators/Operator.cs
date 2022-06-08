@@ -402,8 +402,14 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             {
                 return _greaterThan ??
                        (_greaterThan =
-                           new Operator(Operators.GreaterThan, PrecedenceComparison,
-                               (l, r, ctx) => Compare(l, r, (compRes) => compRes > 0)));
+                           new Operator(Operators.GreaterThan, PrecedenceComparison, (l, r, ctx) => 
+                           {
+                               if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
+                               {
+                                   return RangeOperationsOperator.Apply(l, r, Operators.GreaterThan, ctx);
+                               }
+                               return Compare(l, r, (compRes) => compRes > 0);
+                           }));
             }
         }
 
@@ -448,8 +454,14 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             {
                 return _greaterThanOrEqual ??
                        (_greaterThanOrEqual =
-                           new Operator(Operators.GreaterThanOrEqual, PrecedenceComparison,
-                               (l, r, ctx) => Compare(l, r, (compRes) => compRes >= 0)));
+                           new Operator(Operators.GreaterThanOrEqual, PrecedenceComparison, (l, r, ctx) => 
+                           {
+                               if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
+                               {
+                                   return RangeOperationsOperator.Apply(l, r, Operators.GreaterThanOrEqual, ctx);
+                               }
+                               return Compare(l, r, (compRes) => compRes >= 0); 
+                           }));
             }
         }
 
@@ -460,17 +472,32 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             {
                 return _lessThan ??
                        (_lessThan =
-                           new Operator(Operators.LessThan, PrecedenceComparison,
-                               (l, r, ctx) => Compare(l, r, (compRes) => compRes < 0)));
+                           new Operator(Operators.LessThan, PrecedenceComparison, (l, r, ctx) =>
+                           {
+                               if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
+                               {
+                                   return RangeOperationsOperator.Apply(l, r, Operators.LessThan, ctx);
+                               }
+                               return Compare(l, r, (compRes) => compRes < 0);
+                           }));
             }
         }
 
+        private static IOperator _lessThanOrEqual;
         public static IOperator LessThanOrEqual
         {
             get
             {
-                //return new Operator(Operators.LessThanOrEqual, PrecedenceComparison, (l, r) => new CompileResult(Compare(l, r) <= 0, DataType.Boolean));
-                return new Operator(Operators.LessThanOrEqual, PrecedenceComparison, (l, r, ctx) => Compare(l, r, (compRes) => compRes <= 0));
+                return _lessThanOrEqual ?? 
+                    (_lessThanOrEqual = 
+                        new Operator(Operators.LessThanOrEqual, PrecedenceComparison, (l, r, ctx) => 
+                        {
+                            if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
+                            {
+                                return RangeOperationsOperator.Apply(l, r, Operators.LessThanOrEqual, ctx);
+                            }
+                            return Compare(l, r, (compRes) => compRes <= 0); 
+                        }));
             }
         }
 

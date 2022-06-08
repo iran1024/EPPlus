@@ -63,6 +63,11 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
             _cells[col, row] = c;
         }
 
+        public void SetCell(int row, int col, ICellInfo cell)
+        {
+            _cells[col, row] = cell;
+        }
+
         public bool IsEmpty => _cells.Length == 0;
 
         public bool IsMulti => _cells.Length > 0 && _cells.GetUpperBound(1) > 1;
@@ -123,6 +128,13 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
             var c = _cells[col, row];
             if (c == null) return null;
             return c.Value;
+        }
+
+        public ICellInfo GetCell(int row, int col)
+        {
+            var c = _cells[col, row];
+            if (c == null) return null;
+            return c;
         }
 
         public bool MoveNext()
