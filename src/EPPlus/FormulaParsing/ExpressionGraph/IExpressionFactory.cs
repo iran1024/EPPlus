@@ -20,6 +20,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     internal interface IExpressionFactory
     {
-        Expression Create(Token token, FormulaRangeAddress addressInfo);
+        Expression Create(Token token, FormulaAddressBase addressInfo);
     }
 }

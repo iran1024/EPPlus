@@ -29,8 +29,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         private readonly IExpressionFactory _expressionFactory;
         private readonly ParsingContext _parsingContext;
         private int _tokenIndex = 0;
-        private int _nRangeOffsetTokens = 0;
-        private FormulaRangeAddress _currentAddress;
+        //private int _nRangeOffsetTokens = 0;
+        private FormulaAddressBase _currentAddress;
         private bool _negateNextExpression;
 
         public ExpressionGraphBuilder(ExcelDataProvider excelDataProvider, ParsingContext parsingContext)
@@ -76,13 +76,13 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 }
                 else if (token.TokenTypeIsSet(TokenType.ExternalReference))
                 {
-                    _currentAddress = new FormulaRangeAddress() { ExternalReferenceIx = (short)_parsingContext.Package.Workbook.ExternalLinks.GetExternalLink(token.Value) };
+                    _currentAddress = new FormulaCellAddress() { ExternalReferenceIx = (short)_parsingContext.Package.Workbook.ExternalLinks.GetExternalLink(token.Value) };
                 }
                 else if (token.TokenTypeIsSet(TokenType.WorksheetNameContent))
                 {
                     if (_currentAddress == null)
                     {
-                        _currentAddress = new FormulaRangeAddress();
+                        _currentAddress = new FormulaCellAddress();
                     }
                     if(_currentAddress.ExternalReferenceIx == -1)
                     {

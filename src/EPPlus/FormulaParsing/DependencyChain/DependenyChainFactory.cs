@@ -177,7 +177,7 @@ namespace OfficeOpenXml.FormulaParsing
             if (f.ShIndex > 0)
             {
                 var sf = ws._sharedFormulas[f.ShIndex];
-                sf.SetOffset(f.ws.Name, f.Row-sf.StartRow, f.Column-sf.StartCol);
+                //sf.SetOffset(f.ws.Name, f.Row-sf.StartRow, f.Column-sf.StartCol);
                 f.Tokens = sf.Tokens;
             }
         iterateToken:

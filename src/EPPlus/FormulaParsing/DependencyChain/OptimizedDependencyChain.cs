@@ -62,7 +62,6 @@ namespace OfficeOpenXml.FormulaParsing
                         var s = fs.Value.ToString();
                         if (string.IsNullOrEmpty(s)) continue;
                         f = new Formula(ws, fs.Row, fs.Column, s);
-                        //ws._formulaTokens.SetValue(fs.Row, fs.Column, f.Tokens);
                     }
                     depChain.Add(f);
                     //FollowChain(depChain, lexer, ws.Workbook, ws, f, options);

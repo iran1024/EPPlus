@@ -318,7 +318,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 ix++;
                 if(c != ' ') pc = c;
             }
-            if (current.Length > 0)
+            if (current.Length > 0 || (flags & statFlags.isString) == statFlags.isString)
             {
                 HandleToken(l, pc, current, ref flags);
             }

@@ -59,6 +59,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers
             {
                 var funcArg = new FunctionArgument(compileResult.Result, dataType);
                 funcArg.ExcelAddressReferenceId = compileResult.ExcelAddressReferenceId;
+                funcArg.Address = compileResult.Address;
                 if(compileResult.IsHiddenCell)
                 {
                     funcArg.SetExcelStateFlag(Excel.ExcelCellState.HiddenCell);

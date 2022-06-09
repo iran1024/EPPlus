@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 using OfficeOpenXml.Utils;
 using OfficeOpenXml.FormulaParsing.Excel.Functions;
 using OfficeOpenXml.FormulaParsing;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
@@ -226,6 +227,36 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         public bool IsResultOfResolvedExcelRange
         {
             get { return ExcelAddressReferenceId > 0; }
+        }
+        public virtual FormulaRangeAddress Address
+        {
+            get
+            {
+                return null;
+            }
+        }
+    }
+    public class AddressCompileResult : CompileResult
+    {
+        public AddressCompileResult(Object result, DataType dataType, FormulaRangeAddress address) : base(result, dataType)
+        {
+            Address = address;
+        }
+        public AddressCompileResult(Object result, DataType dataType) : base(result, dataType)
+        { 
+
+        }
+        public AddressCompileResult(eErrorType error) : base(error)
+        {
+
+        }
+        public AddressCompileResult(ExcelErrorValue errorValue) : base(errorValue)
+        {
+
+        }
+        public override FormulaRangeAddress Address
+        {
+            get;
         }
     }
 }

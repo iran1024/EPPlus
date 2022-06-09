@@ -76,10 +76,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             var expression = this;
             if (Next != null && Operator != null)
             {
-                var result = default(CompileResult);
                 var left = Compile();
                 var right = Next.Compile();
-                result = Operator.Apply(left, right, Context);
+                var result = Operator.Apply(left, right, Context);
                 expression = ExpressionConverter.GetInstance(Context).FromCompileResult(result);
                 if (expression is ExcelErrorExpression)
                 {
