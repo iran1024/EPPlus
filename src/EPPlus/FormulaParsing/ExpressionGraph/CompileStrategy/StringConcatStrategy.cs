@@ -27,18 +27,23 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.CompileStrategy
 
         public override Expression Compile()
         {
-            var newExp = _expression is CellAddressExpression ? _expression : ExpressionConverter.GetInstance(Context).ToStringExpression(_expression);
-            newExp.Prev = _expression.Prev;
-            newExp.Next = _expression.Next;
-            if (_expression.Prev != null)
+            if(!(_expression is ExcelRangeExpression))
             {
-                _expression.Prev.Next = newExp;
+                var newExp = _expression is CellAddressExpression ? _expression : ExpressionConverter.GetInstance(Context).ToStringExpression(_expression);
+                newExp.Prev = _expression.Prev;
+                newExp.Next = _expression.Next;
+                if (_expression.Prev != null)
+                {
+                    _expression.Prev.Next = newExp;
+                }
+                if (_expression.Next != null)
+                {
+                    _expression.Next.Prev = newExp;
+                }
+                return newExp.MergeWithNext();
             }
-            if (_expression.Next != null)
-            {
-                _expression.Next.Prev = newExp;
-            }
-            return newExp.MergeWithNext();
+            return _expression.MergeWithNext();
         }
+            
     }
 }
