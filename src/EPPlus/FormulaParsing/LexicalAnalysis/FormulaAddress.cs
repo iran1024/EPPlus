@@ -13,7 +13,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         internal int StartRow, StartCol;
         internal static ISourceCodeTokenizer _tokenizer = OptimizedSourceCodeTokenizer.Default;
         internal IList<Token> Tokens;
-        internal ExpressionGraph.ExpressionGraph _graph;
+        internal IList<Expression> Expressions;
+        //internal ExpressionGraph.ExpressionGraph _graph;
         public Formula(ExcelWorksheet ws, string formula)
         {
             _ws = ws;
@@ -23,15 +24,15 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         private void Init(ExcelWorksheet ws, string formula)
         {
             Tokens = _tokenizer.Tokenize(formula);
-            SetTokenInfos();
+            //SetTokenInfos();
             var ctx = ParsingContext.Create(ws._package);
             ctx.ExcelDataProvider = new EpplusExcelDataProvider(ws._package, ctx);
             var graphBuilder = new ExpressionGraphBuilder(ctx.ExcelDataProvider, ctx);
-            _graph = graphBuilder.Build(Tokens);
+            var graph = graphBuilder.Build(Tokens);
             using (var s = ctx.Scopes.NewScope(new FormulaRangeAddress(ctx){ FromCol=StartCol, FromRow=StartRow, ToCol=StartCol, ToRow=StartRow, WorksheetIx=(short)ws.PositionId}))
             {
                 var compiler = new ExpressionCompiler(ctx);
-                var result = compiler.Compile(_graph.Expressions);
+                var result = compiler.Compile(graph.Expressions);
             }
         }
 
@@ -47,240 +48,240 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             StartRow = row;
             StartCol = col;
         }
-        internal Dictionary<int, TokenInfo> TokenInfos;
-        private void SetTokenInfos()
-        {
-            TokenInfos = new Dictionary<int, TokenInfo>();
-            string er = "", ws = "";
-            short startToken = -1;
-            for (short i = 0; i < Tokens.Count; i++)
-            {
-                var t = Tokens[i];
-                switch (t.TokenType)
-                {
+        //internal Dictionary<int, TokenInfo> TokenInfos;
+        //private void SetTokenInfos()
+        //{
+        //    TokenInfos = new Dictionary<int, TokenInfo>();
+        //    string er = "", ws = "";
+        //    short startToken = -1;
+        //    for (short i = 0; i < Tokens.Count; i++)
+        //    {
+        //        var t = Tokens[i];
+        //        switch (t.TokenType)
+        //        {
 
-                    case TokenType.CellAddress:
-                        var fa = new FormulaCellAddress(i, t.Value, (short)_ws.PositionId);
-                        TokenInfos.Add(i, fa);
-                        er = ws = "";
-                        break;
-                    case TokenType.NameValue:
-                        AddNameInfo(startToken == -1 ? i : startToken, i, er, ws);
-                        er = ws = "";
-                        break;
-                    case TokenType.TableName:
-                        AddTableAddress(i);
-                        er = ws = "";
-                        break;
-                    case TokenType.WorksheetNameContent:
-                        if (startToken == -1)
-                        {
-                            startToken = i;
-                        }
-                        ws = t.Value;
-                        break;
-                    case TokenType.ExternalReference:
-                        er = t.Value;
-                        break;
-                    case TokenType.OpeningBracket:
-                        if (startToken == -1)
-                        {
-                            startToken = i;
-                        }
-                        break;
-                }
-            }
-        }
-        private void AddTableAddress(short pos)
-        {
-            short i = pos;
-            var t = Tokens[i];
-            TokenInfos = new Dictionary<int, TokenInfo>();
-            var table = _ws.Workbook.GetTable(t.Value);
-            if (table != null)
-            {
-                if (Tokens[++i].TokenType == TokenType.OpeningBracket)
-                {
-                    int fromRow = 0, toRow = 0, fromCol = 0, toCol = 0;
-                    FixedFlag fixedFlag = FixedFlag.All;
-                    bool lastColon = false;
-                    var bc = 1;
-                    i++;
-                    while (bc > 0 && i < Tokens.Count)
-                    {
-                        switch (Tokens[i].TokenType)
-                        {
-                            case TokenType.OpeningBracket:
-                                bc++;
-                                break;
-                            case TokenType.ClosingBracket:
-                                bc--;
-                                break;
-                            case TokenType.TablePart:
-                                SetRowFromTablePart(Tokens[i].Value, table, ref fromRow, ref toRow, ref fixedFlag);
-                                break;
-                            case TokenType.TableColumn:
-                                SetColFromTablePart(Tokens[i].Value, table, ref fromCol, ref toCol, lastColon);
-                                break;
-                            case TokenType.Colon:
-                                lastColon = true;
-                                break;
-                            default:
-                                lastColon = false;
-                                break;
-                        }
-                        i++;
-                    }
-                    if (bc == 0)
-                    {
-                        if (fromRow == 0)
-                        {
-                            fromRow = table.DataRange._fromRow;
-                            toRow = table.DataRange._toRow;
-                        }
+        //            case TokenType.CellAddress:
+        //                var fa = new FormulaCellAddress(i, t.Value, (short)_ws.PositionId);
+        //                TokenInfos.Add(i, fa);
+        //                er = ws = "";
+        //                break;
+        //            case TokenType.NameValue:
+        //                AddNameInfo(startToken == -1 ? i : startToken, i, er, ws);
+        //                er = ws = "";
+        //                break;
+        //            case TokenType.TableName:
+        //                AddTableAddress(i);
+        //                er = ws = "";
+        //                break;
+        //            case TokenType.WorksheetNameContent:
+        //                if (startToken == -1)
+        //                {
+        //                    startToken = i;
+        //                }
+        //                ws = t.Value;
+        //                break;
+        //            case TokenType.ExternalReference:
+        //                er = t.Value;
+        //                break;
+        //            case TokenType.OpeningBracket:
+        //                if (startToken == -1)
+        //                {
+        //                    startToken = i;
+        //                }
+        //                break;
+        //        }
+        //    }
+        //}
+        //private void AddTableAddress(short pos)
+        //{
+        //    short i = pos;
+        //    var t = Tokens[i];
+        //    TokenInfos = new Dictionary<int, TokenInfo>();
+        //    var table = _ws.Workbook.GetTable(t.Value);
+        //    if (table != null)
+        //    {
+        //        if (Tokens[++i].TokenType == TokenType.OpeningBracket)
+        //        {
+        //            int fromRow = 0, toRow = 0, fromCol = 0, toCol = 0;
+        //            FixedFlag fixedFlag = FixedFlag.All;
+        //            bool lastColon = false;
+        //            var bc = 1;
+        //            i++;
+        //            while (bc > 0 && i < Tokens.Count)
+        //            {
+        //                switch (Tokens[i].TokenType)
+        //                {
+        //                    case TokenType.OpeningBracket:
+        //                        bc++;
+        //                        break;
+        //                    case TokenType.ClosingBracket:
+        //                        bc--;
+        //                        break;
+        //                    case TokenType.TablePart:
+        //                        SetRowFromTablePart(Tokens[i].Value, table, ref fromRow, ref toRow, ref fixedFlag);
+        //                        break;
+        //                    case TokenType.TableColumn:
+        //                        SetColFromTablePart(Tokens[i].Value, table, ref fromCol, ref toCol, lastColon);
+        //                        break;
+        //                    case TokenType.Colon:
+        //                        lastColon = true;
+        //                        break;
+        //                    default:
+        //                        lastColon = false;
+        //                        break;
+        //                }
+        //                i++;
+        //            }
+        //            if (bc == 0)
+        //            {
+        //                if (fromRow == 0)
+        //                {
+        //                    fromRow = table.DataRange._fromRow;
+        //                    toRow = table.DataRange._toRow;
+        //                }
 
-                        if (fromCol == 0)
-                        {
-                            fromCol = table.DataRange._fromCol;
-                            toCol = table.DataRange._toCol;
-                        }
+        //                if (fromCol == 0)
+        //                {
+        //                    fromCol = table.DataRange._fromCol;
+        //                    toCol = table.DataRange._toCol;
+        //                }
 
-                        i--;
-                        TokenInfos.Add(pos, new FormulaRange(pos, i, fromRow, fromCol, toRow, toCol, fixedFlag));
-                    }
-                }
-                else
-                {
-                    TokenInfos.Add(pos, new FormulaRange(pos, i, table.DataRange._fromRow, table.DataRange._fromCol, table.DataRange._toRow, table.DataRange._toCol, 0));
-                }
-            }
-        }
+        //                i--;
+        //                TokenInfos.Add(pos, new FormulaRange(pos, i, fromRow, fromCol, toRow, toCol, fixedFlag));
+        //            }
+        //        }
+        //        else
+        //        {
+        //            TokenInfos.Add(pos, new FormulaRange(pos, i, table.DataRange._fromRow, table.DataRange._fromCol, table.DataRange._toRow, table.DataRange._toCol, 0));
+        //        }
+        //    }
+        //}
 
-        private void SetColFromTablePart(string value, ExcelTable table, ref int fromCol, ref int toCol, bool lastColon)
-        {
-            var col = table.Columns[value];
-            if (col == null) return;
-            if (lastColon)
-            {
-                toCol = table.Range._fromCol + col.Position;
-            }
-            else
-            {
-                fromCol = toCol = table.Range._fromCol + col.Position;
-            }
-        }
-        private void SetRowFromTablePart(string value, ExcelTable table, ref int fromRow, ref int toRow, ref FixedFlag fixedFlag)
-        {
-            switch (value.ToLower())
-            {
-                case "#all":
-                    fromRow = table.Address._fromRow;
-                    toRow = table.Address._toRow;
-                    break;
-                case "#headers":
-                    if (table.ShowHeader)
-                    {
-                        fromRow = table.Address._fromRow;
-                        if (toRow == 0)
-                        {
-                            toRow = table.Address._fromRow;
-                        }
-                    }
-                    else if (fromRow == 0)
-                    {
-                        fromRow = toRow = -1;
-                    }
-                    break;
-                case "#data":
-                    if (fromRow == 0 || table.DataRange._fromRow < fromRow)
-                    {
-                        fromRow = table.DataRange._fromRow;
-                    }
-                    if (table.DataRange._toRow > toRow)
-                    {
-                        toRow = table.DataRange._toRow;
-                    }
-                    break;
-                case "#totals":
-                    if (table.ShowTotal)
-                    {
-                        if (fromRow == 0)
-                            fromRow = table.Range._toRow;
-                        toRow = table.Range._toRow;
-                    }
-                    else if (fromRow == 0)
-                    {
-                        fromRow = toRow = -1;
-                    }
-                    break;
-                case "#this row":
-                    var dr = table.DataRange;
-                    if (_ws != table.WorkSheet || StartRow < dr._fromRow || StartRow > dr._toRow)
-                    {
-                        fromRow = toRow = -1;
-                    }
-                    else
-                    {
-                        fromRow = StartRow;
-                        toRow = StartRow;
-                        fixedFlag = FixedFlag.FromColFixed | FixedFlag.ToColFixed;
-                    }
-                    break;
-            }
-        }
-        private void AddNameInfo(short startPos, short namePos, string er, string ws)
-        {
-            var t = Tokens[namePos];
-            if (string.IsNullOrEmpty(er))    //TODO: add support for external refrence
-            {
-                ExcelNamedRange n = null;
-                if (string.IsNullOrEmpty(ws))
-                {
-                    if (_ws.Names.ContainsKey(t.Value))
-                    {
-                        n = _ws.Names[t.Value];
-                    }
-                    else if (_ws.Workbook.Names.ContainsKey(t.Value))
-                    {
-                        n = _ws.Workbook.Names[t.Value];
-                    }
-                }
-                else
-                {
-                    var wsRef = _ws.Workbook.Worksheets[ws];
-                    if (wsRef != null && wsRef.Names.ContainsKey(t.Value))
-                    {                        
-                        n = wsRef.Names[t.Value];
-                    }
-                }
-                if (n == null)
-                {
-                    //The name is a table.
-                    var tbl = _ws.Workbook.GetTable(t.Value);
-                    if (tbl != null)
-                    {
-                        var fr = new FormulaRange(startPos, namePos, tbl.DataRange);
-                        fr.Ranges[0].FixedFlag = FixedFlag.All; //a Tables data range is allways fixed.
-                        TokenInfos.Add(startPos, fr);
-                    }
-                }
-                else
-                {
-                    if (n.NameValue != null)
-                    {
-                        TokenInfos.Add(startPos, new FormulaFixedValue(startPos, namePos, n.NameValue));
-                    }
-                    else if (n.Formula != null)
-                    {
-                        TokenInfos.Add(startPos, new FormulaNamedFormula(startPos, namePos, n.NameFormula));
-                    }
-                    else
-                    {
-                        TokenInfos.Add(startPos, new FormulaRange(startPos, namePos, n));
-                    }
-                }
-            }
-        }
+        //private void SetColFromTablePart(string value, ExcelTable table, ref int fromCol, ref int toCol, bool lastColon)
+        //{
+        //    var col = table.Columns[value];
+        //    if (col == null) return;
+        //    if (lastColon)
+        //    {
+        //        toCol = table.Range._fromCol + col.Position;
+        //    }
+        //    else
+        //    {
+        //        fromCol = toCol = table.Range._fromCol + col.Position;
+        //    }
+        //}
+        //private void SetRowFromTablePart(string value, ExcelTable table, ref int fromRow, ref int toRow, ref FixedFlag fixedFlag)
+        //{
+        //    switch (value.ToLower())
+        //    {
+        //        case "#all":
+        //            fromRow = table.Address._fromRow;
+        //            toRow = table.Address._toRow;
+        //            break;
+        //        case "#headers":
+        //            if (table.ShowHeader)
+        //            {
+        //                fromRow = table.Address._fromRow;
+        //                if (toRow == 0)
+        //                {
+        //                    toRow = table.Address._fromRow;
+        //                }
+        //            }
+        //            else if (fromRow == 0)
+        //            {
+        //                fromRow = toRow = -1;
+        //            }
+        //            break;
+        //        case "#data":
+        //            if (fromRow == 0 || table.DataRange._fromRow < fromRow)
+        //            {
+        //                fromRow = table.DataRange._fromRow;
+        //            }
+        //            if (table.DataRange._toRow > toRow)
+        //            {
+        //                toRow = table.DataRange._toRow;
+        //            }
+        //            break;
+        //        case "#totals":
+        //            if (table.ShowTotal)
+        //            {
+        //                if (fromRow == 0)
+        //                    fromRow = table.Range._toRow;
+        //                toRow = table.Range._toRow;
+        //            }
+        //            else if (fromRow == 0)
+        //            {
+        //                fromRow = toRow = -1;
+        //            }
+        //            break;
+        //        case "#this row":
+        //            var dr = table.DataRange;
+        //            if (_ws != table.WorkSheet || StartRow < dr._fromRow || StartRow > dr._toRow)
+        //            {
+        //                fromRow = toRow = -1;
+        //            }
+        //            else
+        //            {
+        //                fromRow = StartRow;
+        //                toRow = StartRow;
+        //                fixedFlag = FixedFlag.FromColFixed | FixedFlag.ToColFixed;
+        //            }
+        //            break;
+        //    }
+        //}
+        //private void AddNameInfo(short startPos, short namePos, string er, string ws)
+        //{
+        //    var t = Tokens[namePos];
+        //    if (string.IsNullOrEmpty(er))    //TODO: add support for external refrence
+        //    {
+        //        ExcelNamedRange n = null;
+        //        if (string.IsNullOrEmpty(ws))
+        //        {
+        //            if (_ws.Names.ContainsKey(t.Value))
+        //            {
+        //                n = _ws.Names[t.Value];
+        //            }
+        //            else if (_ws.Workbook.Names.ContainsKey(t.Value))
+        //            {
+        //                n = _ws.Workbook.Names[t.Value];
+        //            }
+        //        }
+        //        else
+        //        {
+        //            var wsRef = _ws.Workbook.Worksheets[ws];
+        //            if (wsRef != null && wsRef.Names.ContainsKey(t.Value))
+        //            {                        
+        //                n = wsRef.Names[t.Value];
+        //            }
+        //        }
+        //        if (n == null)
+        //        {
+        //            //The name is a table.
+        //            var tbl = _ws.Workbook.GetTable(t.Value);
+        //            if (tbl != null)
+        //            {
+        //                var fr = new FormulaRange(startPos, namePos, tbl.DataRange);
+        //                fr.Ranges[0].FixedFlag = FixedFlag.All; //a Tables data range is allways fixed.
+        //                TokenInfos.Add(startPos, fr);
+        //            }
+        //        }
+        //        else
+        //        {
+        //            if (n.NameValue != null)
+        //            {
+        //                TokenInfos.Add(startPos, new FormulaFixedValue(startPos, namePos, n.NameValue));
+        //            }
+        //            else if (n.Formula != null)
+        //            {
+        //                TokenInfos.Add(startPos, new FormulaNamedFormula(startPos, namePos, n.NameFormula));
+        //            }
+        //            else
+        //            {
+        //                TokenInfos.Add(startPos, new FormulaRange(startPos, namePos, n));
+        //            }
+        //        }
+        //    }
+        //}
     }
     internal class SharedFormula : Formula
     {        
@@ -318,27 +319,27 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 ExcelCellBase.GetRowColFromAddress(value, out StartRow, out StartCol, out EndRow, out EndCol);
             }
         }
-        internal void SetOffset(string wsName, int rowOffset, int colOffset)
-        {
-            SetOffset(rowOffset, colOffset);
-        }
-        internal void SetOffset(int rowOffset, int colOffset)
-        {
-            var changeRowOffset = rowOffset - _rowOffset;
-            var changeColOffset = colOffset - _colOffset;
-            foreach (var t in TokenInfos.Values)
-            {
-                switch(t.Type)
-                {
-                    case FormulaType.CellAddress:
-                    case FormulaType.FormulaRange:
-                        t.SetOffset(changeRowOffset, changeColOffset);
-                        break;                    
-                }
-            }
-            _rowOffset = rowOffset;
-            _colOffset = colOffset;
-        }
+        //internal void SetOffset(string wsName, int rowOffset, int colOffset)
+        //{
+        //    SetOffset(rowOffset, colOffset);
+        //}
+        //internal void SetOffset(int rowOffset, int colOffset)
+        //{
+        //    var changeRowOffset = rowOffset - _rowOffset;
+        //    var changeColOffset = colOffset - _colOffset;
+        //    foreach (var t in TokenInfos.Values)
+        //    {
+        //        switch(t.Type)
+        //        {
+        //            case FormulaType.CellAddress:
+        //            case FormulaType.FormulaRange:
+        //                t.SetOffset(changeRowOffset, changeColOffset);
+        //                break;                    
+        //        }
+        //    }
+        //    _rowOffset = rowOffset;
+        //    _colOffset = colOffset;
+        //}
 
         internal SharedFormula Clone()
         {
@@ -347,7 +348,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 Index = Index,
                 IsArray = IsArray,
                 Tokens = Tokens,
-                TokenInfos = TokenInfos,
+               // TokenInfos = TokenInfos,
                 _ws = _ws,
             };
         }
@@ -442,28 +443,28 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 
         internal virtual bool IsFixed { get { return true; } }
     }
-    internal class FormulaCellAddress : TokenInfo
+    internal class FormulaCellAddress : FormulaAddressBase
     {
-        internal FormulaCellAddress(short pos, string cellAddress, short worksheetIx)
+        internal FormulaCellAddress()
         {
-            WorksheetIx = worksheetIx;
-            Type = FormulaType.CellAddress; 
-            TokenStartPosition = TokenEndPosition = pos;
-            ExcelCellBase.GetRowColFromAddress(cellAddress, out Row, out Col, out FixedRow, out FixedCol);
         }
-        internal short ExternalReferenceIx, WorksheetIx;
+        internal FormulaCellAddress(FormulaAddressBase addressBase)
+        {
+            ExternalReferenceIx = addressBase.ExternalReferenceIx;
+            WorksheetIx = addressBase.WorksheetIx;
+        }
         internal int Row, Col;
         internal bool FixedRow, FixedCol;
-        internal override void SetOffset(int rowOffset, int colOffset)
-        {
-            if (!FixedRow) Row += rowOffset;
-            if (!FixedCol) Col += colOffset;
-        }
-        internal override bool IsFixed { get { return FixedRow & FixedCol; } }
-        internal override string GetValue()
-        {
-            return ExcelCellBase.GetAddress(Row, FixedRow, Col, FixedCol);
-        }
+        //internal override void SetOffset(int rowOffset, int colOffset)
+        //{
+        //    if (!FixedRow) Row += rowOffset;
+        //    if (!FixedCol) Col += colOffset;
+        //}
+        //internal override bool IsFixed { get { return FixedRow & FixedCol; } }
+        //internal override string GetValue()
+        //{
+        //    return ExcelCellBase.GetAddress(Row, FixedRow, Col, FixedCol);
+        //}
     }
     internal class FormulaFixedValue : TokenInfo
     {
@@ -606,7 +607,20 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             return sb.ToString(0, sb.Length - 1);
         }
     }
-    public class FormulaRangeAddress
+    public class FormulaAddressBase
+    {
+        /// <summary>
+        /// External reference index. -1 means the current workbook.
+        /// </summary>
+        public short ExternalReferenceIx = -1;
+        /// <summary>
+        /// Worksheet index in the package.
+        /// -1             - Non-existing worksheet
+        /// short.MinValue - Not set. 
+        /// </summary>
+        public short WorksheetIx = short.MinValue;
+    }
+    public class FormulaRangeAddress : FormulaAddressBase
     {
         public ParsingContext _context;
         internal FormulaRangeAddress()
@@ -617,16 +631,6 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         {            
             _context = ctx;
         }
-        /// <summary>
-        /// External reference index. -1 means the current workbook.
-        /// </summary>
-        public short ExternalReferenceIx=-1;
-        /// <summary>
-        /// Worksheet index in the package.
-        /// -1             - Non-existing worksheet
-        /// short.MinValue - Not set. 
-        /// </summary>
-        public short WorksheetIx = short.MinValue;
         public int FromRow, FromCol, ToRow, ToCol;
         internal FixedFlag FixedFlag;
 

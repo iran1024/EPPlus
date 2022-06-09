@@ -31,7 +31,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         }
 
 
-        public Expression Create(Token token, FormulaRangeAddress addressInfo)
+        public Expression Create(Token token, FormulaAddressBase addressInfo)
         {
             if(token.TokenTypeIsSet(TokenType.Integer))
             {

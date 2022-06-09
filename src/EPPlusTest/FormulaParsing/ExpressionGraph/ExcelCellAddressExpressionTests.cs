@@ -126,5 +126,36 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             Assert.AreEqual(range.Address.ToCol, 5);
             Assert.AreEqual(range.Address.FixedFlag, FixedFlag.None);
         }
+        [TestMethod]
+        public void VerifyCellAddressExpression_WithSum()
+        {
+            //Setup
+            var f = @"Sum(Sheet1!A1:C5:E2:A39 + Sheet1!F1:J39)";
+            var tokens = _tokenizer.Tokenize(f);
+            var exps = _graphBuilder.Build(tokens);
+            var result = _compiler.Compile(exps.Expressions);
+            _package.Workbook.Worksheets[0].Cells["H5"].Formula = f;
+
+            //Assert
+            Assert.AreEqual(18, tokens.Count);
+            Assert.AreEqual(1, exps.Expressions.Count);
+
+            Assert.AreEqual(TokenType.CellAddress, tokens[4].TokenType);
+            Assert.AreEqual(TokenType.CellAddress, tokens[6].TokenType);
+            Assert.AreEqual(TokenType.CellAddress, tokens[8].TokenType);
+            Assert.AreEqual(TokenType.CellAddress, tokens[10].TokenType);
+            var range = (IRangeInfo)result.Result;
+
+            Assert.AreEqual(range.Address.ExternalReferenceIx, -1);
+            Assert.AreEqual(range.Address.WorksheetIx, 0);
+
+            Assert.AreEqual(range.Address.FromRow, 1);
+            Assert.AreEqual(range.Address.FromCol, 1);
+            Assert.AreEqual(range.Address.ToRow, 39);
+            Assert.AreEqual(range.Address.ToCol, 5);
+
+            Assert.AreEqual(range.Address.FixedFlag, FixedFlag.None);
+        }
+
     }
 }
