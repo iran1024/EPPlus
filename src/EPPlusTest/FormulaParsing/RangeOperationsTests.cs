@@ -126,6 +126,23 @@ namespace EPPlusTest.FormulaParsing
         }
 
         [TestMethod]
+        public void ExpOperatorShouldCalculate()
+        {
+            using (var package = new ExcelPackage())
+            {
+                var sheet = package.Workbook.Worksheets.Add("test");
+                sheet.Cells["A1"].Value = 2;
+                sheet.Cells["A2"].Value = 3;
+                sheet.Cells["B1"].Value = 2;
+                sheet.Cells["B2"].Value = 4;
+                sheet.Cells["B3"].Formula = "SUM(A1:A2 ^ B1:B2)";
+                sheet.Calculate();
+                var result = System.Math.Round((double)sheet.Cells["B3"].Value, 2);
+                Assert.AreEqual(85d, result);
+            }
+        }
+
+        [TestMethod]
         public void EqualsOperatorShouldCalculate()
         {
             using (var package = new ExcelPackage())
@@ -202,6 +219,23 @@ namespace EPPlusTest.FormulaParsing
                 sheet.Calculate();
                 var result = System.Math.Round((double)sheet.Cells["A4"].Value, 2);
                 Assert.AreEqual(4d, result);
+            }
+        }
+
+        [TestMethod]
+        public void ConcatOperatorShouldCalculate()
+        {
+            using (var package = new ExcelPackage())
+            {
+                var sheet = package.Workbook.Worksheets.Add("test");
+                sheet.Cells["A1"].Value = "a";
+                sheet.Cells["A2"].Value = "c";
+                sheet.Cells["B1"].Value = "b";
+                sheet.Cells["B2"].Value = "d";
+                sheet.Cells["B3"].Formula = "CONCAT(A1:A2 & B1:B2)";
+                sheet.Calculate();
+                var result = sheet.Cells["B3"].Value.ToString();
+                Assert.AreEqual("abcd", result);
             }
         }
     }

@@ -223,6 +223,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                         }
                         l = l ?? CompileResult.ZeroInt;
                         r = r ?? CompileResult.ZeroInt;
+                        if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
+                        {
+                            return RangeOperationsOperator.Apply(l, r, Operators.Exponentiation, ctx);
+                        }
                         if (CanDoNumericOperation(l, r))
                         {
                             return new CompileResult(Math.Pow(l.ResultNumeric, r.ResultNumeric), DataType.Decimal);
@@ -252,6 +256,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     {
                         l = l ?? new CompileResult(string.Empty, DataType.String);
                         r = r ?? new CompileResult(string.Empty, DataType.String);
+                        if (l.DataType == DataType.ExcelRange || r.DataType == DataType.ExcelRange)
+                        {
+                            return RangeOperationsOperator.Apply(l, r, Operators.Concat, ctx);
+                        }
                         var lStr = l.Result != null ? CompileResultToString(l) : string.Empty;
                         var rStr = r.Result != null ? CompileResultToString(r) : string.Empty;
                         return new CompileResult(string.Concat(lStr, rStr), DataType.String);
