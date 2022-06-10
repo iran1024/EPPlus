@@ -29,10 +29,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         private readonly IExpressionFactory _expressionFactory;
         private readonly ParsingContext _parsingContext;
         private int _tokenIndex = 0;
-        //private int _nRangeOffsetTokens = 0;
         private FormulaAddressBase _currentAddress;
         private bool _negateNextExpression;
-
+        private List<FormulaRangeAddress> _addresses;
         public ExpressionGraphBuilder(ExcelDataProvider excelDataProvider, ParsingContext parsingContext)
             : this(new ExpressionFactory(excelDataProvider, parsingContext), parsingContext)
         {
@@ -44,12 +43,16 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             _expressionFactory = expressionFactory;
             _parsingContext = parsingContext;
         }
-
         public ExpressionGraph Build(IEnumerable<Token> tokens)
+        {
+            return Build(tokens, null);
+        }
+        public ExpressionGraph Build(IEnumerable<Token> tokens, List<FormulaRangeAddress> addresses)
         {
             _tokenIndex = 0;
             _graph.Reset();
             var tokensArr = tokens != null ? tokens.ToArray() : new Token[0];
+            _addresses = addresses;
             BuildUp(tokensArr, null);
             return _graph;
         }
@@ -224,6 +227,11 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 _negateNextExpression = false;
             }
             var expression = _expressionFactory.Create(token, _currentAddress);
+            if (_currentAddress != null && _addresses!=null)
+            {
+                _addresses.Add((FormulaRangeAddress)_currentAddress);
+            }
+
             _currentAddress = null;
             if (parent == null)
             {

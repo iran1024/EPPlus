@@ -74,5 +74,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers
         }
 
         public abstract CompileResult Compile(IEnumerable<Expression> children);
+
     }
 }

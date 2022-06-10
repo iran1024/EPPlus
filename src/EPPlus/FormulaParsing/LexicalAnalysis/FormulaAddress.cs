@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using static OfficeOpenXml.ExcelAddressBase;
+using ExpressionTree = OfficeOpenXml.FormulaParsing.ExpressionGraph.ExpressionGraph;
 
 namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 {
@@ -13,29 +14,33 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         internal int StartRow, StartCol;
         internal static ISourceCodeTokenizer _tokenizer = OptimizedSourceCodeTokenizer.Default;
         internal IList<Token> Tokens;
-        internal IList<Expression> Expressions;
+        internal ExpressionTree ExpressionTree;
         //internal ExpressionGraph.ExpressionGraph _graph;
         public Formula(ExcelWorksheet ws, string formula)
         {
             _ws = ws;
             Init(ws, formula);
         }
-
+        internal List<FormulaRangeAddress> _addresses=new List<FormulaRangeAddress>();
         private void Init(ExcelWorksheet ws, string formula)
         {
             Tokens = _tokenizer.Tokenize(formula);
             //SetTokenInfos();
-            var ctx = ParsingContext.Create(ws._package);
-            ctx.ExcelDataProvider = new EpplusExcelDataProvider(ws._package, ctx);
-            var graphBuilder = new ExpressionGraphBuilder(ctx.ExcelDataProvider, ctx);
-            var graph = graphBuilder.Build(Tokens);
-            using (var s = ctx.Scopes.NewScope(new FormulaRangeAddress(ctx){ FromCol=StartCol, FromRow=StartRow, ToCol=StartCol, ToRow=StartRow, WorksheetIx=(short)ws.PositionId}))
+
+            var ctx = ws.Workbook.FormulaParser.ParsingContext;
+            //ctx.ExcelDataProvider = new EpplusExcelDataProvider(ws._package, ctx);
+            var graphBuilder = ws.Workbook.FormulaParser.GraphBuilder;
+            ExpressionTree = graphBuilder.Build(Tokens, _addresses);
+        }
+        internal void Compile()
+        {
+            var ctx = _ws.Workbook.FormulaParser.ParsingContext;
+            using (var s = ctx.Scopes.NewScope(new FormulaRangeAddress(ctx) { FromCol = StartCol, FromRow = StartRow, ToCol = StartCol, ToRow = StartRow, WorksheetIx = (short)_ws.PositionId }))
             {
-                var compiler = new ExpressionCompiler(ctx);
-                var result = compiler.Compile(graph.Expressions);
+                var compiler = ctx.Configuration.ExpressionCompiler;
+                var result = compiler.Compile(ExpressionTree.Expressions);
             }
         }
-
         public Formula(ExcelWorksheet ws, int row, int col, string formula)
         {
             _ws = ws;

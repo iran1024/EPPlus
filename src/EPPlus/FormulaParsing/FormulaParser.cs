@@ -96,6 +96,8 @@ namespace OfficeOpenXml.FormulaParsing
         private ILexer _lexer;
         private IExpressionGraphBuilder _graphBuilder;
         private IExpressionCompiler _compiler;
+        internal IExpressionGraphBuilder GraphBuilder => _graphBuilder;
+        internal ParsingContext ParsingContext => _parsingContext;
 
         internal ILexer Lexer { get { return _lexer; } }
         internal IEnumerable<string> FunctionNames { get { return _parsingContext.Configuration.FunctionRepository.FunctionNames; } } 
