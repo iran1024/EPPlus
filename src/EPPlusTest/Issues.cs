@@ -3286,5 +3286,41 @@ namespace EPPlusTest
                 SaveAndCleanup(p);
             }
         }
+        [TestMethod]
+        public void I665()
+        {
+            using (var p1 = OpenTemplatePackage("Source.xlsx"))
+            {
+                ExcelWorksheet sheet = p1.Workbook.Worksheets[0];
+                using (var p2 = OpenTemplatePackage("VbaCopy.xlsm"))
+                {
+                    p2.Workbook.Worksheets.Add("sheet2", sheet);
+                    SaveWorkbook("i665.xlsm", p2);
+                }
+            }
+        }
+        [TestMethod]
+        public void I667()
+        {
+            using (var p = OpenTemplatePackage("I667.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets[0];
+
+                var lastDataRowIdx = 10;
+
+                var notCopyCols = ws
+                    .Cells[1, 1, 1, 100]
+                    .Where(x =>
+                        x.Value != null &&
+                        x.Value.ToString().Trim().Replace(" ", string.Empty).IndexOf("#NotCopy", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                    .Select(x => x.End);
+
+                foreach (var col in notCopyCols)
+                {
+                    ws.Cells[lastDataRowIdx + 1, col.Column].Clear();
+                }
+                SaveAndCleanup(p);
+            }
+        }
     }
 }
