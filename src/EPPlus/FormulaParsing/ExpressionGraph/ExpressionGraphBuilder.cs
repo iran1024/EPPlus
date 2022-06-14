@@ -25,13 +25,12 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     internal class ExpressionGraphBuilder :IExpressionGraphBuilder
     {
-        private readonly ExpressionGraph _graph = new ExpressionGraph();
+        private readonly ExpressionTree _graph = new ExpressionTree();
         private readonly IExpressionFactory _expressionFactory;
         private readonly ParsingContext _parsingContext;
         private int _tokenIndex = 0;
         private FormulaAddressBase _currentAddress;
         private bool _negateNextExpression;
-        private List<FormulaRangeAddress> _addresses;
         public ExpressionGraphBuilder(ExcelDataProvider excelDataProvider, ParsingContext parsingContext)
             : this(new ExpressionFactory(excelDataProvider, parsingContext), parsingContext)
         {
@@ -43,16 +42,11 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             _expressionFactory = expressionFactory;
             _parsingContext = parsingContext;
         }
-        public ExpressionGraph Build(IEnumerable<Token> tokens)
-        {
-            return Build(tokens, null);
-        }
-        public ExpressionGraph Build(IEnumerable<Token> tokens, List<FormulaRangeAddress> addresses)
+        public ExpressionTree Build(IEnumerable<Token> tokens)
         {
             _tokenIndex = 0;
             _graph.Reset();
             var tokensArr = tokens != null ? tokens.ToArray() : new Token[0];
-            _addresses = addresses;
             BuildUp(tokensArr, null);
             return _graph;
         }
@@ -60,6 +54,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         private void BuildUp(Token[] tokens, Expression parent)
         {
             int bracketCount = 0;
+            Expression rangeParent=null;
             while (_tokenIndex < tokens.Length)
             {
                 var token = tokens[_tokenIndex];
@@ -144,13 +139,30 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 {
                     if(!(bracketCount > 0 && op.Operator==Operators.Colon) && !(_tokenIndex==0 && op==Operator.Eq))
                     {
-                        SetOperatorOnExpression(parent, op);
+                        var current = GetCurrentExpression(parent);
+
+                        if ((op.Operator == Operators.Colon || op.Operator == Operators.Intersect))
+                        {
+                            if (!(parent is RangeExpression))
+                            {
+                                var rangeExpression = new RangeExpression(_parsingContext);
+                                rangeExpression.Children.Add(current);
+                                var exps = parent == null ? _graph.Expressions : parent.Children;
+                                exps.Remove(current);
+                                exps.Add(rangeExpression);
+                                rangeParent = parent;
+                                parent = rangeExpression;
+                            }
+                        }
+                        else if (rangeParent!=null)
+                        {
+                            parent = rangeParent;
+                            current = rangeParent;
+                            rangeParent = null;
+                        }
+                        current.Operator = op;
                     }
                 }
-                //else if (token.TokenTypeIsSet(TokenType.RangeOffset))
-                //{
-                //    BuildRangeOffsetExpression(tokens, parent, token, tokenInfo);
-                //}
                 else if (token.TokenTypeIsSet(TokenType.Function))
                 {                    
                     BuildFunctionExpression(tokens, parent, token.Value);
@@ -175,7 +187,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 }
                 else if(token.TokenTypeIsSet(TokenType.Percent))
                 {
-                    SetOperatorOnExpression(parent, Operator.Percent);
+                    var current = GetCurrentExpression(parent);
+                    current.Operator = Operator.Percent;
                     if (parent == null)
                     {
                         _graph.Add(ConstantExpressions.Percent);
@@ -226,11 +239,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 token = token.CloneWithNegatedValue(true);
                 _negateNextExpression = false;
             }
-            var expression = _expressionFactory.Create(token, _currentAddress);
-            if (_currentAddress != null && _addresses!=null)
-            {
-                _addresses.Add((FormulaRangeAddress)_currentAddress);
-            }
+            var expression = _expressionFactory.Create(token, ref _currentAddress);
 
             _currentAddress = null;
             if (parent == null)
@@ -338,30 +347,30 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                  BuildUp(tokens, parent);
             }
         }
-
-        private void SetOperatorOnExpression(Expression parent, IOperator op)
+        private Expression GetCurrentExpression(Expression parent)
         {
+            Expression current;
             if (parent == null)
             {
-                _graph.Current.Operator = op;
+                current = _graph.Current;
             }
             else
             {
-                Expression candidate;
                 if (parent is FunctionArgumentExpression)
                 {
-                    candidate = parent.Children.Last();
+                    current = parent.Children.Last();
                 }
                 else
                 {
-                    candidate = parent.Children.Last();
-                    if (candidate is FunctionArgumentExpression)
+                    current = parent.Children.Last();
+                    if (current is FunctionArgumentExpression)
                     {
-                        candidate = candidate.Children.Last();
+                        current = current.Children.Last();
                     }
                 }
-                candidate.Operator = op;
             }
+
+            return current;
         }
     }
 }

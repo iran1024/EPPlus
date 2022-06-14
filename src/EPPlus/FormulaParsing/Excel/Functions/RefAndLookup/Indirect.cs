@@ -62,7 +62,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 var cell = result.FirstOrDefault();
                 var val = cell != null ? cell.Value : null;
                 if (val == null) return CompileResult.Empty;
-                return new CompileResultFactory().Create(val);
+                return CompileResultFactory.Create(val);
             }
             return new CompileResult(result, DataType.Enumerable);
         }

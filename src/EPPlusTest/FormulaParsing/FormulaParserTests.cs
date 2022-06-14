@@ -33,7 +33,7 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml.FormulaParsing;
 using FakeItEasy;
-using ExGraph = OfficeOpenXml.FormulaParsing.ExpressionGraph.ExpressionGraph;
+using ExGraph = OfficeOpenXml.FormulaParsing.ExpressionGraph.ExpressionTree;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 

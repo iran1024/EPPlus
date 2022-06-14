@@ -30,10 +30,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
     [DebuggerDisplay("Operator: {GetOperator()}")]
     public class Operator : IOperator
     {
-        private const int PrecedenceExclamation = 0;
-        private const int PrecedenceColon = 1;
-        private const int PrecedencePercent = 2;
-        private const int PrecedenceIntersect = 3;
+        private const int PrecedenceColon = 0;
+        private const int PrecedenceIntersect = 1;
+        private const int PrecedencePercent = 3;
         private const int PrecedenceExp = 4;
         private const int PrecedenceMultiplyDivide = 6;
         private const int PrecedenceIntegerDivision = 8;
@@ -276,20 +275,23 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 {
                     _colon = new Operator(Operators.Colon, PrecedenceColon, (l, r, ctx) =>
                       {
-                          var result = new FormulaRangeAddress(ctx);
-                          if (l.Result is FormulaCellAddress cr)
+                          if (!(l.Result is FormulaRangeAddress result))
                           {
-                              result.WorksheetIx = cr.WorksheetIx;
-                              result.FromRow = cr.Row;
-                              result.FromCol = cr.Col;
-                          }
-                          else if (l.Result is IRangeInfo lri)
-                          {
-                              result.WorksheetIx = lri.Address.WorksheetIx < -1 ? ctx.Scopes.Current.Address.WorksheetIx : lri.Address.WorksheetIx;
-                              result.FromRow = lri.Address.FromRow;
-                              result.FromCol = lri.Address.FromCol;
-                              result.ToRow = lri.Address.ToRow;
-                              result.ToCol = lri.Address.ToCol;
+                              result = new FormulaRangeAddress(ctx);
+                              if (l.Result is FormulaCellAddress cr)
+                              {
+                                  result.WorksheetIx = cr.WorksheetIx;
+                                  result.FromRow = cr.Row;
+                                  result.FromCol = cr.Col;
+                              }
+                              else if (l.Result is IRangeInfo lri)
+                              {
+                                  result.WorksheetIx = lri.Address.WorksheetIx < -1 ? ctx.Scopes.Current.Address.WorksheetIx : lri.Address.WorksheetIx;
+                                  result.FromRow = lri.Address.FromRow;
+                                  result.FromCol = lri.Address.FromCol;
+                                  result.ToRow = lri.Address.ToRow;
+                                  result.ToCol = lri.Address.ToCol;
+                              }
                           }
 
                           if (r.Result is FormulaCellAddress rr)

@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml.Core.CellStore;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System;
@@ -64,10 +65,8 @@ namespace OfficeOpenXml.FormulaParsing
                         //compiler
                         if (string.IsNullOrEmpty(s)) continue;
                         f = new Formula(ws, fs.Row, fs.Column, s);
-                        foreach(var address in f._addresses)
-                        {
-
-                        }
+                        List<FormulaRangeAddress> addresses=null;
+                        f.CompileAddresses(addresses, f.ExpressionTree.Expressions);
                     }
                     depChain.Add(f);
                     //FollowChain(depChain, lexer, ws.Workbook, ws, f, options);

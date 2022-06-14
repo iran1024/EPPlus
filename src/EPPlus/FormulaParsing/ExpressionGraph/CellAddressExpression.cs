@@ -10,7 +10,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     {
         FormulaCellAddress _addressInfo;
         bool _negate;
-        public CellAddressExpression(Token token, ParsingContext ctx, FormulaAddressBase addressInfo) : base(token.Value, ctx)
+        public CellAddressExpression(Token token, ParsingContext ctx, ref FormulaAddressBase addressInfo) : base(token.Value, ctx)
         {
             if(addressInfo== null)
             {
@@ -20,6 +20,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             {
                 _addressInfo = new FormulaCellAddress(addressInfo);
             }
+            addressInfo = _addressInfo;
             _negate = token.IsNegated;
         }
         public override bool IsGroupedExpression => false;

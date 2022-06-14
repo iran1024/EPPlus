@@ -34,7 +34,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             var parsingContext = ParsingContext.Create(_package);
             _compiler = new ExpressionCompiler(parsingContext);
 
-            parsingContext.Scopes.NewScope(new FormulaRangeAddress() { WorksheetIx=1, FromRow = 1, FromCol = 1, ToRow = 1,ToCol = 1 });
+            parsingContext.Scopes.NewScope(new FormulaRangeAddress() { WorksheetIx=0, FromRow = 1, FromCol = 1, ToRow = 1,ToCol = 1 });
             parsingContext.ExcelDataProvider = _excelDataProvider;
             _graphBuilder = new ExpressionGraphBuilder(_excelDataProvider, parsingContext);
         }
@@ -58,17 +58,19 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
 
             Assert.AreEqual(TokenType.CellAddress, tokens[2].TokenType);
             Assert.AreEqual(TokenType.CellAddress, tokens[4].TokenType);
-            var result1 = ((CellAddressExpression)exps.Expressions[0].Children[0].Children[0]).Compile();
-            var result2 = ((CellAddressExpression)exps.Expressions[0].Children[0].Children[1]).Compile();
-            var range1 = (IRangeInfo)result1.Result;
-            var range2 = (IRangeInfo)result2.Result;
+            var ra = exps.Expressions[0].Children[0].Children[0];
+            Assert.AreEqual(2, ra.Children.Count);
+            var result1 = ((CellAddressExpression)ra.Children[0]).Compile();
+            var result2 = ((CellAddressExpression)ra.Children[1]).Compile();
+            var range1 = (FormulaCellAddress)result1.Result;
+            var range2 = (FormulaCellAddress)result2.Result;
 
-            Assert.AreEqual(range1.Address.FromRow, 1);
-            Assert.AreEqual(range1.Address.FromCol, 1);
-            Assert.AreEqual(range1.Address.FixedFlag, FixedFlag.None);
-            Assert.AreEqual(range2.Address.ToRow, 5);
-            Assert.AreEqual(range2.Address.ToCol, 3);
-            Assert.AreEqual(range2.Address.FixedFlag, FixedFlag.None);
+            Assert.AreEqual(range1.Row, 1);
+            Assert.AreEqual(range1.Col, 1);
+            //Assert.AreEqual(range1.FixedFlag, FixedFlag.None);
+            Assert.AreEqual(range2.Row, 5);
+            Assert.AreEqual(range2.Col, 3);
+            //Assert.AreEqual(range2.FixedFlag, FixedFlag.None);
         }
         [TestMethod]
         public void VerifyCellAddressExpression_MultiColon()
@@ -76,13 +78,13 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             //Setup
             var f = @"Sheet1!A1:C5:E2";
             var tokens = _tokenizer.Tokenize(f);
-            var exps = _graphBuilder.Build(tokens);
-            var result = _compiler.Compile(exps.Expressions);
+            var expTree = _graphBuilder.Build(tokens);
+            var result = _compiler.Compile(expTree.Expressions);
             _package.Workbook.Worksheets[0].Cells["H5"].Formula = f;
 
             //Assert
             Assert.AreEqual(7, tokens.Count);
-            Assert.AreEqual(3, exps.Expressions.Count);
+            Assert.AreEqual(3, expTree.Expressions[0].Children.Count);
 
             Assert.AreEqual(TokenType.CellAddress, tokens[2].TokenType);
             Assert.AreEqual(TokenType.CellAddress, tokens[4].TokenType);
@@ -104,13 +106,13 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             //Setup
             var f = @"[0]Sheet1!A1:C5:E2";
             var tokens = _tokenizer.Tokenize(f);
-            var exps = _graphBuilder.Build(tokens);
-            var result = _compiler.Compile(exps.Expressions);
+            var expTree = _graphBuilder.Build(tokens);
+            var result = _compiler.Compile(expTree.Expressions);
             _package.Workbook.Worksheets[0].Cells["H5"].Formula = f;
 
             //Assert
             Assert.AreEqual(10, tokens.Count);
-            Assert.AreEqual(3, exps.Expressions.Count);
+            Assert.AreEqual(3, expTree.Expressions[0].Children.Count);
 
             Assert.AreEqual(TokenType.CellAddress, tokens[5].TokenType);
             Assert.AreEqual(TokenType.CellAddress, tokens[7].TokenType);
@@ -132,29 +134,41 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             //Setup
             var f = @"Sum(Sheet1!A1:C5:E2:A39 + Sheet1!F1:J39)";
             var tokens = _tokenizer.Tokenize(f);
-            var exps = _graphBuilder.Build(tokens);
-            var result = _compiler.Compile(exps.Expressions);
+            var expTree = _graphBuilder.Build(tokens);
+            var result = _compiler.Compile(expTree.Expressions);
             _package.Workbook.Worksheets[0].Cells["H5"].Formula = f;
 
             //Assert
             Assert.AreEqual(18, tokens.Count);
-            Assert.AreEqual(1, exps.Expressions.Count);
+            Assert.AreEqual(1, expTree.Expressions.Count);
+            Assert.AreEqual(2, expTree.Expressions[0].Children[0].Children.Count);
 
             Assert.AreEqual(TokenType.CellAddress, tokens[4].TokenType);
             Assert.AreEqual(TokenType.CellAddress, tokens[6].TokenType);
             Assert.AreEqual(TokenType.CellAddress, tokens[8].TokenType);
             Assert.AreEqual(TokenType.CellAddress, tokens[10].TokenType);
-            var range = (IRangeInfo)result.Result;
+            var range1 = (FormulaRangeAddress)expTree.Expressions[0].Children[0].Children[0].Compile().Result;
+            var range2 = (FormulaRangeAddress)expTree.Expressions[0].Children[0].Children[1].Compile().Result;
 
-            Assert.AreEqual(range.Address.ExternalReferenceIx, -1);
-            Assert.AreEqual(range.Address.WorksheetIx, 0);
+            //Assert Range 1
+            Assert.AreEqual(range1.ExternalReferenceIx, -1);
+            Assert.AreEqual(range1.WorksheetIx, 0);
+            Assert.AreEqual(range1.FromRow, 1);
+            Assert.AreEqual(range1.FromCol, 1);
+            Assert.AreEqual(range1.ToRow, 39);
+            Assert.AreEqual(range1.ToCol, 5);
+            Assert.AreEqual(range1.FixedFlag, FixedFlag.None);
 
-            Assert.AreEqual(range.Address.FromRow, 1);
-            Assert.AreEqual(range.Address.FromCol, 1);
-            Assert.AreEqual(range.Address.ToRow, 39);
-            Assert.AreEqual(range.Address.ToCol, 5);
+            //Assert Range 2
+            Assert.AreEqual(range2.ExternalReferenceIx, -1);
+            Assert.AreEqual(range2.WorksheetIx, 0);
+            Assert.AreEqual(range2.FromRow, 1);
+            Assert.AreEqual(range2.FromCol, 6);
+            Assert.AreEqual(range2.ToRow, 39);
+            Assert.AreEqual(range2.ToCol, 10);
+                                 
+            Assert.AreEqual(range2.FixedFlag, FixedFlag.None);
 
-            Assert.AreEqual(range.Address.FixedFlag, FixedFlag.None);
         }
 
     }

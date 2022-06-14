@@ -10,6 +10,7 @@
  *************************************************************************************************
   01/27/2020         EPPlus Software AB       Initial release EPPlus 5
  *************************************************************************************************/
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +18,9 @@ using System.Text;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
-    public class ExpressionGraph
+    public class ExpressionTree
     {
+        //internal List<FormulaAddressBase> Addresses = new List<FormulaAddressBase>();
         private List<Expression> _expressions = new List<Expression>();
         public IList<Expression> Expressions { get { return _expressions; } }
         public Expression Current { get; private set; }

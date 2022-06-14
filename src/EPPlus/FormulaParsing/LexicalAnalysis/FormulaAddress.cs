@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using static OfficeOpenXml.ExcelAddressBase;
-using ExpressionTree = OfficeOpenXml.FormulaParsing.ExpressionGraph.ExpressionGraph;
+using ExpressionTree = OfficeOpenXml.FormulaParsing.ExpressionGraph.ExpressionTree;
 
 namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 {
@@ -15,13 +15,13 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         internal static ISourceCodeTokenizer _tokenizer = OptimizedSourceCodeTokenizer.Default;
         internal IList<Token> Tokens;
         internal ExpressionTree ExpressionTree;
+        internal IExpressionCompiler _compiler;
         //internal ExpressionGraph.ExpressionGraph _graph;
         public Formula(ExcelWorksheet ws, string formula)
         {
             _ws = ws;
             Init(ws, formula);
         }
-        internal List<FormulaRangeAddress> _addresses=new List<FormulaRangeAddress>();
         private void Init(ExcelWorksheet ws, string formula)
         {
             Tokens = _tokenizer.Tokenize(formula);
@@ -30,15 +30,45 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             var ctx = ws.Workbook.FormulaParser.ParsingContext;
             //ctx.ExcelDataProvider = new EpplusExcelDataProvider(ws._package, ctx);
             var graphBuilder = ws.Workbook.FormulaParser.GraphBuilder;
-            ExpressionTree = graphBuilder.Build(Tokens, _addresses);
-        }
-        internal void Compile()
+            ExpressionTree = graphBuilder.Build(Tokens);
+    }
+        internal void Compile(List<FormulaRangeAddress> addresses)
         {
+            addresses = new List<FormulaRangeAddress>();
             var ctx = _ws.Workbook.FormulaParser.ParsingContext;
             using (var s = ctx.Scopes.NewScope(new FormulaRangeAddress(ctx) { FromCol = StartCol, FromRow = StartRow, ToCol = StartCol, ToRow = StartRow, WorksheetIx = (short)_ws.PositionId }))
             {
                 var compiler = ctx.Configuration.ExpressionCompiler;
                 var result = compiler.Compile(ExpressionTree.Expressions);
+            }
+        }
+        internal virtual void CompileAddresses(List<FormulaRangeAddress> addresses, IList<Expression> expressions)
+        {
+            var ctx = _ws.Workbook.FormulaParser.ParsingContext;
+            foreach(var exp in expressions)
+            {
+                if (exp.HasChildren)
+                {
+                    CompileAddresses(addresses, exp.Children);
+                }
+                else
+                {
+                    //Address Operators
+                    if (exp.Operator.Operator == Excel.Operators.Operators.Colon ||
+                       exp.Operator.Operator == Excel.Operators.Operators.Intersect)
+                    {
+                        var r = exp.Compile();
+                        exp.MergeWithNext();
+                    }
+                    else
+                    {
+                        if(exp is CellAddressExpression ae)
+                        {
+                            var r=exp.Compile();
+                            addresses.Add(r.Address);
+                        }
+                    }
+                }
             }
         }
         public Formula(ExcelWorksheet ws, int row, int col, string formula)
