@@ -30,7 +30,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         /// <summary>
         /// Worksheet name
         /// </summary>
-        public string Worksheet { get; set; }
+        public short wsIx { get; set; }
         /// <summary>
         /// The name
         /// </summary>

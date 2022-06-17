@@ -275,17 +275,24 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 {
                     _colon = new Operator(Operators.Colon, PrecedenceColon, (l, r, ctx) =>
                       {
-                          if (!(l.Result is FormulaRangeAddress result))
+                          FormulaRangeAddress result=l.Address;
+                          
+                          if (l.Result is FormulaRangeAddress ra)
                           {
-                              result = new FormulaRangeAddress(ctx);
+                              result = ra;
+                          }
+                          else
+                          {
                               if (l.Result is FormulaCellAddress cr)
                               {
+                                  result = new FormulaRangeAddress(ctx);
                                   result.WorksheetIx = cr.WorksheetIx;
                                   result.FromRow = cr.Row;
                                   result.FromCol = cr.Col;
                               }
                               else if (l.Result is IRangeInfo lri)
                               {
+                                  result = new FormulaRangeAddress(ctx);
                                   result.WorksheetIx = lri.Address.WorksheetIx < -1 ? ctx.Scopes.Current.Address.WorksheetIx : lri.Address.WorksheetIx;
                                   result.FromRow = lri.Address.FromRow;
                                   result.FromCol = lri.Address.FromCol;
@@ -293,35 +300,69 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                                   result.ToCol = lri.Address.ToCol;
                               }
                           }
-
+                          
                           if (r.Result is FormulaCellAddress rr)
                           {
-                              if (result.FromRow > rr.Row)
+                              if (result.WorksheetIx != rr.WorksheetIx)
                               {
-                                  result.ToRow = result.FromRow;
-                                  result.FromRow = rr.Row;
+                                  result.WorksheetIx = -1;
                               }
                               else
                               {
-                                  if (rr.Row == 0 || rr.Row > result.ToRow) result.ToRow = rr.Row;
-                              }
+                                  if (result.FromRow > rr.Row)
+                                  {
+                                      if (result.ToCol == 0)
+                                      {
+                                          result.ToCol = result.FromCol;
+                                      }
+                                      result.FromRow = rr.Row;
+                                  }
+                                  else
+                                  {
+                                      if (rr.Row == 0 || rr.Row > result.ToRow) result.ToRow = rr.Row;
+                                  }
 
-                              if (result.FromCol > rr.Col)
-                              {
-                                  result.ToCol = result.FromCol;
-                                  result.FromCol = rr.Col;
-                              }
-                              else
-                              {
-                                  if (rr.Col == 0 || rr.Col > result.ToCol) result.ToCol = rr.Col;
+                                  if (result.FromCol > rr.Col)
+                                  {
+                                      if (result.ToCol == 0)
+                                      {
+                                          result.ToCol = result.FromCol;
+                                      }
+                                      result.FromCol = rr.Col;
+                                  }
+                                  else
+                                  {
+                                      if (rr.Col == 0 || rr.Col > result.ToCol) result.ToCol = rr.Col;
+                                  }
                               }
                           }
                           else if (r.Result is IRangeInfo rri)
                           {
-                              result.FromRow = result.FromRow < rri.Address.FromRow ? result.FromRow : rri.Address.FromRow;
-                              result.FromCol = result.FromCol < rri.Address.FromCol ? result.FromCol : rri.Address.FromCol;
-                              result.ToRow = result.ToRow > rri.Address.ToRow ? result.ToRow : rri.Address.ToRow;
-                              result.ToCol = result.ToCol > rri.Address.ToCol ? result.ToCol : rri.Address.ToCol;
+                              if (result.WorksheetIx != rri.Address.WorksheetIx)
+                              {
+                                  result.WorksheetIx = -1;
+                              }
+                              else
+                              {
+                                  result.FromRow = result.FromRow < rri.Address.FromRow ? result.FromRow : rri.Address.FromRow;
+                                  result.FromCol = result.FromCol < rri.Address.FromCol ? result.FromCol : rri.Address.FromCol;
+                                  result.ToRow = result.ToRow > rri.Address.ToRow ? result.ToRow : rri.Address.ToRow;
+                                  result.ToCol = result.ToCol > rri.Address.ToCol ? result.ToCol : rri.Address.ToCol;
+                              }
+                          }
+                          else if(r.Address!=null)
+                          {
+                              if (result.WorksheetIx != r.Address.WorksheetIx)
+                              {
+                                  result.WorksheetIx = -1;
+                              }
+                              else
+                              {
+                                  result.FromRow = result.FromRow < r.Address.FromRow ? result.FromRow : r.Address.FromRow;
+                                  result.FromCol = result.FromCol < r.Address.FromCol ? result.FromCol : r.Address.FromCol;
+                                  result.ToRow = result.ToRow > r.Address.ToRow ? result.ToRow : r.Address.ToRow;
+                                  result.ToCol = result.ToCol > r.Address.ToCol ? result.ToCol : r.Address.ToCol;
+                              }
                           }
 
                           return new CompileResult(result, DataType.ExcelRange);

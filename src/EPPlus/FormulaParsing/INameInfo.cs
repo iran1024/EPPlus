@@ -21,7 +21,7 @@ namespace OfficeOpenXml.FormulaParsing
     public interface INameInfo
     {
         ulong Id { get; set; }
-        string Worksheet { get; set; }
+        short wsIx { get; set; }
         string Name { get; set; }
         string Formula { get; set; }
         IList<Token> Tokens { get; }

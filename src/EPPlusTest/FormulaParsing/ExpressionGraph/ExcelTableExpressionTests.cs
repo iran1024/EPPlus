@@ -19,6 +19,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         static ExpressionGraphBuilder _graphBuilder;
         static ExcelWorksheet _ws;
         internal static ISourceCodeTokenizer _tokenizer = OptimizedSourceCodeTokenizer.Default;
+        static ExpressionCompiler _compiler;
         [ClassInitialize]
         public static void Init(TestContext context)
         {
@@ -29,10 +30,11 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             LoadTestdata(_ws);
             var tbl = _ws.Tables.Add(_ws.Cells["A1:E101"], "MyTable");
             tbl.ShowTotal = true;
-            _excelDataProvider = new EpplusExcelDataProvider(_package);
             var parsingContext = ParsingContext.Create(_package);
-            
-            parsingContext.Scopes.NewScope(new FormulaRangeAddress() { WorksheetIx=1, FromRow = 1, FromCol = 1, ToRow = 1,ToCol = 1 });
+            _excelDataProvider = new EpplusExcelDataProvider(_package, parsingContext);
+            _compiler = new ExpressionCompiler(parsingContext);
+
+            parsingContext.Scopes.NewScope(new FormulaRangeAddress() { WorksheetIx=0, FromRow = 1, FromCol = 1, ToRow = 1,ToCol = 1 });
             parsingContext.ExcelDataProvider = _excelDataProvider;
             _graphBuilder = new ExpressionGraphBuilder(_excelDataProvider, parsingContext);
         }
@@ -228,6 +230,30 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             Assert.AreEqual(range.Address.ToCol, 5);
             Assert.AreEqual(range.Address.FixedFlag, FixedFlag.All);
         }
+        [TestMethod]
+        public void VerifyTableExpression_Table_And_CellAddress()
+        {
+            //Setup
+            var f = @"SUM(Sheet1!MyTable[]:G5)";
+            _ws.Cells["G1"].Formula = f;
+            var tokens = _tokenizer.Tokenize(f);
+            var exps = _graphBuilder.Build(tokens);
+            var restult = _compiler.Compile(exps.Expressions);
 
+            //Assert
+            Assert.AreEqual(10, tokens.Count);
+            Assert.AreEqual(1, exps.Expressions.Count);
+
+            Assert.AreEqual(TokenType.TableName, tokens[4].TokenType);
+            var addressResult = exps.Expressions[0].Children[0].Children[0].Compile();
+
+            Assert.IsInstanceOfType(addressResult.Result, typeof(FormulaRangeAddress));
+            var rangeResult = (FormulaRangeAddress)addressResult.Result;
+            Assert.AreEqual(0, rangeResult.WorksheetIx);
+            Assert.AreEqual(1, rangeResult.FromCol);
+            Assert.AreEqual(2, rangeResult.FromRow);
+            Assert.AreEqual(101, rangeResult.ToRow);
+            Assert.AreEqual(7, rangeResult.ToCol);
+        }
     }
 }

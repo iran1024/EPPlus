@@ -82,7 +82,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                     {
                         _currentAddress = new FormulaCellAddress();
                     }
-                    if(_currentAddress.ExternalReferenceIx == -1)
+                    if(_currentAddress.ExternalReferenceIx == 0)
                     {
                         _currentAddress.WorksheetIx = _parsingContext.Package.Workbook.Worksheets.GetPositionByToken(token.Value);
                     }

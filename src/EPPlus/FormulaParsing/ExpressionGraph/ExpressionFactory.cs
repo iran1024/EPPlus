@@ -75,7 +75,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
             if (token.TokenTypeIsSet(TokenType.NameValue))
             {
-                return new NamedValueExpression(token.Value, _parsingContext);
+                return new NamedValueExpression(token.Value, _parsingContext, ref addressInfo);
             }
             return new StringExpression(token.Value, _parsingContext);
         }

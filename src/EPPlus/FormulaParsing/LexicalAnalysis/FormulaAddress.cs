@@ -645,9 +645,9 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
     public class FormulaAddressBase
     {
         /// <summary>
-        /// External reference index. -1 means the current workbook.
+        /// External reference index. 0 means the current workbook.
         /// </summary>
-        public short ExternalReferenceIx = -1;
+        public short ExternalReferenceIx = 0;
         /// <summary>
         /// Worksheet index in the package.
         /// -1             - Non-existing worksheet
