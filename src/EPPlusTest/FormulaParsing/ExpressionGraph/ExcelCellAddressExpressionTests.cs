@@ -300,6 +300,27 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             Assert.AreEqual(15, range.ToRow);
             Assert.AreEqual(12, range.ToCol);
         }
+        [TestMethod]
+        public void VerifyRangeAndWorkbookFunction()
+        {
+            //Setup
+            var f = @"Sum(Offset(A1,1,1):Sheet1!J15)";
+            var tokens = _tokenizer.Tokenize(f);
+            var expTree = _graphBuilder.Build(tokens);
+            var result = _compiler.Compile(expTree.Expressions);
+
+            //Assert
+            Assert.AreEqual(8, tokens.Count);
+            Assert.AreEqual(1, expTree.Expressions.Count);
+            Assert.AreEqual(2, expTree.Expressions[0].Children[0].Children[0].Children.Count);
+
+            var resultRange = expTree.Expressions[0].Children[0].Children[0].Compile();
+            var range = (FormulaRangeAddress)resultRange.Result;
+            Assert.AreEqual(15, range.FromRow);
+            Assert.AreEqual(10, range.FromCol);
+            Assert.AreEqual(15, range.ToRow);
+            Assert.AreEqual(12, range.ToCol);
+        }
 
     }
 }

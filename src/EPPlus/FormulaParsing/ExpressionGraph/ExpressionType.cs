@@ -1,4 +1,4 @@
-/*************************************************************************************************
+﻿/*************************************************************************************************
   Required Notice: Copyright (C) EPPlus Software AB. 
   This software is licensed under PolyForm Noncommercial License 1.0.0 
   and may only be used for noncommercial purposes 
@@ -10,27 +10,25 @@
  *************************************************************************************************
   01/27/2020         EPPlus Software AB       Initial release EPPlus 5
  *************************************************************************************************/
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-
-namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
+namespace OfficeOpenXml
 {
-    public class DateExpression : AtomicExpression
+    internal enum ExpressionType
     {
-        public DateExpression(string expression, ParsingContext ctx)
-            : base(expression, ctx)
-        {
-
-        }
-
-        public override CompileResult Compile()
-        {
-            var date = double.Parse(ExpressionString);
-            return new CompileResult(DateTime.FromOADate(date), DataType.Date);
-        }
-        internal override ExpressionType ExpressionType => ExpressionType.Date;
+        Boolean,
+        Date,
+        Decimal,
+        Integer,
+        String,
+        Constant,
+        Enumerable,
+        ExcelRange,
+        Group,
+        ValueError,
+        Function,
+        NameValue,
+        CellAddress,
+        RangeAddress,
+        TableAddress,
+        RangeDefinition
     }
 }

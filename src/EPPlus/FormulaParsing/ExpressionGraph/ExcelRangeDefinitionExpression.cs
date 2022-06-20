@@ -18,6 +18,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public override bool IsGroupedExpression => false;
 
+        internal override ExpressionType ExpressionType => ExpressionType.RangeDefinition;
+
         public override CompileResult Compile()
         {
             var dp = new EpplusExcelDataProvider(Context.Package, Context);

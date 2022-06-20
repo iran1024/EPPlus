@@ -35,6 +35,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             _factoryMethod = factoryMethod;
         }
 
+        internal override ExpressionType ExpressionType => ExpressionType.Constant;
+
         public override CompileResult Compile()
         {
             return _factoryMethod();

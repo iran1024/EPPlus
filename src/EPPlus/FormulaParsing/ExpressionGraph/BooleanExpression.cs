@@ -32,7 +32,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             _precompiledValue = value;
         }
-
+        internal override ExpressionType ExpressionType => ExpressionType.Boolean;
         public override CompileResult Compile()
         {
             var result = _precompiledValue ?? bool.Parse(ExpressionString);

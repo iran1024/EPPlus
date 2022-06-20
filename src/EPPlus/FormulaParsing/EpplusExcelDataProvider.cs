@@ -262,12 +262,116 @@ namespace OfficeOpenXml.FormulaParsing
             }
             return null;
         }
+        private INameInfo GetExternalName(int extIx, short wsIx, string name, ParsingContext ctx)
+        {
+            extIx -= 1;
+            if (extIx > 0 && extIx < _package.Workbook.ExternalLinks.Count)
+            {
+                var externalWorkbook = _package.Workbook.ExternalLinks[extIx].As.ExternalWorkbook;
+                if (externalWorkbook != null)
+                {
+                    if (externalWorkbook.Package == null)
+                    {
+                        return GetLocalName(externalWorkbook.Package, wsIx, name, ctx);
+                    }
+                    else
+                    {
+                        return GetNameFromCache(externalWorkbook, wsIx, name, ctx);
+                    }
+                }
+                return new NameInfo()
+                {
+                    Name = name,
+                    Value = ExcelErrorValue.Create(eErrorType.Name)
+                };
+            }
+            return null;
+        }
 
+        private INameInfo GetLocalName(ExcelPackage package, short wsIx, string name, ParsingContext ctx)
+        {
+            ExcelNamedRange extName=null;
+            if(wsIx==short.MinValue)
+            {
+                extName = package.Workbook.Names[name];
+            }
+            else if(wsIx != -1)
+            {
+                var ws = package.Workbook.Worksheets[wsIx];
+                extName = ws.Names[name];
+            }
+
+            if (extName == null)
+            {
+                return new NameInfo()
+                {
+                    Name = name,
+                    wsIx = -1,
+                    Value = ExcelErrorCodes.Name
+                };
+            }
+            else
+            {
+                var ni = new NameInfo()
+                {
+                    Name = name,
+                    wsIx = (short)(extName.Worksheet == null ? wsIx : (short)extName.Worksheet.PositionId),
+                    Formula = extName.Formula
+                };
+                if (extName._fromRow > 0)
+                {
+                    ni.Value = new RangeInfo(extName.Worksheet ?? package.Workbook.Worksheets[extName.WorkSheetName], extName._fromRow, extName._fromCol, extName._toRow, extName._toCol, ctx);
+                }
+                else
+                {
+                    ni.Value = extName.Value;
+                }
+                return ni;
+            }
+        }
+        private static INameInfo GetNameFromCache(ExcelExternalWorkbook externalWorkbook, short wsIx, string name, ParsingContext ctx)
+        {
+            ExcelExternalDefinedName nameItem=null;
+
+            int ix=-1;
+            if (wsIx==short.MinValue)
+            {
+                nameItem = externalWorkbook.CachedNames[name];
+            }
+            else if(wsIx!=-1)
+            {
+                nameItem = externalWorkbook.CachedWorksheets[wsIx].CachedNames[name];
+            }
+
+            object value;
+            if (!string.IsNullOrEmpty(nameItem.RefersTo))
+            {
+                var nameAddress = nameItem.RefersTo.TrimStart('=');
+                ExcelAddressBase address = new ExcelAddressBase(nameAddress);
+                if (address.Address == "#REF!")
+                {
+                    value = ExcelErrorValue.Create(eErrorType.Ref);
+                }
+                else
+                {
+                    value = new EpplusExcelExternalRangeInfo(ix, nameItem.SheetId, address._fromRow, address._fromCol, address._toRow, address._toCol, ctx);
+                }
+            }
+            else
+            {
+                value = ExcelErrorValue.Create(eErrorType.Name);
+            }
+            return new NameInfo()
+            {
+                Name = name,
+                Value = value
+            };
+        }
         private static INameInfo GetNameFromCache(ExcelExternalWorkbook externalWorkbook, string name, ParsingContext ctx)
         {
             ExcelExternalDefinedName nameItem;
 
-            int ix=-1;
+            int ix = -1;
             var sheetName = ExcelAddressBase.GetWorksheetPart(name, "", ref ix);
             if (string.IsNullOrEmpty(sheetName))
             {
@@ -291,7 +395,7 @@ namespace OfficeOpenXml.FormulaParsing
                 }
                 else
                 {
-                    value = new EpplusExcelExternalRangeInfo(ix, nameItem.SheetId, -1,-1,-1,-1, ctx);
+                    value = new EpplusExcelExternalRangeInfo(ix, nameItem.SheetId, -1, -1, -1, -1, ctx);
                 }
             }
             else
@@ -304,90 +408,89 @@ namespace OfficeOpenXml.FormulaParsing
                 Value = value
             };
         }
+        //private INameInfo GetLocalName(ExcelPackage package, short wsIx, string name, ParsingContext ctx)
+        //{
+        //    ExcelNamedRange nameItem;
+        //    ulong id;
+        //    ExcelWorksheet ws;
+        //    var ix = name.IndexOf('!');
+        //    if(ix>0)
+        //    {
+        //        var wsName=ExcelAddressBase.GetWorksheetPart(name, "", ref ix);
+        //        if(!string.IsNullOrEmpty(wsName))
+        //        {
+        //            name = name.Substring(ix);
+        //            wsIx = (short)_package.Workbook.Worksheets[wsName].PositionId;
+        //        }
+        //    }
+        //    if (wsIx<0)
+        //    {
+        //        if (package._workbook.Names.ContainsKey(name))
+        //        {
+        //            nameItem = package._workbook.Names[name];
+        //        }
+        //        else
+        //        {
+        //            return null;
+        //        }
+        //        ws = null;
+        //    }
+        //    else
+        //    {
+        //        ws = package._workbook.Worksheets[wsIx];
+        //        if (ws != null && ws.Names.ContainsKey(name))
+        //        {
+        //            nameItem = ws.Names[name];
+        //        }
+        //        else if (package._workbook.Names.ContainsKey(name))
+        //        {
+        //            nameItem = package._workbook.Names[name];
+        //        }
+        //        else
+        //        {
+        //            var tbl = ws.Tables[name];
+        //            if (tbl != null)
+        //            {
+        //                nameItem = new ExcelNamedRange(name, ws, ws, tbl.DataRange.Address, -1);
+        //            }
+        //            else
+        //            {
+        //                var wsName = package.Workbook.Worksheets[name];
+        //                if (wsName == null)
+        //                {
+        //                    return null;
+        //                }
+        //                nameItem = new ExcelNamedRange(name, ws, wsName, "A:XFD", -1);
+        //            }
+        //        }
+        //    }
+        //    id = ExcelAddressBase.GetCellId(nameItem.LocalSheetId, nameItem.Index, 0);
 
-        private INameInfo GetLocalName(ExcelPackage package, short wsIx, string name, ParsingContext ctx)
-        {
-            ExcelNamedRange nameItem;
-            ulong id;
-            ExcelWorksheet ws;
-            var ix = name.IndexOf('!');
-            if(ix>0)
-            {
-                var wsName=ExcelAddressBase.GetWorksheetPart(name, "", ref ix);
-                if(!string.IsNullOrEmpty(wsName))
-                {
-                    name = name.Substring(ix);
-                    wsIx = (short)_package.Workbook.Worksheets[wsName].PositionId;
-                }
-            }
-            if (wsIx<0)
-            {
-                if (package._workbook.Names.ContainsKey(name))
-                {
-                    nameItem = package._workbook.Names[name];
-                }
-                else
-                {
-                    return null;
-                }
-                ws = null;
-            }
-            else
-            {
-                ws = package._workbook.Worksheets[wsIx];
-                if (ws != null && ws.Names.ContainsKey(name))
-                {
-                    nameItem = ws.Names[name];
-                }
-                else if (package._workbook.Names.ContainsKey(name))
-                {
-                    nameItem = package._workbook.Names[name];
-                }
-                else
-                {
-                    var tbl = ws.Tables[name];
-                    if (tbl != null)
-                    {
-                        nameItem = new ExcelNamedRange(name, ws, ws, tbl.DataRange.Address, -1);
-                    }
-                    else
-                    {
-                        var wsName = package.Workbook.Worksheets[name];
-                        if (wsName == null)
-                        {
-                            return null;
-                        }
-                        nameItem = new ExcelNamedRange(name, ws, wsName, "A:XFD", -1);
-                    }
-                }
-            }
-            id = ExcelAddressBase.GetCellId(nameItem.LocalSheetId, nameItem.Index, 0);
-
-            if (_names.ContainsKey(id))
-            {
-                return _names[id];
-            }
-            else
-            {
-                var ni = new NameInfo()
-                {
-                    Id = id,
-                    Name = name,
-                    wsIx = (nameItem.Worksheet == null ? wsIx : (short)nameItem.Worksheet.PositionId),
-                    Formula = nameItem.Formula
-                };
-                if (nameItem._fromRow > 0)
-                {
-                    ni.Value = new RangeInfo(nameItem.Worksheet ?? ws, nameItem._fromRow, nameItem._fromCol, nameItem._toRow, nameItem._toCol, ctx);
-                }
-                else
-                {
-                    ni.Value = nameItem.Value;
-                }
-                _names.Add(id, ni);
-                return ni;
-            }
-        }
+        //    if (_names.ContainsKey(id))
+        //    {
+        //        return _names[id];
+        //    }
+        //    else
+        //    {
+        //        var ni = new NameInfo()
+        //        {
+        //            Id = id,
+        //            Name = name,
+        //            wsIx = (nameItem.Worksheet == null ? wsIx : (short)nameItem.Worksheet.PositionId),
+        //            Formula = nameItem.Formula
+        //        };
+        //        if (nameItem._fromRow > 0)
+        //        {
+        //            ni.Value = new RangeInfo(nameItem.Worksheet ?? ws, nameItem._fromRow, nameItem._fromCol, nameItem._toRow, nameItem._toCol, ctx);
+        //        }
+        //        else
+        //        {
+        //            ni.Value = nameItem.Value;
+        //        }
+        //        _names.Add(id, ni);
+        //        return ni;
+        //    }
+        //}
 
         public override IEnumerable<object> GetRangeValues(string address)
         {
@@ -570,46 +673,52 @@ namespace OfficeOpenXml.FormulaParsing
 
         public override INameInfo GetName(short externalRef, short wsIx, string name)
         {
-            var wb = _package.Workbook;
-            if (wsIx == -1) return null; //Non-existing worksheet
-            var workSheetIx = wsIx < 0 ? ParsingContext.Scopes.Current.Address.WorksheetIx : wsIx;
-            ExcelNamedRange nameItem = null;
-            ExcelWorksheet ws = null;
-
-            if (workSheetIx >= 0 && workSheetIx < wb.Worksheets.Count)
+            if(externalRef>0)
             {
-                ws = wb.Worksheets[workSheetIx];
-                if (ws.Names.ContainsKey(name))
-                {
-                    nameItem = ws.Names[name];
-                }
-            }
-
-            if (wsIx < 0 && nameItem == null)
-            {
-                nameItem = wb.Names[name];
-            }
-
-            if (nameItem == null) return null;
-
-            var id = ExcelAddressBase.GetCellId(nameItem.LocalSheetId, nameItem.Index, 0);
-            var ni = new NameInfo()
-            {
-                Id = id,
-                Name = name,
-                wsIx = (nameItem.Worksheet == null ? wsIx : (short)nameItem.Worksheet.PositionId),
-                Formula = nameItem.Formula
-            };
-            if (nameItem._fromRow > 0)
-            {
-                ni.Value = new RangeInfo(nameItem.Worksheet ?? ws, nameItem._fromRow, nameItem._fromCol, nameItem._toRow, nameItem._toCol, ParsingContext);
+                return GetExternalName(externalRef, wsIx, name, _context);
             }
             else
             {
-                ni.Value = nameItem.Value;
-            }
-            return ni;
+                var wb = _package.Workbook;
+                if (wsIx == -1) return null; //Non-existing worksheet
+                var workSheetIx = wsIx < 0 ? ParsingContext.Scopes.Current.Address.WorksheetIx : wsIx;
+                ExcelNamedRange nameItem = null;
+                ExcelWorksheet ws = null;
 
+                if (workSheetIx >= 0 && workSheetIx < wb.Worksheets.Count)
+                {
+                    ws = wb.Worksheets[workSheetIx];
+                    if (ws.Names.ContainsKey(name))
+                    {
+                        nameItem = ws.Names[name];
+                    }
+                }
+
+                if (wsIx < 0 && nameItem == null)
+                {
+                    nameItem = wb.Names[name];
+                }
+
+                if (nameItem == null) return null;
+
+                var id = ExcelAddressBase.GetCellId(nameItem.LocalSheetId, nameItem.Index, 0);
+                var ni = new NameInfo()
+                {
+                    Id = id,
+                    Name = name,
+                    wsIx = (nameItem.Worksheet == null ? wsIx : (short)nameItem.Worksheet.PositionId),
+                    Formula = nameItem.Formula
+                };
+                if (nameItem._fromRow > 0)
+                {
+                    ni.Value = new RangeInfo(nameItem.Worksheet ?? ws, nameItem._fromRow, nameItem._fromCol, nameItem._toRow, nameItem._toCol, ParsingContext);
+                }
+                else
+                {
+                    ni.Value = nameItem.Value;
+                }
+                return ni;
+            }
         }
         //public override void SetToTableAddress(ExcelAddress address)
         //{

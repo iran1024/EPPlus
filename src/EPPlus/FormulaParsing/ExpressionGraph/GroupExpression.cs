@@ -50,5 +50,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             get { return true; }
         }
+
+        internal override ExpressionType ExpressionType => ExpressionType.Group;
     }
 }

@@ -133,6 +133,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
         }
 
+        internal override ExpressionType ExpressionType => ExpressionType.Function;
+
         /// <summary>
         /// Adds a child expression
         /// </summary>

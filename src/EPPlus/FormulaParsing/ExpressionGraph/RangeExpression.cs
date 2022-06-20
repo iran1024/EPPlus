@@ -23,5 +23,23 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
             return cr;
         }
+        public bool NeedsCalculation 
+        { 
+            get
+            {
+                foreach (var child in Children)
+                {
+                    if (child.ExpressionType == ExpressionType.Function)
+                    {
+                        return true;
+                    }
+                    if (child.ExpressionType == ExpressionType.NameValue)
+                    {
+                        var name = (NamedValueExpression)child;
+                    }
+                }
+                return false;
+            }
+        }
     }
 }

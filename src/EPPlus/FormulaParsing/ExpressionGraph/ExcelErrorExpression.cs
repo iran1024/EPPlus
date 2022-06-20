@@ -40,6 +40,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             get { return false; }
         }
 
+        internal override ExpressionType ExpressionType => ExpressionType.ValueError;
+
         public override CompileResult Compile()
         {
             return new CompileResult(_error, DataType.ExcelError);

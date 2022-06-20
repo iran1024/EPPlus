@@ -91,7 +91,19 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                         var er = _parsingContext.Package.Workbook.ExternalLinks[_currentAddress.ExternalReferenceIx];
                         if (er.ExternalLinkType == eExternalLinkType.ExternalWorkbook)
                         {
-                            _currentAddress.WorksheetIx = (short)(((ExcelExternalWorkbook)er).CachedWorksheets[token.Value]?.SheetId ?? -1);
+                            var wb = (ExcelExternalWorkbook)er;
+                            if(wb.Package==null)
+                            {
+                                _currentAddress.WorksheetIx = (short)(wb.Package.Workbook.Worksheets[token.Value]?.SheetId ?? -1);
+                            }
+                            else 
+                            {
+                                _currentAddress.WorksheetIx = (short)(wb.CachedWorksheets[token.Value]?.SheetId ?? -1);
+                            }
+                        }
+                        else
+                        {
+                            _currentAddress.WorksheetIx = -1;
                         }
                     }
                 }

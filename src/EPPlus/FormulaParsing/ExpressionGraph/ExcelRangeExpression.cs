@@ -16,7 +16,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         private readonly IRangeInfo _rangeInfo;
         public override bool IsGroupedExpression => false;
-
+        internal override ExpressionType ExpressionType => ExpressionType.ExcelRange;
         public override CompileResult Compile()
         {
             return new CompileResult(_rangeInfo, DataType.ExcelRange);

@@ -30,20 +30,11 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         private readonly ParsingContext _parsingContext;
 
+        internal override ExpressionType ExpressionType => ExpressionType.NameValue;
+
         public override CompileResult Compile()
         {
             var c = _parsingContext.Scopes.Current;
-            if(_locationInfo.ExternalReferenceIx>0)
-            {
-                var n = GetExternalName();
-                if(n!=null)
-                {
-                    return null;
-                    //return CompileResultFactory.Create(n.RefersTo);
-                }
-                return new CompileResult(eErrorType.Name);
-            }
-
             var name = _parsingContext.ExcelDataProvider.GetName(_locationInfo.ExternalReferenceIx, _locationInfo.WorksheetIx, ExpressionString);
             
             var cache = _parsingContext.AddressCache;

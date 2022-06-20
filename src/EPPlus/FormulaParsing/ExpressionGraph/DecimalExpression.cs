@@ -36,7 +36,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             _compiledValue = compiledValue;
         }
-
+        internal override ExpressionType ExpressionType => ExpressionType.Decimal;
         public override CompileResult Compile()
         {
             double result = _compiledValue ?? double.Parse(ExpressionString, CultureInfo.InvariantCulture);

@@ -42,7 +42,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             return this;
         }
-
+        internal override ExpressionType ExpressionType => ExpressionType.Enumerable;
         public override CompileResult Compile()
         {
             var result = new List<object>();

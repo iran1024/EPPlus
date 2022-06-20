@@ -14,6 +14,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         }
         public override bool IsGroupedExpression => false;
         public bool HasCircularReference { get; internal set; }
+
+        internal override ExpressionType ExpressionType => ExpressionType.TableAddress;
+
         public override CompileResult Compile()
         {
             var ri = Context.ExcelDataProvider.GetRange(_addressInfo);

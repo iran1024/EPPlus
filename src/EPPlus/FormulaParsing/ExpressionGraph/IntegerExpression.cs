@@ -40,7 +40,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             _compiledValue = Math.Floor(val);
         }
-
+        internal override ExpressionType ExpressionType => ExpressionType.Integer;
         public override CompileResult Compile()
         {
             double result = _compiledValue ?? double.Parse(ExpressionString, CultureInfo.InvariantCulture);

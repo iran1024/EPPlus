@@ -24,7 +24,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
 
         }
-
+        internal override ExpressionType ExpressionType => ExpressionType.String; 
         public override CompileResult Compile()
         {
             return new CompileResult(ExpressionString, DataType.String);

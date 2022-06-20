@@ -27,6 +27,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public bool HasCircularReference { get; internal set; }
 
+        internal override ExpressionType ExpressionType => ExpressionType.CellAddress;
+
         public override CompileResult Compile()
         {
             ExcelCellBase.GetRowColFromAddress(ExpressionString, out int row, out int col, out bool fixedRow, out bool fixedCol);
