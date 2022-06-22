@@ -32,7 +32,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             var arg0 = functionArguments.First();
             var rowOffset = ArgToInt(functionArguments, 1);
             var colOffset = ArgToInt(functionArguments, 2);
-            var r = arg0.ValueAsRangeInfo;
+            //var r = arg0.ValueAsRangeInfo;
 
             var startRange = ArgToAddress(functionArguments, 0, context);
             
@@ -49,7 +49,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             }
             var ws = context.Scopes.Current.Address.WorksheetName;            
             //var r =context.ExcelDataProvider.GetRange(ws, context.Scopes.Current.Address.FromRow, context.Scopes.Current.Address.FromCol, startRange);
-            var adr = r.Address;
+            var adr = arg0.Address;
 
             var fromRow = adr.FromRow + rowOffset;
             var fromCol = adr.FromCol + colOffset;

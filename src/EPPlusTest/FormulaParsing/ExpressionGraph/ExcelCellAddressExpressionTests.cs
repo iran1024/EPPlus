@@ -96,7 +96,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             Assert.AreEqual(TokenType.CellAddress, tokens[6].TokenType);
             var range = (IRangeInfo)result.Result;
 
-            Assert.AreEqual(range.Address.ExternalReferenceIx, 0);
+            Assert.AreEqual(range.Address.ExternalReferenceIx, -1);
             Assert.AreEqual(range.Address.WorksheetIx, 0);
 
             Assert.AreEqual(range.Address.FromRow, 1);
@@ -124,7 +124,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             Assert.AreEqual(TokenType.CellAddress, tokens[9].TokenType);
             var range = (IRangeInfo)result.Result;
 
-            Assert.AreEqual(range.Address.ExternalReferenceIx, 0);
+            Assert.AreEqual(range.Address.ExternalReferenceIx, -1);
             Assert.AreEqual(range.Address.WorksheetIx, 0);
 
             Assert.AreEqual(range.Address.FromRow, 1);
@@ -156,7 +156,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             var range2 = (FormulaRangeAddress)expTree.Expressions[0].Children[0].Children[1].Compile().Result;
 
             //Assert Range 1
-            Assert.AreEqual(range1.ExternalReferenceIx, 0);
+            Assert.AreEqual(range1.ExternalReferenceIx, -1);
             Assert.AreEqual(range1.WorksheetIx, 0);
             Assert.AreEqual(range1.FromRow, 1);
             Assert.AreEqual(range1.FromCol, 1);
@@ -165,7 +165,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             Assert.AreEqual(range1.FixedFlag, FixedFlag.None);
 
             //Assert Range 2
-            Assert.AreEqual(range2.ExternalReferenceIx, 0);
+            Assert.AreEqual(range2.ExternalReferenceIx, -1);
             Assert.AreEqual(range2.WorksheetIx, 0);
             Assert.AreEqual(range2.FromRow, 1);
                 Assert.AreEqual(range2.FromCol, 6);
@@ -310,16 +310,16 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             var result = _compiler.Compile(expTree.Expressions);
 
             //Assert
-            Assert.AreEqual(8, tokens.Count);
+            Assert.AreEqual(15, tokens.Count);
             Assert.AreEqual(1, expTree.Expressions.Count);
             Assert.AreEqual(2, expTree.Expressions[0].Children[0].Children[0].Children.Count);
 
             var resultRange = expTree.Expressions[0].Children[0].Children[0].Compile();
             var range = (FormulaRangeAddress)resultRange.Result;
-            Assert.AreEqual(15, range.FromRow);
-            Assert.AreEqual(10, range.FromCol);
+            Assert.AreEqual(2, range.FromRow);
+            Assert.AreEqual(2, range.FromCol);
             Assert.AreEqual(15, range.ToRow);
-            Assert.AreEqual(12, range.ToCol);
+            Assert.AreEqual(10, range.ToCol);
         }
 
     }

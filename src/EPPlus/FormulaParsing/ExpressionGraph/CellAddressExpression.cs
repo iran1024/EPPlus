@@ -33,7 +33,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             ExcelCellBase.GetRowColFromAddress(ExpressionString, out int row, out int col, out bool fixedRow, out bool fixedCol);
             //Range
-            _addressInfo.WorksheetIx = _addressInfo.WorksheetIx == short.MinValue ? Context.Scopes.Current.Address.WorksheetIx : _addressInfo.WorksheetIx;
             _addressInfo.FromRow = _addressInfo.ToRow = row;
             _addressInfo.FromCol = _addressInfo.ToCol = col;
             _addressInfo.FixedFlag = fixedRow ? FixedFlag.FromRowFixed | FixedFlag.ToRowFixed : 0;
@@ -47,6 +46,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             else
             {
                 // Single Cell.
+                _addressInfo.WorksheetIx = _addressInfo.WorksheetIx == short.MinValue ? Context.Scopes.Current.Address.WorksheetIx : _addressInfo.WorksheetIx;
                 var wsIx = _addressInfo.WorksheetIx < -1 ? Context.Scopes.Current.Address.WorksheetIx : _addressInfo.WorksheetIx;
                 if (wsIx < 0) return new CompileResult(eErrorType.Ref);
                 var result = CompileResultFactory.Create(Context.Package.Workbook.Worksheets[wsIx].GetValueInner(row, col), 0, _addressInfo);

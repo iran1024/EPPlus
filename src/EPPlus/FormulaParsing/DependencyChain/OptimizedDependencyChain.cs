@@ -65,13 +65,28 @@ namespace OfficeOpenXml.FormulaParsing
                         //compiler
                         if (string.IsNullOrEmpty(s)) continue;
                         f = new Formula(ws, fs.Row, fs.Column, s);
-                        List<FormulaRangeAddress> addresses=null;
-                        f.CompileAddresses(addresses, f.ExpressionTree.Expressions);
+                        FollowChain(fs, depChain, f);
                     }
                     depChain.Add(f);
                     //FollowChain(depChain, lexer, ws.Workbook, ws, f, options);
                 }
             }
         }
+
+        private static void FollowChain(CellStoreEnumerator<object> fs, OptimizedDependencyChain depChain, Formula f)
+        {
+            Stack<StackInfo> stack;
+//IterateAddresses:           
+            foreach(var e in f.ExpressionTree.AddressExpressions)
+            {
+                var address=e.Compile().Address;
+            }
+ //ProcessAddress:
+            
+        }
+    }
+
+    internal class StackInfo
+    {
     }
 }

@@ -21,6 +21,7 @@ using OfficeOpenXml.FormulaParsing;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using static OfficeOpenXml.ExcelAddressBase;
 using System.Diagnostics;
+using OfficeOpenXml.FormulaParsing.Ranges;
 
 namespace OfficeOpenXml.FormulaParsing.Excel.Operators
 {
@@ -331,7 +332,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                           //}
                           /*else*/ if (r.Result is IRangeInfo rri)
                           {
-                              if (result.WorksheetIx != rri.Address.WorksheetIx)
+                              if (result.WorksheetIx != rri.Address.WorksheetIx && r.Address.WorksheetIx != short.MinValue)
                               {
                                   result.WorksheetIx = -1;
                               }
@@ -345,7 +346,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                           }
                           else if(r.Address!=null)
                           {
-                              if (result.WorksheetIx != r.Address.WorksheetIx)
+                              if (result.WorksheetIx != r.Address.WorksheetIx && r.Address.WorksheetIx!=short.MinValue)
                               {
                                   result.WorksheetIx = -1;
                               }
@@ -358,7 +359,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                               }
                           }
 
-                          return new CompileResult(result, DataType.ExcelRange);
+                          return new AddressCompileResult(new RangeInfo(result, ctx), DataType.ExcelRange,result);
                           throw new ExcelErrorValueException(eErrorType.Ref);
                       });
                 }
@@ -418,14 +419,41 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                     _intersect = new Operator(Operators.Intersect, PrecedenceIntersect,
                                    (l, r, ctx) =>
                                    {
-                                       if(l.Result is IRangeInfo left && r.Result is IRangeInfo right)
+                                       FormulaRangeAddress la, ra;
+                                       if(l.Result is IRangeInfo left)
                                        {
-                                           var iA = left.Address.Intersect(right.Address);
+                                           la = left.Address;
+                                       }
+                                       else if (l.Result is FormulaRangeAddress lfra)
+                                       {
+                                           la = lfra;
+                                       }
+                                       else
+                                       {
+                                           la = null;
+                                       }
+
+                                       if (r.Result is IRangeInfo right)
+                                       {
+                                           ra = right.Address;
+                                       }
+                                       else if (r.Result is FormulaRangeAddress rfra)
+                                       {
+                                           ra = rfra;
+                                       }
+                                       else
+                                       {
+                                           ra = null;
+                                       }
+
+                                       if (la!=null && ra!=null)
+                                       {
+                                           var iA = la.Intersect(ra);
                                            if (iA == null)
                                            {
                                                return new CompileResult(eErrorType.Null);
                                            }
-                                           var intersectRange = ctx.ExcelDataProvider.GetRange(left.Worksheet.Name, iA.FromRow, iA.FromCol, iA.ToRow, iA.ToCol);
+                                           var intersectRange = ctx.ExcelDataProvider.GetRange(iA);
                                            return new CompileResult(intersectRange, DataType.ExcelRange);
                                            
                                        }

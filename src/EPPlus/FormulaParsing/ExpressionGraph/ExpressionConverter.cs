@@ -88,10 +88,11 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 case DataType.ExcelRange:                    
                     if(compileResult.Result is FormulaRangeAddress f)
                     {
-                        if(f.ExternalReferenceIx < -1 || f.WorksheetIx<0)
+                        if(f.ExternalReferenceIx < -1 || f.WorksheetIx==-1)
                         {
                             return new ExcelErrorExpression(ExcelErrorValue.Create(eErrorType.Ref), _ctx);
                         }
+                        if (f.WorksheetIx == short.MinValue) f.WorksheetIx = _ctx.Scopes.Current.Address.WorksheetIx;
                         return new ExcelRangeExpression(_ctx.ExcelDataProvider.GetRange(_ctx.Package.Workbook.Worksheets[f.WorksheetIx]?.Name, f.FromRow, f.FromCol, f.ToRow, f.ToCol), _ctx);
                     }
                     else if (compileResult.Result is IRangeInfo ri)

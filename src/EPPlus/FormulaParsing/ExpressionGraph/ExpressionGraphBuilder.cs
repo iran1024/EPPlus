@@ -165,14 +165,18 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                                 rangeParent = parent;
                                 parent = rangeExpression;
                             }
+                            current.Operator = op;
                         }
                         else if (rangeParent!=null)
                         {
+                            parent.Operator = op;
                             parent = rangeParent;
-                            current = rangeParent;
                             rangeParent = null;
                         }
-                        current.Operator = op;
+                        else
+                        {
+                            current.Operator = op;
+                        }
                     }
                 }
                 else if (token.TokenTypeIsSet(TokenType.Function))

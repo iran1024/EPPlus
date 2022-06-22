@@ -75,7 +75,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             {
                 obj = ((IRangeInfo)obj).GetOffset(0, 0);
             }
-            if (obj == null) return new CompileResult(null, DataType.Empty);
+            if (obj == null) return new AddressCompileResult(null, DataType.Empty, address);
             var t = obj.GetType();
             
             if (t.Equals(typeof(string)))

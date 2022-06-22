@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using static OfficeOpenXml.ExcelAddressBase;
-using ExpressionTree = OfficeOpenXml.FormulaParsing.ExpressionGraph.ExpressionTree;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 
 namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 {

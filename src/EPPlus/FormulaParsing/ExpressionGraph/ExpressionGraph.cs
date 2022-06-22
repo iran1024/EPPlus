@@ -22,6 +22,35 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     {
         //internal List<FormulaAddressBase> Addresses = new List<FormulaAddressBase>();
         private List<Expression> _expressions = new List<Expression>();
+        public IList<Expression> AddressExpressions 
+        { 
+            get
+            {
+                var list = new List<Expression>();
+                GetAddressExpressions(list, _expressions);
+                return list;
+            }
+        }
+
+        private void GetAddressExpressions(List<Expression> list, IList<Expression> expressions)
+        {
+            foreach(var e in expressions)
+            {
+                if(e.ExpressionType==ExpressionType.CellAddress || e.ExpressionType==ExpressionType.RangeAddress)
+                {
+                    var a=e.Compile().Address;
+                    if(a!=null)
+                    {
+                        list.Add(e);
+                    }
+                }
+                if(e.HasChildren)
+                {
+                    GetAddressExpressions(list, e.Children);
+                }
+            }
+        }
+
         public IList<Expression> Expressions { get { return _expressions; } }
         public Expression Current { get; private set; }
 
