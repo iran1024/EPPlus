@@ -74,15 +74,15 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 }
                 else if (token.TokenTypeIsSet(TokenType.ExternalReference))
                 {
-                    _currentAddress = new FormulaCellAddress() { ExternalReferenceIx = (short)_parsingContext.Package.Workbook.ExternalLinks.GetExternalLink(token.Value) };
+                    _currentAddress = new FormulaAddressBase() { ExternalReferenceIx = (short)_parsingContext.Package.Workbook.ExternalLinks.GetExternalLink(token.Value) };
                 }
                 else if (token.TokenTypeIsSet(TokenType.WorksheetNameContent))
                 {
                     if (_currentAddress == null)
                     {
-                        _currentAddress = new FormulaCellAddress();
+                        _currentAddress = new FormulaAddressBase();
                     }
-                    if(_currentAddress.ExternalReferenceIx == 0)
+                    if(_currentAddress.ExternalReferenceIx == -1)
                     {
                         _currentAddress.WorksheetIx = _parsingContext.Package.Workbook.Worksheets.GetPositionByToken(token.Value);
                     }

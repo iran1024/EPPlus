@@ -8,17 +8,17 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     [DebuggerDisplay("CellAddressExpression: {ExpressionString}")]
     internal class CellAddressExpression : Expression
     {
-        FormulaCellAddress _addressInfo;
+        FormulaRangeAddress _addressInfo;
         bool _negate;
         public CellAddressExpression(Token token, ParsingContext ctx, ref FormulaAddressBase addressInfo) : base(token.Value, ctx)
         {
             if(addressInfo== null)
             {
-                _addressInfo = new FormulaCellAddress();
+                _addressInfo = new FormulaRangeAddress();
             }
             else
             {
-                _addressInfo = new FormulaCellAddress(addressInfo);
+                _addressInfo = new FormulaRangeAddress() { ExternalReferenceIx= addressInfo.ExternalReferenceIx, WorksheetIx=addressInfo.WorksheetIx };
             }
             addressInfo = _addressInfo;
             _negate = token.IsNegated;
@@ -32,23 +32,24 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         public override CompileResult Compile()
         {
             ExcelCellBase.GetRowColFromAddress(ExpressionString, out int row, out int col, out bool fixedRow, out bool fixedCol);
-            if((Operator!=null && Operator.Operator == Operators.Colon) || (Prev != null && Prev.Operator.Operator == Operators.Colon))
-            {
-                //Range
-                _addressInfo.WorksheetIx = _addressInfo.WorksheetIx == short.MinValue ? Context.Scopes.Current.Address.WorksheetIx : _addressInfo.WorksheetIx;
-                _addressInfo.Row = row;
-                _addressInfo.Col = col;
-                _addressInfo.FixedRow = fixedRow;
-                _addressInfo.FixedCol |= fixedCol;
+            //Range
+            _addressInfo.WorksheetIx = _addressInfo.WorksheetIx == short.MinValue ? Context.Scopes.Current.Address.WorksheetIx : _addressInfo.WorksheetIx;
+            _addressInfo.FromRow = _addressInfo.ToRow = row;
+            _addressInfo.FromCol = _addressInfo.ToCol = col;
+            _addressInfo.FixedFlag = fixedRow ? FixedFlag.FromRowFixed | FixedFlag.ToRowFixed : 0;
+            _addressInfo.FixedFlag |= fixedCol ? FixedFlag.FromColFixed | FixedFlag.ToColFixed : 0;
 
-                return new CompileResult(_addressInfo, DataType.ExcelCellAddress);
+            if ((Operator!=null && Operator.Operator == Operators.Colon) || (Prev != null && Prev.Operator.Operator == Operators.Colon))
+            {
+
+                return new AddressCompileResult(_addressInfo, DataType.ExcelCellAddress, _addressInfo);
             }
             else
             {
                 // Single Cell.
                 var wsIx = _addressInfo.WorksheetIx < -1 ? Context.Scopes.Current.Address.WorksheetIx : _addressInfo.WorksheetIx;
                 if (wsIx < 0) return new CompileResult(eErrorType.Ref);
-                var result = CompileResultFactory.Create(Context.Package.Workbook.Worksheets[wsIx].GetValueInner(row, col));
+                var result = CompileResultFactory.Create(Context.Package.Workbook.Worksheets[wsIx].GetValueInner(row, col), 0, _addressInfo);
                 if(result.IsNumeric && _negate)
                 {
                     result.Negate();

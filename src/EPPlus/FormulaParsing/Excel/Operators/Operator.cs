@@ -283,14 +283,7 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                           }
                           else
                           {
-                              if (l.Result is FormulaCellAddress cr)
-                              {
-                                  result = new FormulaRangeAddress(ctx);
-                                  result.WorksheetIx = cr.WorksheetIx;
-                                  result.FromRow = cr.Row;
-                                  result.FromCol = cr.Col;
-                              }
-                              else if (l.Result is IRangeInfo lri)
+                              if (l.Result is IRangeInfo lri)
                               {
                                   result = new FormulaRangeAddress(ctx);
                                   result.WorksheetIx = lri.Address.WorksheetIx < -1 ? ctx.Scopes.Current.Address.WorksheetIx : lri.Address.WorksheetIx;
@@ -301,42 +294,42 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                               }
                           }
                           
-                          if (r.Result is FormulaCellAddress rr)
-                          {
-                              if (result.WorksheetIx != rr.WorksheetIx)
-                              {
-                                  result.WorksheetIx = -1;
-                              }
-                              else
-                              {
-                                  if (result.FromRow > rr.Row)
-                                  {
-                                      if (result.ToCol == 0)
-                                      {
-                                          result.ToCol = result.FromCol;
-                                      }
-                                      result.FromRow = rr.Row;
-                                  }
-                                  else
-                                  {
-                                      if (rr.Row == 0 || rr.Row > result.ToRow) result.ToRow = rr.Row;
-                                  }
+                          //if (r.Result is FormulaCellAddress rr)
+                          //{
+                          //    if (result.WorksheetIx != rr.WorksheetIx)
+                          //    {
+                          //        result.WorksheetIx = -1;
+                          //    }
+                          //    else
+                          //    {
+                          //        if (result.FromRow > rr.Row)
+                          //        {
+                          //            if (result.ToCol == 0)
+                          //            {
+                          //                result.ToCol = result.FromCol;
+                          //            }
+                          //            result.FromRow = rr.Row;
+                          //        }
+                          //        else
+                          //        {
+                          //            if (rr.Row == 0 || rr.Row > result.ToRow) result.ToRow = rr.Row;
+                          //        }
 
-                                  if (result.FromCol > rr.Col)
-                                  {
-                                      if (result.ToCol == 0)
-                                      {
-                                          result.ToCol = result.FromCol;
-                                      }
-                                      result.FromCol = rr.Col;
-                                  }
-                                  else
-                                  {
-                                      if (rr.Col == 0 || rr.Col > result.ToCol) result.ToCol = rr.Col;
-                                  }
-                              }
-                          }
-                          else if (r.Result is IRangeInfo rri)
+                          //        if (result.FromCol > rr.Col)
+                          //        {
+                          //            if (result.ToCol == 0)
+                          //            {
+                          //                result.ToCol = result.FromCol;
+                          //            }
+                          //            result.FromCol = rr.Col;
+                          //        }
+                          //        else
+                          //        {
+                          //            if (rr.Col == 0 || rr.Col > result.ToCol) result.ToCol = rr.Col;
+                          //        }
+                          //    }
+                          //}
+                          /*else*/ if (r.Result is IRangeInfo rri)
                           {
                               if (result.WorksheetIx != rri.Address.WorksheetIx)
                               {

@@ -124,6 +124,7 @@ namespace EPPlusTest.Drawing
                 var imageTif = ws.Drawings.AddPicture("tif1", msTif, ePictureType.Tif);
                 imageTif.SetPosition(0, 0, 80, 0);
             }
+
         }
         [TestMethod]
         public void AddIcoImages()
@@ -224,6 +225,15 @@ namespace EPPlusTest.Drawing
         public void AddSvgImages()
         {
             AddFilesToWorksheet("Svg", ePictureType.Svg);
+        }
+        [TestMethod]
+        public async Task AddSvgImagesAsync()
+        {
+            using (var ms = new MemoryStream(Properties.Resources.Svg2ByteArray))
+            {
+                var ws = _pck.Workbook.Worksheets.Add("svgAsync");
+                var image = await ws.Drawings.AddPictureAsync("svg1", ms, ePictureType.Svg);
+            }
         }
         [TestMethod]
         public void AddPngImages()

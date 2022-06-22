@@ -478,29 +478,29 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 
         internal virtual bool IsFixed { get { return true; } }
     }
-    internal class FormulaCellAddress : FormulaAddressBase
-    {
-        internal FormulaCellAddress()
-        {
-        }
-        internal FormulaCellAddress(FormulaAddressBase addressBase)
-        {
-            ExternalReferenceIx = addressBase.ExternalReferenceIx;
-            WorksheetIx = addressBase.WorksheetIx;
-        }
-        internal int Row, Col;
-        internal bool FixedRow, FixedCol;
-        //internal override void SetOffset(int rowOffset, int colOffset)
-        //{
-        //    if (!FixedRow) Row += rowOffset;
-        //    if (!FixedCol) Col += colOffset;
-        //}
-        //internal override bool IsFixed { get { return FixedRow & FixedCol; } }
-        //internal override string GetValue()
-        //{
-        //    return ExcelCellBase.GetAddress(Row, FixedRow, Col, FixedCol);
-        //}
-    }
+    //internal class FormulaCellAddress : FormulaAddressBase
+    //{
+    //    internal FormulaCellAddress()
+    //    {
+    //    }
+    //    internal FormulaCellAddress(FormulaAddressBase addressBase)
+    //    {
+    //        ExternalReferenceIx = addressBase.ExternalReferenceIx;
+    //        WorksheetIx = addressBase.WorksheetIx;
+    //    }
+    //    internal int Row, Col;
+    //    internal bool FixedRow, FixedCol;
+    //    //internal override void SetOffset(int rowOffset, int colOffset)
+    //    //{
+    //    //    if (!FixedRow) Row += rowOffset;
+    //    //    if (!FixedCol) Col += colOffset;
+    //    //}
+    //    //internal override bool IsFixed { get { return FixedRow & FixedCol; } }
+    //    //internal override string GetValue()
+    //    //{
+    //    //    return ExcelCellBase.GetAddress(Row, FixedRow, Col, FixedCol);
+    //    //}
+    //}
     internal class FormulaFixedValue : TokenInfo
     {
         public FormulaFixedValue(short startPos, short endPos, object v)
@@ -645,9 +645,11 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
     public class FormulaAddressBase
     {
         /// <summary>
-        /// External reference index. 0 means the current workbook.
+        /// External reference index. 
+        /// -1 means the current workbook.
+        /// short.MinValue - Invalid reference.
         /// </summary>
-        public short ExternalReferenceIx = 0;
+        public short ExternalReferenceIx = -1;
         /// <summary>
         /// Worksheet index in the package.
         /// -1             - Non-existing worksheet

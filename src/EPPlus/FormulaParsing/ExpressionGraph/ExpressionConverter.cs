@@ -88,7 +88,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 case DataType.ExcelRange:                    
                     if(compileResult.Result is FormulaRangeAddress f)
                     {
-                        if(f.ExternalReferenceIx < 0 || f.WorksheetIx<0)
+                        if(f.ExternalReferenceIx < -1 || f.WorksheetIx<0)
                         {
                             return new ExcelErrorExpression(ExcelErrorValue.Create(eErrorType.Ref), _ctx);
                         }
@@ -104,13 +104,13 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                     }
                     break;
                 case DataType.ExcelCellAddress:
-                    if (compileResult.ResultValue is FormulaCellAddress c)
+                    if (compileResult.ResultValue is FormulaRangeAddress r)
                     {
-                        if (c.ExternalReferenceIx<0 || c.WorksheetIx < 0)
+                        if (r.ExternalReferenceIx<0 || r.WorksheetIx < 0)
                         {
                             return new ExcelErrorExpression(ExcelErrorValue.Create(eErrorType.Ref), _ctx);
                         }
-                        return new ExcelRangeExpression(_ctx.ExcelDataProvider.GetRange(_ctx.Package.Workbook.Worksheets[c.WorksheetIx]?.Name, c.Row, c.Col, c.Row, c.Col), _ctx);
+                        return new ExcelRangeExpression(_ctx.ExcelDataProvider.GetRange(_ctx.Package.Workbook.Worksheets[r.WorksheetIx]?.Name, r.FromRow, r.FromCol, r.ToRow, r.ToCol), _ctx);
                     }
                     break;
             }

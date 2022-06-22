@@ -67,14 +67,14 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             Assert.AreEqual(2, ra.Children.Count);
             var result1 = ((CellAddressExpression)ra.Children[0]).Compile();
             var result2 = ((CellAddressExpression)ra.Children[1]).Compile();
-            var range1 = (FormulaCellAddress)result1.Result;
-            var range2 = (FormulaCellAddress)result2.Result;
+            var range1 = (FormulaRangeAddress)result1.Result;
+            var range2 = (FormulaRangeAddress)result2.Result;
 
-            Assert.AreEqual(range1.Row, 1);
-            Assert.AreEqual(range1.Col, 1);
+            Assert.AreEqual(range1.FromRow, 1);
+            Assert.AreEqual(range1.FromCol, 1);
             //Assert.AreEqual(range1.FixedFlag, FixedFlag.None);
-            Assert.AreEqual(range2.Row, 5);
-            Assert.AreEqual(range2.Col, 3);
+            Assert.AreEqual(range2.FromRow, 5);
+            Assert.AreEqual(range2.FromCol, 3);
             //Assert.AreEqual(range2.FixedFlag, FixedFlag.None);
         }
         [TestMethod]
