@@ -640,11 +640,34 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
             }
             return CreateResult(result, DataType.Enumerable);
         }
+        /// <summary>
+        /// If the function returns a different value with the same parameters.
+        /// </summary>
         public virtual bool IsVolatile
         {
             get
             {
                 return false;
+            }
+        }
+        /// <summary>
+        /// If the function returns a range reference
+        /// </summary>
+        public virtual bool ReturnsReference
+        {
+            get
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// If addresses parameters to the funtion can be ignored in the dependency chain
+        /// </summary>
+        public virtual bool FollowChainOnReferences
+        {
+            get
+            {
+                return true;
             }
         }
     }

@@ -96,5 +96,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Information
             }
             return CreateResult(result, DataType.Integer);
         }
+        /// <summary>
+        /// Reference Parameters do not need to be follows in the dependency chain.
+        /// </summary>
+        public override bool FollowChainOnReferences => false;
     }
 }

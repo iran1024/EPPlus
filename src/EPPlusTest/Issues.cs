@@ -3056,7 +3056,7 @@ namespace EPPlusTest
         public void Issue592()
         {
             using (var p = OpenTemplatePackage("I592.xlsx"))
-            {        
+            {
                 var ws = p.Workbook.Worksheets[0];
                 SaveAndCleanup(p);
             }
@@ -3098,7 +3098,7 @@ namespace EPPlusTest
 
                 ExcelBarChartSerie eventS2Serie = chart.Series.Add("H9:H12", "B9:B12");
 
-                
+
 
                 chart.StyleManager.SetChartStyle(ePresetChartStyle.BarChartStyle5, ePresetChartColors.MonochromaticPalette5);
 
@@ -3190,14 +3190,14 @@ namespace EPPlusTest
                 var wsTable = p.Workbook.Worksheets[1];
                 var tbl = wsTable.Tables[0];
                 wsTable.Cells["E9"].Value = "New Value";
-                wsTable.Cells["E9"].Value="Stockholm";
+                wsTable.Cells["E9"].Value = "Stockholm";
                 wsTable.Cells["F11"].Value = "Test";
                 tbl.AddRow(11);
-                tbl.Range.Offset(1, 0, tbl.Range.Rows - 1, tbl.Range.Columns).Copy(tbl.Range.Offset(11,0));
+                tbl.Range.Offset(1, 0, tbl.Range.Rows - 1, tbl.Range.Columns).Copy(tbl.Range.Offset(11, 0));
                 Assert.IsNotNull(pt.Fields[2].Items.Count);
                 Assert.IsNotNull(pt.Fields[10].Items.Count);
                 Assert.IsNotNull(pt.Fields[1].Items.Count);
-                for (int r=12;r<23;r++)
+                for (int r = 12; r < 23; r++)
                 {
                     wsTable.Cells[r, 1].Value += "-" + r;
                     wsTable.Cells[r, 2].Value = r;
@@ -3322,5 +3322,6 @@ namespace EPPlusTest
                 SaveAndCleanup(p);
             }
         }
+
     }
 }

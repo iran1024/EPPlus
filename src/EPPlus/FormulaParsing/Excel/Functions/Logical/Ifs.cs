@@ -36,5 +36,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Logical
             }
             return CreateResult(ExcelErrorValue.Create(eErrorType.NA), DataType.ExcelError);
         }
+        public override bool ReturnsReference => true;
     }
 }

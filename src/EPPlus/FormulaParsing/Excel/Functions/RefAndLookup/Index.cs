@@ -72,5 +72,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             }
             return new CompileResult(eErrorType.Value);
         }
+        public override bool ReturnsReference => true;
     }
 }

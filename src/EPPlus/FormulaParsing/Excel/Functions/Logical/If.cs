@@ -33,5 +33,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Logical
             var secondStatement = arguments.ElementAt(2).Value;
             return condition ? CompileResultFactory.Create(firstStatement) : CompileResultFactory.Create(secondStatement);
         }
+        public override bool ReturnsReference => true;
     }
 }

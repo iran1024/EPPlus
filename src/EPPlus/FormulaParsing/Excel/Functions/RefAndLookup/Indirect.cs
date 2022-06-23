@@ -66,5 +66,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             }
             return new CompileResult(result, DataType.Enumerable);
         }
+        public override bool ReturnsReference => true;
     }
 }
