@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using OfficeOpenXml.FormulaParsing.Excel.Operators;
 using OfficeOpenXml.FormulaParsing.Exceptions;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
@@ -55,11 +56,30 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             get { return _children.Any(); }
         }
 
+        /// <summary>
+        /// Prepares the expression for next child expression
+        /// </summary>
+        /// <returns></returns>
         public virtual Expression  PrepareForNextChild()
         {
             return this;
         }
 
+        /// <summary>
+        /// Prepares the expression for next child expression.
+        /// </summary>
+        /// <param name="token"><see cref="Token"/> that is relevant in the context.</param>
+        /// <returns></returns>
+        public virtual Expression PrepareForNextChild(Token token)
+        {
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a child expression.
+        /// </summary>
+        /// <param name="child">The child expression to add</param>
+        /// <returns></returns>
         public virtual Expression AddChild(Expression child)
         {
             if (_children.Any())
