@@ -53,5 +53,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
                 return CompileResultFactory.Create(choosedValue);
             }
         }
+        public override bool ReturnsReference => true;
     }
 }

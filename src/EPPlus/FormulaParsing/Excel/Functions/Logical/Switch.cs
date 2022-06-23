@@ -76,5 +76,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Logical
             }
             return Convert.ToDouble(obj);
         }
+        public override bool ReturnsReference => true;
     }
 }

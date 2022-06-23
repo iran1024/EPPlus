@@ -48,5 +48,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             }
             throw new ArgumentException("Invalid range supplied");
         }
+        public override bool FollowChainOnReferences => false;
     }
 }
