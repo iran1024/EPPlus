@@ -58,6 +58,7 @@ namespace OfficeOpenXml.FormulaParsing
                     if (fs.Value is int ix)
                     {
                         f = ws._sharedFormulas[ix];
+                        f.UpdateAddress(fs.Row, fs.Column);
                     }
                     else
                     {

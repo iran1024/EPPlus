@@ -71,6 +71,12 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 }
             }
         }
+
+        internal virtual void UpdateAddress(int row, int column)
+        {
+            
+        }
+
         public Formula(ExcelWorksheet ws, int row, int col, string formula)
         {
             _ws = ws;
@@ -354,6 +360,13 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 ExcelCellBase.GetRowColFromAddress(value, out StartRow, out StartCol, out EndRow, out EndCol);
             }
         }
+        internal override void UpdateAddress(int row, int column)
+        {
+            _rowOffset = row - StartRow;
+            _colOffset = column - StartCol;
+            ExpressionTree.SetAddresses(_rowOffset, _colOffset);
+        }
+
         //internal void SetOffset(string wsName, int rowOffset, int colOffset)
         //{
         //    SetOffset(rowOffset, colOffset);
