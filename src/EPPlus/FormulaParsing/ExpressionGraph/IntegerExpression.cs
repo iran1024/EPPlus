@@ -12,12 +12,14 @@
  *************************************************************************************************/
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
+    [DebuggerDisplay("{ExpressionString}")]
     public class IntegerExpression : AtomicExpression
     {
         private double? _compiledValue;

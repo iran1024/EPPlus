@@ -110,7 +110,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
 
         public int GetNCells()
         {
-            return _cells.Length * _cells.GetUpperBound(1);
+            return _size.NumberOfRows * _size.NumberOfCols;
         }
 
         public object GetOffset(int rowOffset, int colOffset)

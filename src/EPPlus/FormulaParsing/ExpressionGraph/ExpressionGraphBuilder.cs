@@ -247,7 +247,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             if (parent != null && 
                 (token.TokenTypeIsSet(TokenType.Comma) || token.TokenTypeIsSet(TokenType.SemiColon)))
             {
-                parent = parent.PrepareForNextChild();
+                parent = parent.PrepareForNextChild(token);
                 return;
             }
             if (_negateNextExpression)
