@@ -15,13 +15,15 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         
         public override CompileResult Compile()
         {
-            CompileResult cr=null;
-            for(int i=0;i<Children.Count-1;i++)
+            if (_result == null)
             {
-                if (Children[i].Operator == null) return CompileResult.Empty;
-                cr = Children[i].Operator.Apply(cr??Children[i].Compile(), Children[i + 1].Compile(), Context);
+                for (int i = 0; i < Children.Count - 1; i++)
+                {
+                    if (Children[i].Operator == null) return CompileResult.Empty;
+                    _result = Children[i].Operator.Apply(_result ?? Children[i].Compile(), Children[i + 1].Compile(), Context);
+                }
             }
-            return cr;
+            return _result;
         }
         public bool NeedsCalculation 
         { 

@@ -16,7 +16,8 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         internal IList<Token> Tokens;
         internal ExpressionTree ExpressionTree;
         internal IExpressionCompiler _compiler;
-        //internal ExpressionGraph.ExpressionGraph _graph;
+        internal int AddressExpressionIndex;
+
         public Formula(ExcelWorksheet ws, string formula)
         {
             _ws = ws;
@@ -28,10 +29,9 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             //SetTokenInfos();
 
             var ctx = ws.Workbook.FormulaParser.ParsingContext;
-            //ctx.ExcelDataProvider = new EpplusExcelDataProvider(ws._package, ctx);
-            var graphBuilder = ws.Workbook.FormulaParser.GraphBuilder;
+            var graphBuilder = ws.Workbook.FormulaParser.GraphBuilder;            
             ExpressionTree = graphBuilder.Build(Tokens);
-    }
+         }
         internal void Compile(List<FormulaRangeAddress> addresses)
         {
             addresses = new List<FormulaRangeAddress>();
@@ -654,6 +654,22 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             }
             return sb.ToString(0, sb.Length - 1);
         }
+    }
+    public struct FormulaCellAddress
+    {
+        public FormulaCellAddress(int wsIx, int row, int column)
+        {
+            WorksheetIx = wsIx;
+            Row = row;
+            Column = column;
+        }
+        /// <summary>
+        /// Worksheet index in the package.
+        /// -1             - Non-existing worksheet
+        /// short.MinValue - Not set. 
+        /// </summary>
+        public int WorksheetIx;
+        public int Row, Column;
     }
     public class FormulaAddressBase
     {

@@ -22,17 +22,21 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     {
         //internal List<FormulaAddressBase> Addresses = new List<FormulaAddressBase>();
         private List<Expression> _expressions = new List<Expression>();
+        IList<Expression> _addressExpressions=null;
         public IList<Expression> AddressExpressions 
         { 
             get
             {
-                var list = new List<Expression>();
-                GetAddressExpressions(list, _expressions);
-                return list;
+                if (_addressExpressions == null)
+                {
+                    _addressExpressions = new List<Expression>();
+                    GetAddressExpressions(_addressExpressions, _expressions);
+                }
+                return _addressExpressions;
             }
         }
 
-        private void GetAddressExpressions(List<Expression> list, IList<Expression> expressions)
+        private void GetAddressExpressions(IList<Expression> list, IList<Expression> expressions)
         {
             foreach(var e in expressions)
             {
@@ -79,6 +83,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 Current = item.Prev ?? item.Next;
             }
             _expressions.Remove(item);
+        }
+
+        internal void SetAddresses(int rowOffset, int colOffset)
+        {
+            foreach(CellAddressExpression a in AddressExpressions)
+            {
+                
+            }
         }
     }
 }

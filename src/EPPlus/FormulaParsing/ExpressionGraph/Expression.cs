@@ -21,7 +21,7 @@ using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     public abstract class Expression
-    {
+    {        
         internal string ExpressionString { get; private set; }
         private readonly List<Expression> _children = new List<Expression>();
         protected ParsingContext Context { get; private set; }
@@ -129,7 +129,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }            
             return expression;
         }
-
+        protected CompileResult _result;
         public abstract CompileResult Compile();
 
     }

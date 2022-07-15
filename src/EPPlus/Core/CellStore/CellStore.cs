@@ -75,6 +75,16 @@ namespace OfficeOpenXml.Core.CellStore
                 return false;
             }
         }
+        internal bool HasValue(int fromRow, int fromCol, int toRow, int toCol)
+        {
+            var colPos = GetClosestColumnPosition(toCol);
+            while(colPos < 0 || colPos >= ColumnCount && _columnIndex[colPos].Index>=fromCol)
+            {
+                var r = _columnIndex[colPos].GetNextRow(fromRow - 1);
+                if (r <= toRow) return true;
+            }
+            return false;
+        }
         internal int GetClosestColumnPosition(int column)
         {
             var pos = GetColumnPosition(column);

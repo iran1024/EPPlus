@@ -3480,8 +3480,6 @@ namespace EPPlusTest
                 ws.Row(32).Height = 30;  //Add extra space between Strategy section
                 SaveAndCleanup(p);
             }
-
         }
-
     }
 }

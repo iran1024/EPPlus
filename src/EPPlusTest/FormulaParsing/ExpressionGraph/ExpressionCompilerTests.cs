@@ -32,7 +32,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
-using ExpGraph = OfficeOpenXml.FormulaParsing.ExpressionGraph.ExpressionTree;
 using OfficeOpenXml.FormulaParsing.Excel.Operators;
 using OfficeOpenXml.FormulaParsing;
 
@@ -42,7 +41,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
     public class ExpressionCompilerTests
     {
         private IExpressionCompiler _expressionCompiler;
-        private ExpGraph _graph;
+        private ExpressionTree _graph;
         private ParsingContext _context;
         
         [TestInitialize]
@@ -50,7 +49,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
         {
             _context = ParsingContext.Create();
             _expressionCompiler = new ExpressionCompiler(_context);
-            _graph = new ExpGraph();
+            _graph = new ExpressionTree();
         }
 
         [TestMethod]

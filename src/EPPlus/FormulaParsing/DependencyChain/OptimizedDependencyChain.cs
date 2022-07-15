@@ -47,6 +47,8 @@ namespace OfficeOpenXml.FormulaParsing
         private static void GetChain(OptimizedDependencyChain depChain, ILexer lexer, ExcelRange range, ExcelCalculationOption options)
         {
             var ws = range.Worksheet;
+            Formula f=null;
+            Stack<Formula> stack;
             var fs = new CellStoreEnumerator<object>(ws._formulas, range._fromRow, range._fromCol, range._toRow, range._toCol);
             while (fs.Next())
             {
@@ -54,7 +56,7 @@ namespace OfficeOpenXml.FormulaParsing
                 var id = ExcelCellBase.GetCellId(ws.IndexInList, fs.Row, fs.Column);
                 if (!depChain.index.ContainsKey(id))
                 {
-                    Formula f;
+                    ws.Workbook.FormulaParser.ParsingContext.CurrentCell = new FormulaCellAddress(ws.IndexInList, fs.Row, fs.Column);
                     if (fs.Value is int ix)
                     {
                         f = ws._sharedFormulas[ix];
@@ -66,28 +68,30 @@ namespace OfficeOpenXml.FormulaParsing
                         //compiler
                         if (string.IsNullOrEmpty(s)) continue;
                         f = new Formula(ws, fs.Row, fs.Column, s);
-                        FollowChain(fs, depChain, f);
                     }
+                    goto FollowFomulaChain;                    
+NextFormula:
                     depChain.Add(f);
                     //FollowChain(depChain, lexer, ws.Workbook, ws, f, options);
                 }
             }
+
+FollowFomulaChain:
+            while (f.AddressExpressionIndex < f.ExpressionTree.AddressExpressions.Count)
+            {
+                var address = f.ExpressionTree.Expressions[f.AddressExpressionIndex++].Compile().Address;
+
+
+            }
+
         }
 
         private static void FollowChain(CellStoreEnumerator<object> fs, OptimizedDependencyChain depChain, Formula f)
         {
-            Stack<StackInfo> stack;
 //IterateAddresses:           
-            foreach(var e in f.ExpressionTree.AddressExpressions)
-            {
-                var address=e.Compile().Address;
-            }
  //ProcessAddress:
             
         }
     }
 
-    internal class StackInfo
-    {
-    }
 }
