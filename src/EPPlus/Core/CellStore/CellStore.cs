@@ -78,9 +78,9 @@ namespace OfficeOpenXml.Core.CellStore
         internal bool HasValue(int fromRow, int fromCol, int toRow, int toCol)
         {
             var colPos = GetClosestColumnPosition(toCol);
-            while(colPos < 0 || colPos >= ColumnCount && _columnIndex[colPos].Index>=fromCol)
+            while((colPos >= 0 || colPos < ColumnCount) && _columnIndex[colPos].Index>=fromCol && _columnIndex[colPos].Index<=toCol)
             {
-                var r = _columnIndex[colPos].GetNextRow(fromRow - 1);
+                var r = _columnIndex[colPos++].GetNextRow(fromRow);
                 if (r <= toRow) return true;
             }
             return false;

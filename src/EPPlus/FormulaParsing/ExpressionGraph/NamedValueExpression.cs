@@ -101,5 +101,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
             return null;
         }
+        internal override Expression Clone()
+        {
+            return CloneMe(new NamedValueExpression(ExpressionString, Context, ref _locationInfo));
+        }
     }
 }

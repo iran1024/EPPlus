@@ -22,5 +22,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             var ri = Context.ExcelDataProvider.GetRange(_addressInfo);
             return new CompileResult(ri, DataType.ExcelRange);
         }
+
+        internal override Expression Clone()
+        {
+            return CloneMe(new TableAddressExpression(Context, _addressInfo));
+        }
     }
 }

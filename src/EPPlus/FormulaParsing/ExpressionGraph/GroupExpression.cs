@@ -46,6 +46,11 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             return result;
         }
 
+        internal override Expression Clone()
+        {
+            return CloneMe(new GroupExpression(_isNegated, _expressionCompiler, Context));
+        }
+
         public override bool IsGroupedExpression
         {
             get { return true; }

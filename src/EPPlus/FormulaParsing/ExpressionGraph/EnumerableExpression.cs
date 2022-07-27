@@ -113,5 +113,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             nRows += _separators.Count(x => x.TokenTypeIsSet(TokenType.SemiColon));
             return new RangeDefinition(nRows, nCols);
         }
+
+        internal override Expression Clone()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

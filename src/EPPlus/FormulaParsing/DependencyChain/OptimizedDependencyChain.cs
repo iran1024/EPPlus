@@ -48,11 +48,12 @@ namespace OfficeOpenXml.FormulaParsing
         {
             var ws = range.Worksheet;
             Formula f=null;
-            Stack<Formula> stack;
+            Stack<ExpressionTree> stack=new Stack<ExpressionTree>();
             var fs = new CellStoreEnumerator<object>(ws._formulas, range._fromRow, range._fromCol, range._toRow, range._toCol);
-            while (fs.Next())
+NextFormula:
+            if (fs.Next())
             {
-                if (fs.Value == null || fs.Value.ToString().Trim() == "") continue;
+                if (fs.Value == null || fs.Value.ToString().Trim() == "") goto NextFormula;
                 var id = ExcelCellBase.GetCellId(ws.IndexInList, fs.Row, fs.Column);
                 if (!depChain.index.ContainsKey(id))
                 {
@@ -66,24 +67,57 @@ namespace OfficeOpenXml.FormulaParsing
                     {
                         var s = fs.Value.ToString();
                         //compiler
-                        if (string.IsNullOrEmpty(s)) continue;
+                        if (string.IsNullOrEmpty(s)) goto NextFormula;
                         f = new Formula(ws, fs.Row, fs.Column, s);
                     }
                     goto FollowFomulaChain;                    
-NextFormula:
-                    depChain.Add(f);
-                    //FollowChain(depChain, lexer, ws.Workbook, ws, f, options);
                 }
             }
 
-FollowFomulaChain:
-            while (f.AddressExpressionIndex < f.ExpressionTree.AddressExpressions.Count)
+        FollowFomulaChain:
+            var et = f.ExpressionTree;
+            if (f.AddressExpressionIndex < et.AddressExpressions.Count)
             {
-                var address = f.ExpressionTree.Expressions[f.AddressExpressionIndex++].Compile().Address;
+                var address = et.AddressExpressions[f.AddressExpressionIndex++].Compile().Address;
+                if(ws._formulas.HasValue(address.FromRow, address.FromCol, address.ToRow, address.ToCol))
+                {
+                    stack.Push(et);
+                    if (address.FromRow==address.ToRow && address.FromCol==address.ToCol)
+                    {
+                        ExcelWorksheet fws;
+                        if (address.WorksheetIx > 0)
+                            fws = ws.Workbook.Worksheets[address.WorksheetIx];
+                        else
+                            fws = ws;
 
-
+                        var fv = fws._formulas.GetValue(address.FromRow, address.FromCol);
+                        if (fv is int ix)
+                        {
+                            f = fws._sharedFormulas[ix];
+                            et = f.GetExpressionTree(address.FromRow, address.FromCol);
+                        }
+                        else
+                        {
+                            var s = fv.ToString();
+                            //compiler
+                            if (string.IsNullOrEmpty(s)) goto FollowFomulaChain;
+                            f = new Formula(ws, address.FromRow, address.FromCol, s);
+                        }
+                        goto FollowFomulaChain;
+                    }
+                    else
+                    {
+                        f._formulaEnumerator = new CellStoreEnumerator<object>(ws._formulas, address.FromRow, address.FromCol, address.ToRow, address.ToRow);
+                    }
+                }
             }
-
+            depChain.Add(f);
+            if (stack.Count > 0)
+            {
+                et = stack.Pop();
+                goto FollowFomulaChain;
+            }
+            goto NextFormula;
         }
 
         private static void FollowChain(CellStoreEnumerator<object> fs, OptimizedDependencyChain depChain, Formula f)

@@ -74,6 +74,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             _expressions.Clear();
             Current = null;
+            _addressExpressions=null;
         }
 
         public void Remove(Expression item)
@@ -91,6 +92,23 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             {
                 
             }
+        }
+
+        internal ExpressionTree CreateFromOffset(int rowOffset, int colOffset)
+        {
+            var ret = new ExpressionTree();
+            foreach(var e in _expressions)
+            {
+                if(e.ExpressionType == ExpressionType.CellAddress)
+                {
+                    
+                }
+                else
+                {
+                    ret.Add(e.Clone());
+                }
+            }
+            return ret;
         }
     }
 }

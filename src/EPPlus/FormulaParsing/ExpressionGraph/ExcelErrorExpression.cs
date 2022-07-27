@@ -44,15 +44,16 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public override CompileResult Compile()
         {
-            return new CompileResult(_error, DataType.ExcelError);
-            //if (ParentIsLookupFunction)
-            //{
-            //    return new CompileResult(ExpressionString, DataType.ExcelError);
-            //}
-            //else
-            //{
-            //    return CompileRangeValues();
-            //}
+            if (_result == null)
+            {
+                _result = new CompileResult(_error, DataType.ExcelError);
+            }
+            return _result; 
+        }
+
+        internal override Expression Clone()
+        {            
+            return CloneMe(new ExcelErrorExpression(_error, Context));
         }
     }
 }

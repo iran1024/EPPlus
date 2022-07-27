@@ -21,5 +21,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             return new CompileResult(_rangeInfo, DataType.ExcelRange);
         }
+
+        internal override Expression Clone()
+        {
+            return CloneMe(new ExcelRangeExpression(_rangeInfo, Context));
+        }
     }
 }

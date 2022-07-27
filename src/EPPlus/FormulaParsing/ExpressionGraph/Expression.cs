@@ -53,7 +53,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public virtual bool HasChildren
         {
-            get { return _children.Any(); }
+            get { return _children.Count>0; }
         }
 
         /// <summary>
@@ -128,6 +128,18 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 Prev.Next = expression;
             }            
             return expression;
+        }
+
+        internal abstract Expression Clone();
+        protected Expression CloneMe(Expression e)
+        {
+            foreach(var c in Children)
+            {
+                e.Children.Add(c.Clone());
+            }
+            e.Operator = Operator;
+            e._result = _result;
+            return e;
         }
         protected CompileResult _result;
         public abstract CompileResult Compile();

@@ -304,6 +304,8 @@ namespace EPPlusTest.Drawing.Control
             r2.SetPosition(530, 100);
             r2.SetSize(100, 25);
             var r3 = _ws.Drawings.AddRadioButtonControl("Option Button 3");
+            r3.RichText[0].Fill.Style = eFillStyle.SolidFill;
+            r3.RichText[1].Fill.SolidFill.Color.SetRgbColor(Color.Red);
             r3.SetPosition(560, 100);
             r3.SetSize(100, 25);
             r3.FirstButton = true;

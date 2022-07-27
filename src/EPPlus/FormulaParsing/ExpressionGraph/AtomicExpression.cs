@@ -29,5 +29,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             get { return false; }
         }
+        internal override Expression Clone()
+        {
+            return this;
+        }
     }
 }

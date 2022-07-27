@@ -300,7 +300,9 @@ namespace OfficeOpenXml
         {
             if(address._fromRow > _toRow || _toRow < address._fromRow ||
                address._fromCol > _toCol || _toCol < address._fromCol ||
-               address._ws != _ws)
+               _fromRow > address._toRow || address._toRow < _fromRow ||
+               _fromCol > address._toCol || address._toCol < _fromCol ||
+               address._ws != _ws)               
             {
                 return null;
             }

@@ -25,5 +25,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             var dp = new EpplusExcelDataProvider(Context.Package, Context);
             return new CompileResult(dp.GetRange(_range), DataType.Enumerable);
         }
+
+        internal override Expression Clone()
+        {
+            return CloneMe(new ExcelRangeDefinitionExpression(_range, Context));
+        }
     }
 }

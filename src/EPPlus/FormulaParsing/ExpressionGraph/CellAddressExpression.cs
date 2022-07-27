@@ -57,5 +57,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 return result;
             }
         }
+
+        internal override Expression Clone()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

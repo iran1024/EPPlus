@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using static OfficeOpenXml.ExcelAddressBase;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
+using OfficeOpenXml.Core.CellStore;
 
 namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
 {
@@ -17,6 +18,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         internal ExpressionTree ExpressionTree;
         internal IExpressionCompiler _compiler;
         internal int AddressExpressionIndex;
+        internal CellStoreEnumerator<object> _formulaEnumerator;
 
         public Formula(ExcelWorksheet ws, string formula)
         {
@@ -76,6 +78,10 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         {
             
         }
+        internal virtual ExpressionTree GetExpressionTree(int fromRow, int fromCol)
+        {
+            return ExpressionTree;
+        }
 
         public Formula(ExcelWorksheet ws, int row, int col, string formula)
         {
@@ -89,6 +95,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             StartRow = row;
             StartCol = col;
         }
+
         //internal Dictionary<int, TokenInfo> TokenInfos;
         //private void SetTokenInfos()
         //{
@@ -461,6 +468,33 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             {
                 Tokens = _tokenizer.Tokenize(Formula, worksheet);
             }
+        }
+        internal Dictionary<ulong, ExpressionTree> _expressionTrees;
+        internal override ExpressionTree GetExpressionTree(int row, int col)
+        {
+            if(row==StartRow && col == StartCol)
+            {
+                return ExpressionTree;
+            }
+            else
+            {
+                var id = ExcelAddressBase.GetCellId(0, row, col);
+                if(_expressionTrees.TryGetValue(id, out ExpressionTree tree))
+                {
+                    return tree;
+                }
+                else
+                {
+                    tree= ExpressionTree.CreateFromOffset(row - StartRow, col - StartCol);
+                    _expressionTrees.Add(id, tree);
+                    return tree;
+                }
+            }
+        }
+
+        private ExpressionTree CreateNewExpressionTree(int row, int col)
+        {
+            throw new NotImplementedException();
         }
     }
     internal enum FormulaType
