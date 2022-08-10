@@ -48,11 +48,10 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             var exp1 = new IntegerExpression("1", _context);
             exp1.Operator = Operator.Plus;
             var exp2 = new IntegerExpression("2", _context);
-            exp1.Next = exp2;
 
-            var result = exp1.MergeWithNext();
+            var result = exp1.MergeWithNext(new List<Expression>() { exp1, exp2}, 0);
 
-            Assert.AreEqual(3d, result.Compile().Result);
+            Assert.AreEqual(3d, result.Compile().ResultValue);
         }
 
         [TestMethod]
@@ -61,11 +60,12 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             var exp1 = new IntegerExpression("1", _context);
             exp1.Operator = Operator.Plus;
             var exp2 = new IntegerExpression("2", _context);
-            exp1.Next = exp2;
 
-            var result = exp1.MergeWithNext();
+            var l = new List<Expression>() { exp1, exp2 };
+            var result = exp1.MergeWithNext(l, 0);
 
-            Assert.IsNull(result.Next);
+            Assert.AreEqual(1, l.Count);
+            Assert.AreEqual(0, l.IndexOf(result));
         }
 
         //[TestMethod]

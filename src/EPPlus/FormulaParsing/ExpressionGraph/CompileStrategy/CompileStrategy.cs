@@ -28,6 +28,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.CompileStrategy
             Context = ctx;
         }
 
-        public abstract Expression Compile();
+        public abstract Expression Compile(IList<Expression> expressions, int index);
     }
 }

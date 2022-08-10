@@ -24,9 +24,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.CompileStrategy
         {
 
         }
-        public override Expression Compile()
+        public override Expression Compile(IList<Expression> expressions, int index)
         {
-            return _expression.MergeWithNext();
+            return _expression.MergeWithNext(expressions, index);
         }
     }
 }

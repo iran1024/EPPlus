@@ -21,13 +21,13 @@ using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     public abstract class Expression
-    {        
+    {
         internal string ExpressionString { get; private set; }
         private readonly List<Expression> _children = new List<Expression>();
         protected ParsingContext Context { get; private set; }
         public IList<Expression> Children { get { return _children; } }
-        public Expression Next { get; set; }
-        public Expression Prev { get; set; }
+        //public Expression Next { get; set; }
+        //public Expression Prev { get; set; }
         public IOperator Operator { get; set; }
         internal abstract ExpressionType ExpressionType { get; }
         public abstract bool IsGroupedExpression { get; }
@@ -85,16 +85,18 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             if (_children.Any())
             {
                 var last = _children.Last();
-                child.Prev = last;
-                last.Next = child;
+                //child.Prev = last;
+                //last.Next = child;
             }
             _children.Add(child);
             return child;
         }
 
-        public virtual Expression MergeWithNext()
+        public virtual Expression MergeWithNext(IList<Expression> expressions, int index)
         {
             var expression = this;
+            var Next = GetItem(expressions, index + 1);
+            var Prev = GetItem(expressions, index - 1);
             if (Next != null && Operator != null)
             {
                 var left = Compile();
@@ -103,8 +105,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 expression = ExpressionConverter.GetInstance(Context).FromCompileResult(result);
                 if (expression is ExcelErrorExpression)
                 {
-                    expression.Next = null;
-                    expression.Prev = null;
+                    //expression.Next = null;
+                    //expression.Prev = null;
                     return expression;
                 }
                 if (Next != null)
@@ -115,28 +117,55 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 {
                     expression.Operator = null;
                 }
-                expression.Next = Next.Next;
-                if (expression.Next != null) expression.Next.Prev = expression;
-                expression.Prev = Prev;
+                //expression.Next = Next.Next;
+                //if (expression.Next != null) expression.Next.Prev = expression;
+                //expression.Prev = Prev;
+                expressions.Insert(index, expression);
+                expressions.Remove(this);
+                expressions.Remove(Next);
             }
             else
             {
                 throw (new FormatException("Invalid formula syntax. Operator missing expression."));
             }
-            if (Prev != null)
-            {
-                Prev.Next = expression;
-            }            
+            //if (Prev != null)
+            //{
+            //    Prev.Next = expression;
+            //}            
             return expression;
         }
 
+        private Expression GetItem(IList<Expression> expressions, int index)
+        {
+            if(index < 0 || index >= expressions.Count)
+            {
+                return null;
+            }
+            return expressions[index];
+        }
+
         internal abstract Expression Clone();
+        internal virtual Expression Clone(int rowOffset, int colOffset)
+        {
+            return CloneExpressionWithOffset(this, rowOffset, colOffset);
+        }
+        protected Expression CloneExpressionWithOffset(Expression e, int rowOffset, int colOffset)
+        {
+            var clone = e.Clone();
+            foreach(var c in e.Children)
+            {
+                clone.Children.Add(c.Clone(rowOffset, colOffset));
+            }
+            clone.Operator = Operator;
+            clone._result = _result;
+            return clone;
+        }
         protected Expression CloneMe(Expression e)
         {
-            foreach(var c in Children)
-            {
-                e.Children.Add(c.Clone());
-            }
+            //foreach (var c in Children)
+            //{
+            //    e.Children.Add(c.Clone());
+            //}
             e.Operator = Operator;
             e._result = _result;
             return e;

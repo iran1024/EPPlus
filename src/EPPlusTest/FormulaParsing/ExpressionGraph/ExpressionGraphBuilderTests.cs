@@ -143,8 +143,8 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             };
             var result = _graphBuilder.Build(tokens);
 
-            Assert.IsNotNull(result.Expressions.First().Next);
-            Assert.IsInstanceOfType(result.Expressions.First().Next, typeof(IntegerExpression));
+            Assert.IsNotNull(result.Expressions[1]);
+            Assert.IsInstanceOfType(result.Expressions[1], typeof(IntegerExpression));
 
         }
 

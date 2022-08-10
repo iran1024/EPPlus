@@ -60,7 +60,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                        exp.Operator.Operator == Excel.Operators.Operators.Intersect)
                     {
                         var r = exp.Compile();
-                        exp.MergeWithNext();
+                        exp.MergeWithNext(expressions, expressions.IndexOf(exp));
                     }
                     else
                     {
@@ -83,11 +83,14 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             return ExpressionTree;
         }
 
-        public Formula(ExcelWorksheet ws, int row, int col, string formula)
+        public Formula(ExcelWorksheet ws, int row, int col)
         {
             _ws = ws;
             StartRow = row;
             StartCol = col;
+        }
+        public Formula(ExcelWorksheet ws, int row, int col, string formula) : this(ws,row,col)
+        {
             Init(ws, formula);            
         }
         internal void SetRowCol(int row, int col)
@@ -404,9 +407,21 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 IsArray = IsArray,
                 Tokens = Tokens,
                // TokenInfos = TokenInfos,
-                _ws = _ws,
+                _ws = _ws,                
             };
         }
+        internal Formula GetFormula(int row, int col)
+        {
+            return new Formula(_ws, row, col)
+            {
+                AddressExpressionIndex = 0,
+                Tokens = Tokens,
+                ExpressionTree = GetExpressionTree(row, col),
+                StartRow = row,
+                StartCol = col,
+                _compiler = _compiler,
+            };
+        }            
         internal string GetFormula(int row, int column, string worksheet)
         {
             if (StartRow == row && StartCol == column)
@@ -469,7 +484,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 Tokens = _tokenizer.Tokenize(Formula, worksheet);
             }
         }
-        internal Dictionary<ulong, ExpressionTree> _expressionTrees;
+        internal Dictionary<ulong, ExpressionTree> _expressionTrees=new Dictionary<ulong, ExpressionTree>();
         internal override ExpressionTree GetExpressionTree(int row, int col)
         {
             if(row==StartRow && col == StartCol)
@@ -490,11 +505,6 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                     return tree;
                 }
             }
-        }
-
-        private ExpressionTree CreateNewExpressionTree(int row, int col)
-        {
-            throw new NotImplementedException();
         }
     }
     internal enum FormulaType
@@ -720,7 +730,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         /// </summary>
         public short WorksheetIx = short.MinValue;
     }
-    public class FormulaRangeAddress : FormulaAddressBase
+    public class FormulaRangeAddress : FormulaAddressBase, IComparable<FormulaRangeAddress>
     {
         public ParsingContext _context;
         internal FormulaRangeAddress()
@@ -823,6 +833,30 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 return new ExcelAddressBase(ExternalReferenceIx, WorksheetName, FromRow, FromCol, ToRow, ToCol);
             }
             return new ExcelAddressBase(WorksheetName, FromRow, FromCol, ToRow, ToCol);
+        }
+
+        public int CompareTo(FormulaRangeAddress other)
+        {
+            if(FromRow < other.FromRow)
+            {
+                return -1;
+            }
+            else if(FromRow> other.FromRow)
+            {
+                return 1;
+            }
+            else
+            {
+                if(FromCol < other.FromCol)
+                {
+                    return -1;
+                }
+                else if (FromCol>other.FromCol)
+                {
+                    return 1;
+                }
+                return 0;
+            }
         }
 
         internal ExcelCellAddress _start = null;

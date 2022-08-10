@@ -20,7 +20,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     public class ExpressionTree
     {
-        //internal List<FormulaAddressBase> Addresses = new List<FormulaAddressBase>();
         private List<Expression> _expressions = new List<Expression>();
         IList<Expression> _addressExpressions=null;
         public IList<Expression> AddressExpressions 
@@ -61,11 +60,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         public Expression Add(Expression expression)
         {
             _expressions.Add(expression);
-            if (Current != null)
-            {
-                Current.Next = expression;
-                expression.Prev = Current;
-            }
             Current = expression;
             return expression;
         }
@@ -73,16 +67,12 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         public void Reset()
         {
             _expressions.Clear();
-            Current = null;
+            Current = null;           
             _addressExpressions=null;
         }
 
         public void Remove(Expression item)
         {
-            if (item == Current)
-            {
-                Current = item.Prev ?? item.Next;
-            }
             _expressions.Remove(item);
         }
 
@@ -99,14 +89,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             var ret = new ExpressionTree();
             foreach(var e in _expressions)
             {
-                if(e.ExpressionType == ExpressionType.CellAddress)
-                {
-                    
-                }
-                else
-                {
-                    ret.Add(e.Clone());
-                }
+                ret.Add(e.Clone(rowOffset, colOffset));
             }
             return ret;
         }

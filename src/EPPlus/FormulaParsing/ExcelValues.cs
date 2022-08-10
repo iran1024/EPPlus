@@ -143,12 +143,25 @@ namespace OfficeOpenXml
             }
         }
 
-        internal static ExcelErrorValue Create(eErrorType errorType)
+        /// <summary>
+        /// Created an <see cref="ExcelErrorValue"/> from a <paramref name="errorType"/>>
+        /// </summary>
+        /// <param name="errorType">The error type</param>
+        /// <returns>The error value to set in a cell</returns>
+        public static ExcelErrorValue Create(eErrorType errorType)
         {
             return new ExcelErrorValue(errorType);
         }
 
-        internal static ExcelErrorValue Parse(string val)
+        /// <summary>
+        /// Created an <see cref="ExcelErrorValue"/> from a string. 
+        /// The string value must match any of the constants in <see cref="ExcelErrorValue.Values"/>
+        /// </summary>
+        /// <param name="val">The string value</param>
+        /// <returns>The error value to set in a cell</returns>
+        /// <exception cref="ArgumentNullException">If null is passed as an argument</exception>
+        /// <exception cref="ArgumentException">If the argument cannot be converted.</exception>
+        public static ExcelErrorValue Parse(string val)
         {
             if (Values.StringIsErrorValue(val))
             {
