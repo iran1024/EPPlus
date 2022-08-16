@@ -43,7 +43,7 @@ namespace EPPlusTest.FormulaParsing
         public void VerifyCellAddressExpression_NonFixed()
         {
             using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
-            {
+            {                
                 var ws = p.Workbook.Worksheets[0];
                 var dp=OptimizedDependencyChainFactory.Create(p.Workbook, new ExcelCalculationOption(){ });
             }

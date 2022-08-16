@@ -12,7 +12,51 @@ namespace OfficeOpenXml.Core.CellStore
     /// </summary>
     internal class RangeDictionary
     {
-        internal Dictionary<int,List<long>> _addresses = new Dictionary<int, List<long>>();
+        internal Dictionary<int, List<long>> _addresses = new Dictionary<int, List<long>>();
+        internal bool Merge(long row, int col)
+        {
+            long rowSpan = ((row-1) << 20) | (row-1);
+            if (!_addresses.TryGetValue(col, out List<long> rows))
+            {
+                rows = new List<long>();
+                _addresses.Add(col, rows);
+                rows.Add(rowSpan);
+                return true;
+            }
+            var ix = rows.BinarySearch(rowSpan);
+            if (ix < 0)
+            {
+                ix = ~ix;
+                if (ix > 0) ix--;
+                var fromRow = (int)(rows[ix] >> 20) + 1;
+                var toRow = (int)(rows[ix] & 0xFFFFF) + 1;
+                if(row >= fromRow && row <= toRow)
+                {
+                    return false;
+                }
+                else
+                {
+                    if(fromRow-1==row)
+                    {
+                        rows[ix] = ((row - 1) << 20) | ((long)toRow - 1);
+                    }
+                    else if(toRow+1==row)
+                    {
+                        rows[ix] = (((long)fromRow - 1) << 20) | (row - 1);
+                    }
+                    else
+                    {
+                        rows[ix] = ((row - 1) << 20) | (row - 1);
+                    }
+                    return true;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Merge the cell into the existing data and returns the ranges added.
         /// </summary>
@@ -20,11 +64,11 @@ namespace OfficeOpenXml.Core.CellStore
         /// <returns></returns>
         internal bool Merge(ref FormulaRangeAddress newAddress)
         {
-            var spillRanges= new List<long>();
+            var spillRanges = new List<long>();
             byte isAdded = 0;
-            for(int c=newAddress.FromCol;c<=newAddress.ToCol;c++)
+            for (int c = newAddress.FromCol; c <= newAddress.ToCol; c++)
             {
-                var rowSpan = ((newAddress.FromRow-1) << 20) | (newAddress.ToRow-1);
+                var rowSpan = (((long)newAddress.FromRow - 1) << 20) | ((long)newAddress.ToRow - 1);
                 if (!_addresses.TryGetValue(c, out List<long> rows))
                 {
                     rows = new List<long>();
@@ -35,7 +79,7 @@ namespace OfficeOpenXml.Core.CellStore
                     continue;
                 }
                 var ix = rows.BinarySearch(rowSpan);
-                if(ix < 0)
+                if (ix < 0)
                 {
                     ix = ~ix;
                     if (ix > 0) ix--;
@@ -46,8 +90,12 @@ namespace OfficeOpenXml.Core.CellStore
                     //}
                     MergeWithNext(rows, ix);
                 }
+                else
+                {
+                    spillRanges.Add(-1);
+                }
             }
-            if(isAdded == 1)
+            if (isAdded == 1)
             {
                 GetSpillRanges(spillRanges, ref newAddress);
             }
@@ -60,14 +108,22 @@ namespace OfficeOpenXml.Core.CellStore
             fromRow = toRow = fromCol = toCol = -1;
             var col = address.FromCol;
             bool hasGap = false;
-            foreach(var r in spillRanges)
+            foreach (var r in spillRanges)
             {
-                if(r<-1)
+                if (r < -1)
                 {
                     return;
                 }
+                else if (r == -1)
+                {
+                    if (fromRow > 0)
+                    {
+                        hasGap = true;
+                    }
+                }
                 else
                 {
+
                     var fr = (int)(r >> 20) + 1;
                     var tr = (int)(r & 0xFFFFF) + 1;
                     if (fromRow == -1)
@@ -79,14 +135,7 @@ namespace OfficeOpenXml.Core.CellStore
                             fromCol = toCol = col;
                         }
                     }
-                    if(r==-1)
-                    {
-                        if(fromRow > 0)
-                        {
-                            hasGap = true;
-                        }
-                    }
-                    else 
+                    else
                     {
                         if (fromRow == fr && toRow == tr && hasGap == false)
                         {
@@ -97,7 +146,7 @@ namespace OfficeOpenXml.Core.CellStore
                         {
                             return;
                         }
-                    }                    
+                    }
                 }
                 col++;
             }
@@ -131,17 +180,17 @@ namespace OfficeOpenXml.Core.CellStore
 
         internal bool Exists(int row, int col)
         {
-            if(_addresses.TryGetValue(col, out List<long> rows))
+            if (_addresses.TryGetValue(col, out List<long> rows))
             {
-                var rowSpan = ((row - 1) << 20) | (row - 1);
+                long rowSpan = ((row - 1) << 20) | (row - 1);
                 var ix = rows.BinarySearch(rowSpan);
-                if(ix<0)
+                if (ix < 0)
                 {
                     ix = ~ix;
                     if (ix > 0) ix--;
                     var fromRow = (int)(rows[ix] >> 20) + 1;
                     var toRow = (int)(rows[ix] & 0xFFFFF) + 1;
-                    if(row >= fromRow && row <= toRow)
+                    if (row >= fromRow && row <= toRow)
                     {
                         return true;
                     }
@@ -154,15 +203,15 @@ namespace OfficeOpenXml.Core.CellStore
             return false;
         }
 
-        private static byte VerifyAndAdd(FormulaRangeAddress newAddress, int rowSpan, List<long> rows, int ix, List<long> spillRanges)
+        private static byte VerifyAndAdd(FormulaRangeAddress newAddress, long rowSpan, List<long> rows, int ix, List<long> spillRanges)
         {
             var fromRow = (int)(rows[ix] >> 20) + 1;
             var toRow = (int)(rows[ix] & 0xFFFFF) + 1;
             if (newAddress.FromRow > toRow)
             {
-                if(newAddress.FromRow-1==toRow) //Next to each other: Merge
+                if (newAddress.FromRow - 1 == toRow) //Next to each other: Merge
                 {
-                    rows[ix]= (fromRow-1 << 20) | (newAddress.ToRow-1);
+                    rows[ix] = ((long)fromRow - 1 << 20) | (long)(newAddress.ToRow - 1);
                 }
                 else
                 {
@@ -173,9 +222,9 @@ namespace OfficeOpenXml.Core.CellStore
             }
             else if (newAddress.ToRow < fromRow)
             {
-                if(newAddress.ToRow + 1 == fromRow)   //Next to each other: Merge
+                if (newAddress.ToRow + 1 == fromRow)   //Next to each other: Merge
                 {
-                    rows[ix] = (newAddress.FromRow - 1 << 20) | (toRow - 1);
+                    rows[ix] = ((long)newAddress.FromRow - 1 << 20) | ((long)toRow - 1);
                 }
                 else
                 {
@@ -189,28 +238,33 @@ namespace OfficeOpenXml.Core.CellStore
                 if (newAddress.FromRow >= fromRow && newAddress.ToRow <= toRow) //Within, 
                 {
                     spillRanges.Add(-1);
-                    return 0;
                 }
                 else
                 {
-                    
+
                     if (newAddress.FromRow < fromRow && newAddress.ToRow <= toRow)
                     {
                         spillRanges.Add(((newAddress.FromRow - 1) << 20) | (fromRow - 2));
-                        rows[ix] = ((newAddress.FromRow) << 20) | (toRow - 1);
+                        rows[ix] = (((long)newAddress.FromRow - 1) << 20) | ((long)toRow - 1);
                     }
                     if (newAddress.FromRow >= fromRow && newAddress.ToRow > toRow)
                     {
-                        if(newAddress.FromRow < fromRow && newAddress.ToRow <= toRow)
+                        if (newAddress.FromRow < fromRow && newAddress.ToRow <= toRow)
                         {
                             spillRanges[spillRanges.Count - 1] = -2;    //Partial address, return the full address at the end.
                         }
                         else
                         {
-                            spillRanges.Add((toRow << 20) & (newAddress.ToRow - 1));
-                            rows[ix] = ((fromRow - 1) << 20) | (newAddress.ToRow - 1);
+                            spillRanges.Add((toRow << 20) | (newAddress.ToRow - 1));
+                            rows[ix] = (((long)fromRow - 1) << 20) | ((long)newAddress.ToRow - 1);
                         }
                     }
+                    if (newAddress.FromRow < fromRow && newAddress.ToRow > toRow)
+                    {
+                        spillRanges.Add(-2);
+                        rows[ix] = (((long)newAddress.FromRow - 1) << 20) | ((long)newAddress.ToRow - 1);
+                    }
+                    return 1;
                 }
             }
 
