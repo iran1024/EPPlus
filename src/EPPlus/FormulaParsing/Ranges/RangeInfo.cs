@@ -40,7 +40,7 @@ namespace OfficeOpenXml.FormulaParsing.Ranges
         {
             _context = ctx;
             _address = address;
-            var wsIx = address.WorksheetIx >= 0 ? address.WorksheetIx : ctx.Scopes.Current.Address.WorksheetIx;
+            var wsIx = address.WorksheetIx >= 0 ? address.WorksheetIx : ctx.CurrentCell.WorksheetIx;
             if (wsIx >= 0 && wsIx < ctx.Package.Workbook.Worksheets.Count)
             {
                 _ws = ctx.Package.Workbook.Worksheets[wsIx];

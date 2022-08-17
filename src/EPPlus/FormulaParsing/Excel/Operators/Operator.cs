@@ -281,13 +281,17 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                           if (l.Result is FormulaRangeAddress ra)
                           {
                               result = ra;
+                              if (ra.WorksheetIx < -1)
+                              {
+                                  result.WorksheetIx = (short)ctx.CurrentCell.WorksheetIx;
+                              }
                           }
                           else
                           {
                               if (l.Result is IRangeInfo lri)
                               {
                                   result = new FormulaRangeAddress(ctx);
-                                  result.WorksheetIx = lri.Address.WorksheetIx < -1 ? ctx.Scopes.Current.Address.WorksheetIx : lri.Address.WorksheetIx;
+                                  result.WorksheetIx = lri.Address.WorksheetIx < -1 ? (short)ctx.CurrentCell.WorksheetIx : lri.Address.WorksheetIx;
                                   result.FromRow = lri.Address.FromRow;
                                   result.FromCol = lri.Address.FromCol;
                                   result.ToRow = lri.Address.ToRow;

@@ -43,5 +43,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 return false;
             }
         }
+        internal override ExpressionType ExpressionType => ExpressionType.RangeAddress;
     }
 }

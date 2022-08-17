@@ -48,5 +48,15 @@ namespace EPPlusTest.FormulaParsing
                 var dp=OptimizedDependencyChainFactory.Create(p.Workbook, new ExcelCalculationOption(){ });
             }
         }
+        [TestMethod]
+        public void VerifyCellAddressExpression_Range()
+        {
+            using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets[1];
+                var dp = OptimizedDependencyChainFactory.Create(ws, new ExcelCalculationOption() { });
+            }
+        }
+
     }
 }

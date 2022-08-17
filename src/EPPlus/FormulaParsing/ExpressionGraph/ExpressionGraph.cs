@@ -46,6 +46,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                     {
                         list.Add(e);
                     }
+                    if(e.ExpressionType == ExpressionType.RangeAddress)
+                    {
+                        continue;
+                    }
                 }
                 if(e.HasChildren)
                 {
