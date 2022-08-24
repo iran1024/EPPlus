@@ -3481,5 +3481,57 @@ namespace EPPlusTest
                 SaveAndCleanup(p);
             }
         }
+        [TestMethod]
+        public void i681()
+        {
+            using (var p = OpenTemplatePackage("i681.xlsx"))
+            {
+                p.Workbook.Calculate();
+
+                var ws = p.Workbook.Worksheets[1];
+                Assert.AreEqual(400D, ws.Cells["B118"].Value);
+            }            
+        }
+        [TestMethod]
+        public void SumWithDoubleWorksheetRefs()
+        {
+            using (var p = new ExcelPackage())
+            {
+                var wsA = p.Workbook.Worksheets.Add("a");
+                var wsB = p.Workbook.Worksheets.Add("b");
+                wsA.Cells["A1"].Value = 1;
+                wsA.Cells["A2"].Value = 2;
+                wsA.Cells["A3"].Value = 3;
+                wsB.Cells["A4"].Formula = "sum(a!a1:'a'!A3)";
+
+                wsB.Calculate();
+                Assert.AreEqual(6D, wsB.GetValue(4, 1));
+            }
+        }
+        [TestMethod]
+        public void AddressWithDoubleWorksheetRefs()
+        {
+            var a=new ExcelAddressBase("a!a1:'a'!A3");
+
+            Assert.AreEqual(1, a._fromRow);
+            Assert.AreEqual(3, a._toRow);
+            Assert.AreEqual(1, a._fromCol);
+            Assert.AreEqual(1, a._toCol);
+        }
+        [TestMethod]
+        public void IsError_CellReference_StringLiteral()
+        {
+            using (var pck = new ExcelPackage())
+            {
+                var sheet1 = pck.Workbook.Worksheets.Add("Sheet1");
+                sheet1.Cells["B2"].Value = ExcelErrorValue.Create(eErrorType.Value);
+                sheet1.Cells["C3"].Formula = "ISERROR(B2)";
+                sheet1.Calculate();
+
+                Assert.IsTrue(sheet1.Cells["B2"].Value is ExcelErrorValue);
+                Assert.IsTrue(sheet1.Cells["C3"].Value is bool);
+                Assert.IsTrue((bool)sheet1.Cells["C3"].Value);
+            }
+        }
     }
 }
