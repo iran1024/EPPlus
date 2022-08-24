@@ -21,32 +21,34 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     public class ExpressionTree
     {
         private List<Expression> _expressions = new List<Expression>();
-        IList<Expression> _addressExpressions=null;
-        public IList<Expression> AddressExpressions 
+        IList<ExpressionWithParent> _addressExpressions=null;
+        public IList<ExpressionWithParent> AddressExpressions 
         { 
             get
             {
                 if (_addressExpressions == null)
                 {
-                    _addressExpressions = new List<Expression>();
+                    _addressExpressions = new List<ExpressionWithParent>();
                     GetAddressExpressions(_addressExpressions, _expressions);
                 }
                 return _addressExpressions;
             }
         }
 
-        private void GetAddressExpressions(IList<Expression> list, IList<Expression> expressions)
+        private void GetAddressExpressions(IList<ExpressionWithParent> list, IList<Expression> expressions)
         {
             foreach(var e in expressions)
             {
-                if(e.ExpressionType==ExpressionType.CellAddress || e.ExpressionType==ExpressionType.RangeAddress)
+                if(e.ExpressionType==ExpressionType.CellAddress || 
+                   e.ExpressionType==ExpressionType.RangeAddress || 
+                   e.ExpressionType==ExpressionType.TableAddress)
                 {
                     var a=e.Compile().Address;
                     if(a!=null)
                     {
-                        list.Add(e);
+                        list.Add((ExpressionWithParent)e);
                     }
-                    if(e.ExpressionType == ExpressionType.RangeAddress)
+                    if(e.ExpressionType == ExpressionType.RangeAddress || e.ExpressionType == ExpressionType.TableAddress)
                     {
                         continue;
                     }

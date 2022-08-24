@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
 using OfficeOpenXml.FormulaParsing;
+using OfficeOpenXml.FormulaParsing.Exceptions;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
@@ -49,7 +50,7 @@ namespace EPPlusTest.FormulaParsing
             }
         }
         [TestMethod]
-        public void VerifyCellAddressExpression_Range()
+        public void VerifyRangeAddressExpression_Range()
         {
             using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
             {
@@ -57,6 +58,52 @@ namespace EPPlusTest.FormulaParsing
                 var dp = OptimizedDependencyChainFactory.Create(ws, new ExcelCalculationOption() { });
             }
         }
-
+        [TestMethod]
+        public void VerifyTableAddressExpression_Table()
+        {
+            using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets[2];
+                var dp = OptimizedDependencyChainFactory.Create(ws, new ExcelCalculationOption() { });
+            }
+        }
+        [TestMethod]
+        public void VerifyAddressExpressions_CrossReference()
+        {
+            using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets[3];
+                var dp = OptimizedDependencyChainFactory.Create(ws, new ExcelCalculationOption() { });
+            }
+        }
+        [TestMethod]
+        public void VerifyAddressExpressions_CirularReference1()
+        {
+            using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets[4];
+                var dp = OptimizedDependencyChainFactory.Create(ws.Cells["A1"], new ExcelCalculationOption() { });
+            }
+        }
+        [TestMethod]
+        public void VerifyAddressExpressions_CirularReference2()
+        {
+            using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets[4];
+                var dp = OptimizedDependencyChainFactory.Create(ws.Cells["A2"], new ExcelCalculationOption() { });
+                Assert.AreEqual(1, dp._circularReferences.Count);
+            }
+        }
+        [TestMethod]
+        public void VerifyAddressExpressions_CirularReference3()
+        {
+            using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets[4];
+                var dp = OptimizedDependencyChainFactory.Create(ws.Cells["A3"], new ExcelCalculationOption() { });
+                Assert.AreEqual(1, dp._circularReferences.Count);
+            }
+        }
     }
 }

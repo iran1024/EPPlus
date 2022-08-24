@@ -25,6 +25,7 @@ namespace OfficeOpenXml
         Group,
         ValueError,
         Function,
+        FunctionArgument,
         NameValue,
         CellAddress,
         RangeAddress,

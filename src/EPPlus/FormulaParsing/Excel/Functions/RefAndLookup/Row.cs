@@ -41,6 +41,9 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             var address = factory.Create(rangeAddress);
             return CreateResult(address.FromRow, DataType.Integer);
         }
-        public override bool FollowChainOnReferences => false;
+        public override FunctionParameterInformation GetParameterInfo(int argumentIndex)
+        {
+            return FunctionParameterInformation.IgnoreAddress;
+        }
     }
 }

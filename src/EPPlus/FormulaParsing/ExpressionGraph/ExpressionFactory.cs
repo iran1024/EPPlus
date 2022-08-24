@@ -31,7 +31,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         }
 
 
-        public Expression Create(Token token, ref FormulaAddressBase addressInfo)
+        public Expression Create(Token token, ref FormulaAddressBase addressInfo, Expression parent)
         {
             if(token.TokenTypeIsSet(TokenType.Integer))
             {
@@ -51,11 +51,11 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
             if(token.TokenTypeIsSet(TokenType.CellAddress))
             {
-                return new CellAddressExpression(token, _parsingContext, ref addressInfo);
+                return new CellAddressExpression(token, _parsingContext, ref addressInfo) { _parent = parent };
             }
             if((token.TokenTypeIsSet(TokenType.ClosingBracket) && addressInfo is FormulaTableAddress ti))
             {
-                return new TableAddressExpression(_parsingContext, ti);
+                return new TableAddressExpression(_parsingContext, ti) { _parent = parent };
             }
             if (token.TokenTypeIsSet(TokenType.InvalidReference))
             {
@@ -75,7 +75,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
             if (token.TokenTypeIsSet(TokenType.NameValue))
             {
-                return new NamedValueExpression(token.Value, _parsingContext, ref addressInfo);
+                return new NamedValueExpression(token.Value, _parsingContext, ref addressInfo) { _parent = parent };
             }
             return new StringExpression(token.Value, _parsingContext);
         }

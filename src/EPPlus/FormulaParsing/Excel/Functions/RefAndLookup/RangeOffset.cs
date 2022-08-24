@@ -25,6 +25,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             var toCol = System.Math.Max(StartRange.Address.ToCol, EndRange.Address.ToCol);
             var rangeAddress = new RangeInfo(StartRange.Worksheet, new ExcelAddressBase(fromRow, fromCol, toRow, toCol));
             return CreateResult(rangeAddress, DataType.Enumerable);
-        }
+        } 
     }
 }

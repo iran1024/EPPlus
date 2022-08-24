@@ -1,4 +1,6 @@
 ﻿using OfficeOpenXml.Core.CellStore;
+using OfficeOpenXml.FormulaParsing.Excel.Functions;
+using OfficeOpenXml.FormulaParsing.Exceptions;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.FunctionCompilers;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
@@ -14,6 +16,7 @@ namespace OfficeOpenXml.FormulaParsing
         internal List<Formula> formulas = new List<Formula>();
         internal Dictionary<int, RangeDictionary> accessedRanges = new Dictionary<int, RangeDictionary>();
         internal HashSet<ulong> processedCells = new HashSet<ulong>();
+        internal List<ulong> _circularReferences = new List<ulong>();
         internal void Add(Formula f)
         {
             formulas.Add(f);
@@ -49,6 +52,14 @@ namespace OfficeOpenXml.FormulaParsing
 
             return depChain;
         }
+        internal static OptimizedDependencyChain Create(ExcelRange cells, ExcelCalculationOption options)
+        {
+            var depChain = new OptimizedDependencyChain();
+
+            AddRangeToChain(depChain, cells.Worksheet.Workbook.FormulaParser.Lexer, cells, options);
+
+            return depChain;
+        }
 
         private static void AddRangeToChain(OptimizedDependencyChain depChain, ILexer lexer, ExcelRange range, ExcelCalculationOption options)
         {
@@ -77,92 +88,69 @@ namespace OfficeOpenXml.FormulaParsing
                         f = new Formula(ws, fs.Row, fs.Column, s);
                     }
                     AddChainForFormula(depChain, lexer, f, options);
-                    }
+                }
             }
         }
         private static void AddChainForFormula(OptimizedDependencyChain depChain, ILexer lexer, Formula f, ExcelCalculationOption options)
         {
             Stack<Formula> stack = new Stack<Formula>();
             var ws = f._ws;
-        //            var ws = range.Worksheet;
-        //            Formula f=null;
-        //            ExpressionTree et=null;
-        //            Stack<Formula> stack=new Stack<Formula>();            
-        //            var wsFs = new CellStoreEnumerator<object>(ws._formulas, range._fromRow, range._fromCol, range._toRow, range._toCol);
-        //            var fs = wsFs;
-        //NextFormula:
-        //            if (fs.Next())
-        //            {
-
-        //                if (fs.Value == null || fs.Value.ToString().Trim() == "") goto NextFormula;
-        //                var id = ExcelCellBase.GetCellId(ws.IndexInList, fs.Row, fs.Column);
-        //                if (depChain.processedCells.Contains(id)==false)
-        //                {
-        //                    depChain.processedCells.Add(id);
-        //                    ws.Workbook.FormulaParser.ParsingContext.CurrentCell = new FormulaCellAddress(ws.IndexInList, fs.Row, fs.Column);
-        //                    if (fs.Value is int ix)
-        //                    {
-        //                        f = ws._sharedFormulas[ix].GetFormula(fs.Row, fs.Column);
-        //                    }
-
-        //                    else
-        //                    {
-        //                        var s = fs.Value.ToString();
-        //                        //compiler
-        //                        if (string.IsNullOrEmpty(s)) goto NextFormula;
-        //                        f = new Formula(ws, fs.Row, fs.Column, s);
-        //                    }
-        //                    goto FollowFormulaChain;                    
-        //                }
-        //                goto NextFormula;
-        //            }
-        //            else
-        //            {
-        //                if(fs!=wsFs)
-        //                {
-        //                    fs = wsFs;
-        //                    f._formulaEnumerator = null;
-        //                    f.AddressExpressionIndex++;
-        //                    goto FollowFormulaChain;
-        //                }
-        //            }
-        //            return;
-        FollowFormulaChain:
+            ExcelFunction currentFunction = null;
+FollowFormulaChain:
             var et = f.ExpressionTree;
             if (f.AddressExpressionIndex < et.AddressExpressions.Count)
             {
-                var address = et.AddressExpressions[f.AddressExpressionIndex++].Compile().Address;
+                var ae = et.AddressExpressions[f.AddressExpressionIndex++];                
+                if(ae._parent?.ExpressionType==ExpressionType.FunctionArgument)
+                {
+                    var fa = ((FunctionArgumentExpression)ae._parent);
+                    currentFunction = fa.Function;
+                    if (currentFunction.GetParameterInfo(fa.Index)==FunctionParameterInformation.IgnoreAddress)
+                    {
+                        goto FollowFormulaChain;
+                    }
+                }
+                var address = ae.Compile().Address;                
                 if (address.FromRow == address.ToRow && address.FromCol == address.ToCol)
                 {
-                    if (GetProcessedAddress(depChain, (int)address.WorksheetIx, address.FromRow, address.FromCol) && 
-                        ws._formulas.Exists(address.FromRow, address.FromCol))
+                    if (GetProcessedAddress(depChain, (int)address.WorksheetIx, address.FromRow, address.FromCol))                         
                     {
-                        stack.Push(f);
                         ExcelWorksheet fws;
                         if (address.WorksheetIx > 0)
                             fws = ws.Workbook.Worksheets[address.WorksheetIx];
                         else
                             fws = ws;
 
-                        var fv = fws._formulas.GetValue(address.FromRow, address.FromCol);
-                        if (fv is int ix)
+                        if(fws._formulas.Exists(address.FromRow, address.FromCol))
                         {
-                            f = fws._sharedFormulas[ix].GetFormula(address.FromRow, address.FromCol);
+                            stack.Push(f);
+                            var fv = fws._formulas.GetValue(address.FromRow, address.FromCol);
+                            if (fv is int ix)
+                            {
+                                f = fws._sharedFormulas[ix].GetFormula(address.FromRow, address.FromCol);
+                            }
+                            else
+                            {
+                                var s = fv.ToString();
+                                //compiler
+                                if (string.IsNullOrEmpty(s)) goto FollowFormulaChain;
+                                f = new Formula(fws, address.FromRow, address.FromCol, s);
+                            }
+                            depChain.processedCells.Add(f.Id);
+                            ws = fws;
+                            goto FollowFormulaChain;
                         }
-                        else
-                        {
-                            var s = fv.ToString();
-                            //compiler
-                            if (string.IsNullOrEmpty(s)) goto FollowFormulaChain;
-                            f = new Formula(ws, address.FromRow, address.FromCol, s);
-                        }
-                        depChain.processedCells.Add(ExcelCellBase.GetCellId(f._ws.IndexInList, f.StartRow, f.StartCol));
-                        goto FollowFormulaChain;
                     }
                 }
                 else if (GetProcessedAddress(depChain, ref address))
                 {
-                    f._formulaEnumerator = new CellStoreEnumerator<object>(ws._formulas, address.FromRow, address.FromCol, address.ToRow, address.ToCol);
+                    ExcelWorksheet fws;
+                    if (address.WorksheetIx > 0)
+                        fws = ws.Workbook.Worksheets[address.WorksheetIx];
+                    else
+                        fws = ws;
+
+                    f._formulaEnumerator = new CellStoreEnumerator<object>(fws._formulas, address.FromRow, address.FromCol, address.ToRow, address.ToCol);
                     goto NextFormula;
                 }
                 if (f.AddressExpressionIndex < et.AddressExpressions.Count)
@@ -171,10 +159,19 @@ namespace OfficeOpenXml.FormulaParsing
                     goto FollowFormulaChain;
                 }
             }
-            depChain.Add(f);
+            if (IsCircularReference(depChain, stack, f.Id))
+            {
+                //Check
+            }
+            else
+            {
+                depChain.Add(f);
+            }
+
             if (stack.Count > 0)
             {
                 f = stack.Pop();
+                ws = f._ws;
                 if (f._formulaEnumerator == null)
                 {
                     goto FollowFormulaChain;
@@ -185,7 +182,7 @@ namespace OfficeOpenXml.FormulaParsing
                 }
             }
             return;
-        NextFormula:
+NextFormula:
             var fs = f._formulaEnumerator;
             if (f._formulaEnumerator.Next())
             {
@@ -208,13 +205,36 @@ namespace OfficeOpenXml.FormulaParsing
                         if (string.IsNullOrEmpty(s)) goto NextFormula;
                         f = new Formula(ws, fs.Row, fs.Column, s);
                     }
+                    ws = f._ws;
                     goto FollowFormulaChain;
                 }
+                else if (IsCircularReference(depChain, stack, id))
+                {
+                    //Check
+                }
+
                 goto NextFormula;
             }
             f._formulaEnumerator = null;
             goto FollowFormulaChain;
         }
+
+        private static bool IsCircularReference(OptimizedDependencyChain depChain, Stack<Formula> stack, ulong Id)
+        {
+            foreach(var f in stack)
+            {
+                var fId = ExcelCellBase.GetCellId(f._ws.IndexInList, f.StartRow, f.StartCol);
+                if (Id==fId)
+                {
+                    depChain._circularReferences.Add(Id);
+                    //throw Circual Reference.
+                    //throw new CircularReferenceException($"Circular reference detected in cell {ExcelCellBase.GetAddress(f.StartRow,f.StartCol)}");
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static bool GetProcessedAddress(OptimizedDependencyChain depChain, ref FormulaRangeAddress address)
         {
             if (depChain.accessedRanges.TryGetValue(address.WorksheetIx, out RangeDictionary wsRd) == false)

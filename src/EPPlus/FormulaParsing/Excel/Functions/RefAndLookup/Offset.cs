@@ -61,6 +61,14 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup
             return CreateResult(newRange, DataType.Enumerable);
         }
         public override bool ReturnsReference => true;
-        public override bool FollowChainOnReferences => false;
+       
+        public override FunctionParameterInformation GetParameterInfo(int argumentIndex)
+        {
+            if(argumentIndex==0)
+            {
+                return FunctionParameterInformation.IgnoreAddress;
+            }
+            return FunctionParameterInformation.Normal;
+        }
     }
 }

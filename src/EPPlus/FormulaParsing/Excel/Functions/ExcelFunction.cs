@@ -29,6 +29,20 @@ using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 namespace OfficeOpenXml.FormulaParsing.Excel.Functions
 {
     /// <summary>
+    /// Information about an argument passed to a function used in the formula parser. 
+    /// </summary>
+    public enum FunctionParameterInformation
+    { 
+        /// <summary>
+        /// The argument will be handled as a normally.
+        /// </summary>
+        Normal,
+        /// <summary>
+        /// If the argument is an address this address will be ignored in the dependency chain.
+        /// </summary>
+        IgnoreAddress
+    }
+    /// <summary>
     /// Base class for Excel function implementations.
     /// </summary>
     public abstract class ExcelFunction
@@ -661,14 +675,13 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
             }
         }
         /// <summary>
-        /// If addresses parameters to the funtion can be ignored in the dependency chain
+        /// Information of individual arguments of the function used internally by the formula parser .
         /// </summary>
-        public virtual bool FollowChainOnReferences
+        /// <param name="argumentIndex">The argument index</param>
+        /// <returns>Function argument information</returns>
+        public virtual FunctionParameterInformation GetParameterInfo(int argumentIndex)
         {
-            get
-            {
-                return true;
-            }
+            return FunctionParameterInformation.Normal;
         }
     }
 }

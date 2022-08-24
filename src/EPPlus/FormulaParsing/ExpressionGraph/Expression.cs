@@ -26,8 +26,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         private readonly List<Expression> _children = new List<Expression>();
         protected ParsingContext Context { get; private set; }
         public IList<Expression> Children { get { return _children; } }
-        //public Expression Next { get; set; }
-        //public Expression Prev { get; set; }
         public IOperator Operator { get; set; }
         internal abstract ExpressionType ExpressionType { get; }
         public abstract bool IsGroupedExpression { get; }

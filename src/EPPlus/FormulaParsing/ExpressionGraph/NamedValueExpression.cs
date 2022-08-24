@@ -18,7 +18,7 @@ using OfficeOpenXml.ExternalReferences;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
-    public class NamedValueExpression : AtomicExpression
+    internal class NamedValueExpression : ExpressionWithParent
     {
         FormulaAddressBase _locationInfo;
         public NamedValueExpression(string expression, ParsingContext parsingContext, ref FormulaAddressBase locationInfo)
@@ -31,7 +31,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         private readonly ParsingContext _parsingContext;
 
         internal override ExpressionType ExpressionType => ExpressionType.NameValue;
-
+        public override bool IsGroupedExpression => false;
         public override CompileResult Compile()
         {
             var c = _parsingContext.Scopes.Current;

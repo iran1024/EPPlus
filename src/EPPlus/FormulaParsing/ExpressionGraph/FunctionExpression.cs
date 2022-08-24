@@ -29,7 +29,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
     /// Expression that handles execution of a function.
     /// </summary>
     [DebuggerDisplay("FunctionExpression: {ExpressionString}")]
-    internal class FunctionExpression : AtomicExpression
+    internal class FunctionExpression : ExpressionWithParent
     {
         /// <summary>
         /// Constructor
@@ -37,12 +37,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         /// <param name="expression">should be the of the function</param>
         /// <param name="parsingContext"></param>
         /// <param name="isNegated">True if the numeric result of the function should be negated.</param>
-        public FunctionExpression(string expression, ParsingContext parsingContext, bool isNegated)
+        /// <param name="parent">The parent expression</param>
+        public FunctionExpression(string expression, ParsingContext parsingContext, bool isNegated, Expression parent)
             : base(expression, parsingContext)
         {
             _parsingContext = parsingContext;
             _functionCompilerFactory = new FunctionCompilerFactory(parsingContext.Configuration.FunctionRepository, parsingContext);
             _isNegated = isNegated;
+            _parent = parent;
             base.AddChild(new FunctionArgumentExpression(this, parsingContext));
         }
 
@@ -135,6 +137,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         internal override ExpressionType ExpressionType => ExpressionType.Function;
 
+        public override bool IsGroupedExpression => false;
+
         /// <summary>
         /// Adds a child expression
         /// </summary>
@@ -144,6 +148,21 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             Children.Last().AddChild(child);
             return child;
+        }
+        internal override Expression Clone()
+        {
+            return CloneMe(new FunctionExpression(ExpressionString, Context, _isNegated, null));
+        }
+        internal override Expression Clone(int rowOffset, int colOffset)
+        {
+            return CloneExpressionWithOffset(Clone(), rowOffset,colOffset);
+        }
+        internal ExcelFunction Function
+        {
+            get
+            {
+                return _parsingContext.Configuration.FunctionRepository.GetFunction(ExpressionString);
+            }
         }
     }
 }

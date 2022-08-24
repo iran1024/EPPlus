@@ -6,7 +6,7 @@ using Operators = OfficeOpenXml.FormulaParsing.Excel.Operators.Operators;
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     [DebuggerDisplay("CellAddressExpression: {ExpressionString}")]
-    internal class CellAddressExpression : Expression
+    internal class CellAddressExpression : ExpressionWithParent
     {
         FormulaRangeAddress _addressInfo;
         bool _negate;
@@ -68,7 +68,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             if (_result == null) Compile();
             FormulaAddressBase address=null;
-            var exp = new CellAddressExpression(new Token(), Context, ref address);            
+            var exp = new CellAddressExpression(new Token(), Context, ref address);
             var range = (FormulaRangeAddress)address;
             range.ExternalReferenceIx = _addressInfo.ExternalReferenceIx;
             range.WorksheetIx = _addressInfo.WorksheetIx;

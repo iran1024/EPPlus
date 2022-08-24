@@ -10,6 +10,7 @@
  *************************************************************************************************
   01/27/2020         EPPlus Software AB       Initial release EPPlus 5
  *************************************************************************************************/
+using OfficeOpenXml.FormulaParsing.Excel.Functions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             : base(false, ctx)
         {
             _function = function;
+            _parent = (ExpressionWithParent)function;
         }
 
         public override bool IsGroupedExpression
@@ -48,6 +50,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         public override Expression PrepareForNextChild()
         {
             return _function.PrepareForNextChild();
+        }
+        internal override ExpressionType ExpressionType => ExpressionType.FunctionArgument;
+        internal ExcelFunction Function
+        {
+            get
+            {
+                return Context.Configuration.FunctionRepository.GetFunction(_function.ExpressionString);
+            }
         }
     }
 }

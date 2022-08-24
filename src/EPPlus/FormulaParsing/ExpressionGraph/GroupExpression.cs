@@ -17,7 +17,7 @@ using System.Text;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
-    internal class GroupExpression : Expression
+    internal class GroupExpression : ExpressionWithParent
     {
         public GroupExpression(bool isNegated, ParsingContext ctx)
             : this(isNegated, new ExpressionCompiler(ctx), ctx)

@@ -19,6 +19,18 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         internal IExpressionCompiler _compiler;
         internal int AddressExpressionIndex;
         internal CellStoreEnumerator<object> _formulaEnumerator;
+        internal ulong _id=ulong.MinValue;
+        public ulong Id 
+        {
+            get
+            {
+                if(_id== ulong.MinValue)
+                {
+                    _id=ExcelCellBase.GetCellId(_ws.IndexInList, StartRow, StartCol);
+                }
+                return _id;
+            }
+        }
 
         public Formula(ExcelWorksheet ws, string formula)
         {

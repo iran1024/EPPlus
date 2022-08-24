@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 {
     [DebuggerDisplay("TableAddressExpression: {_addressInfo}")]
-    internal class TableAddressExpression : Expression
+    internal class TableAddressExpression : ExpressionWithParent
     {
         readonly FormulaRangeAddress _addressInfo;
         public TableAddressExpression(ParsingContext ctx, FormulaRangeAddress addressInfo) : base(null, ctx)
@@ -20,7 +20,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         public override CompileResult Compile()
         {
             var ri = Context.ExcelDataProvider.GetRange(_addressInfo);
-            return new CompileResult(ri, DataType.ExcelRange);
+            return new AddressCompileResult(ri, DataType.ExcelRange, _addressInfo);
         }
 
         internal override Expression Clone()

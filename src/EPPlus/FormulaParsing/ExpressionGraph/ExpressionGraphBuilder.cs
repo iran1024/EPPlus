@@ -157,13 +157,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                         {
                             if (!(parent is RangeExpression))
                             {
-                                var rangeExpression = new RangeExpression(_parsingContext);
+                                var rangeExpression = new RangeExpression(_parsingContext) { _parent = parent };
                                 rangeExpression.Children.Add(current);
                                 var exps = parent == null ? graph.Expressions : parent.Children;
                                 exps.Remove(current);
                                 exps.Add(rangeExpression);
                                 rangeParent = parent;
-                                parent = rangeExpression;
+                                ((GroupExpression)parent)._parent = rangeExpression;
+                                parent = rangeExpression;                                
                             }
                             current.Operator = op;
                         }
@@ -255,7 +256,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 token = token.CloneWithNegatedValue(true);
                 _negateNextExpression = false;
             }
-            var expression = _expressionFactory.Create(token, ref _currentAddress);
+            var expression = _expressionFactory.Create(token, ref _currentAddress, parent);
 
             _currentAddress = null;
             if (parent == null)
@@ -318,13 +319,13 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             if (parent == null)
             {
-                graph.Add(new FunctionExpression(funcName, _parsingContext, _negateNextExpression));
+                graph.Add(new FunctionExpression(funcName, _parsingContext, _negateNextExpression, parent));
                 _negateNextExpression = false;
                 HandleFunctionArguments(graph, tokens, graph.Current);
             }
             else
             {
-                var func = new FunctionExpression(funcName, _parsingContext, _negateNextExpression);
+                var func = new FunctionExpression(funcName, _parsingContext, _negateNextExpression, parent);
                 _negateNextExpression = false;
                 parent.AddChild(func);
                 HandleFunctionArguments(graph, tokens, func);
