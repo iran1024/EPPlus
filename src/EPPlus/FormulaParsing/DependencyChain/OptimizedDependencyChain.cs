@@ -91,23 +91,44 @@ namespace OfficeOpenXml.FormulaParsing
                 }
             }
         }
+        internal class CalcState
+        {
+            internal Stack<Formula> _stack = new Stack<Formula>();
+
+        }
         private static void AddChainForFormula(OptimizedDependencyChain depChain, ILexer lexer, Formula f, ExcelCalculationOption options)
         {
-            Stack<Formula> stack = new Stack<Formula>();
+            var subCalcs = new Stack<CalcState>();
+            var calcState = new CalcState();
             var ws = f._ws;
             ExcelFunction currentFunction = null;
 FollowFormulaChain:
             var et = f.ExpressionTree;
             if (f.AddressExpressionIndex < et.AddressExpressions.Count)
             {
-                var ae = et.AddressExpressions[f.AddressExpressionIndex++];                
-                if(ae._parent?.ExpressionType==ExpressionType.FunctionArgument)
+                var ae = et.AddressExpressions[f.AddressExpressionIndex++];
+                if (ae.ExpressionType == ExpressionType.Function) goto FollowFormulaChain;
+                if(ae._parent?.ExpressionType==ExpressionType.Function)
                 {
-                    var fa = ((FunctionArgumentExpression)ae._parent);
-                    currentFunction = fa.Function;
-                    if (currentFunction.GetParameterInfo(fa.Index)==FunctionParameterInformation.IgnoreAddress)
+                    var fe = ((FunctionExpression)ae._parent);
+                    currentFunction = fe.Function;
+                    switch(currentFunction.GetParameterInfo(fe.GetArgumentIndex(ae)))
                     {
-                        goto FollowFormulaChain;
+                        case FunctionParameterInformation.IgnoreAddress:
+                            goto FollowFormulaChain;
+                        case FunctionParameterInformation.Condition:
+                            subCalcs.Push(calcState);
+                            calcState = new CalcState();
+                            
+                            goto FollowFormulaChain;
+                        default:
+                            break;
+                    }
+                    if(currentFunction.ReturnsReference)
+                    {
+                        //fa.Stack
+                        int i=1;
+                        //var compiler = new FunctionCompilerFactory();
                     }
                 }
                 var address = ae.Compile().Address;                
@@ -123,7 +144,7 @@ FollowFormulaChain:
 
                         if(fws._formulas.Exists(address.FromRow, address.FromCol))
                         {
-                            stack.Push(f);
+                            calcState._stack.Push(f);
                             var fv = fws._formulas.GetValue(address.FromRow, address.FromCol);
                             if (fv is int ix)
                             {
@@ -155,11 +176,11 @@ FollowFormulaChain:
                 }
                 if (f.AddressExpressionIndex < et.AddressExpressions.Count)
                 {
-                    f.AddressExpressionIndex++;
+                    //f.AddressExpressionIndex++;
                     goto FollowFormulaChain;
                 }
             }
-            if (IsCircularReference(depChain, stack, f.Id))
+            if (IsCircularReference(depChain, calcState._stack, f.Id))
             {
                 //Check
             }
@@ -168,9 +189,9 @@ FollowFormulaChain:
                 depChain.Add(f);
             }
 
-            if (stack.Count > 0)
+            if (calcState._stack.Count > 0)
             {
-                f = stack.Pop();
+                f = calcState._stack.Pop();
                 ws = f._ws;
                 if (f._formulaEnumerator == null)
                 {
@@ -192,7 +213,7 @@ NextFormula:
                 {
                     depChain.processedCells.Add(id);
                     ws.Workbook.FormulaParser.ParsingContext.CurrentCell = new FormulaCellAddress(ws.IndexInList, fs.Row, fs.Column);
-                    stack.Push(f);
+                    calcState._stack.Push(f);
                     if (fs.Value is int ix)
                     {
                         f = ws._sharedFormulas[ix].GetFormula(fs.Row, fs.Column);
@@ -208,7 +229,7 @@ NextFormula:
                     ws = f._ws;
                     goto FollowFormulaChain;
                 }
-                else if (IsCircularReference(depChain, stack, id))
+                else if (IsCircularReference(depChain, calcState._stack, id))
                 {
                     //Check
                 }

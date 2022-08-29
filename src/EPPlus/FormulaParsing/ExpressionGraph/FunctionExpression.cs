@@ -45,7 +45,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             _functionCompilerFactory = new FunctionCompilerFactory(parsingContext.Configuration.FunctionRepository, parsingContext);
             _isNegated = isNegated;
             _parent = parent;
-            base.AddChild(new FunctionArgumentExpression(this, parsingContext));
+            //base.AddChild(new FunctionArgumentExpression(this, parsingContext));
         }
 
         private readonly ParsingContext _parsingContext;
@@ -115,6 +115,11 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             
         }
 
+        internal int GetArgumentIndex(Expression expression)
+        {
+            return Children.IndexOf(expression);
+        }
+
         /// <summary>
         /// Adds a new <see cref="FunctionArgumentExpression"/> for the next child
         /// </summary>
@@ -131,7 +136,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
             get
             {
-                return (Children.Any() && Children.First().Children.Any());
+                //return (Children.Any() && Children.First().Children.Any());
+                return Children.Any();
             }
         }
 
@@ -146,7 +152,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         /// <returns></returns>
         public override Expression AddChild(Expression child)
         {
-            Children.Last().AddChild(child);
+            //Children.Last().AddChild(child);
+            Children.Add(child);
             return child;
         }
         internal override Expression Clone()

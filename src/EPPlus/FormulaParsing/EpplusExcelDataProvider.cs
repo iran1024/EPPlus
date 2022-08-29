@@ -681,7 +681,7 @@ namespace OfficeOpenXml.FormulaParsing
             {
                 var wb = _package.Workbook;
                 if (wsIx == -1) return null; //Non-existing worksheet
-                var workSheetIx = wsIx < 0 ? ParsingContext.Scopes.Current.Address.WorksheetIx : wsIx;
+                var workSheetIx = wsIx < 0 ? ParsingContext.CurrentCell.WorksheetIx : wsIx;
                 ExcelNamedRange nameItem = null;
                 ExcelWorksheet ws = null;
 

@@ -321,6 +321,22 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
             Assert.AreEqual(15, range.ToRow);
             Assert.AreEqual(10, range.ToCol);
         }
+        [TestMethod]
+        public void VerifyRangeExpressionInFunction()
+        {
+            //Setup
+            var f = @"IF(FALSE,A1:A2,B1:B2)";
+            var tokens = _tokenizer.Tokenize(f);
+            var expTree = _graphBuilder.Build(tokens);
+            var result = _compiler.Compile(expTree.Expressions);
 
+            //Assert
+            Assert.AreEqual(12, tokens.Count);
+            Assert.AreEqual(1, expTree.Expressions.Count);
+            Assert.AreEqual(3, expTree.Expressions[0].Children.Count);
+            Assert.AreEqual(ExpressionType.Boolean, expTree.Expressions[0].Children[0].ExpressionType);
+            Assert.AreEqual(ExpressionType.RangeAddress, expTree.Expressions[0].Children[1].ExpressionType);
+            Assert.AreEqual(ExpressionType.RangeAddress, expTree.Expressions[0].Children[2].ExpressionType);
+        }
     }
 }

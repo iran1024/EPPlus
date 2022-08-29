@@ -163,7 +163,7 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                                 exps.Remove(current);
                                 exps.Add(rangeExpression);
                                 rangeParent = parent;
-                                ((GroupExpression)parent)._parent = rangeExpression;
+                                ((ExpressionWithParent)parent)._parent = rangeExpression;
                                 parent = rangeExpression;                                
                             }
                             current.Operator = op;
@@ -249,6 +249,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 (token.TokenTypeIsSet(TokenType.Comma) || token.TokenTypeIsSet(TokenType.SemiColon)))
             {
                 parent = parent.PrepareForNextChild(token);
+                if(parent is RangeExpression re)
+                {
+                    parent = re._parent;
+                }
                 return;
             }
             if (_negateNextExpression)
@@ -341,7 +345,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                 throw new ExcelErrorValueException(eErrorType.Value);
             }
             _tokenIndex++;
-            BuildUp(graph, tokens, function.Children.First());
+            //BuildUp(graph, tokens, function.Children.First());
+            BuildUp(graph, tokens, function);
         }
 
         private void BuildGroupExpression(ExpressionTree graph, Token[] tokens, Expression parent)
@@ -354,7 +359,8 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
             else
             {
-                if (parent.IsGroupedExpression || parent is FunctionArgumentExpression)
+                //if (parent.IsGroupedExpression || parent is FunctionArgumentExpression)
+                if (parent.IsGroupedExpression || parent is FunctionExpression)
                 {
                     var newGroupExpression = new GroupExpression(_negateNextExpression, _parsingContext);
                     _negateNextExpression = false;
@@ -373,14 +379,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             }
             else
             {
-                if (parent is FunctionArgumentExpression)
+                if (parent.ExpressionType==ExpressionType.Function)
                 {
                     current = parent.Children.Last();
                 }
                 else
                 {
                     current = parent.Children.Last();
-                    if (current is FunctionArgumentExpression)
+                    if (current.ExpressionType==ExpressionType.Function)
                     {
                         current = current.Children.Last();
                     }

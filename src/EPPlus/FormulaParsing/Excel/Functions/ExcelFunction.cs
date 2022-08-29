@@ -40,7 +40,10 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions
         /// <summary>
         /// If the argument is an address this address will be ignored in the dependency chain.
         /// </summary>
-        IgnoreAddress
+        IgnoreAddress,
+        Condition,
+        UseIfConditionIsTrue,
+        UseIfConditionIsFalse
     }
     /// <summary>
     /// Base class for Excel function implementations.

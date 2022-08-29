@@ -37,5 +37,16 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Functions.Logical
             return CreateResult(ExcelErrorValue.Create(eErrorType.NA), DataType.ExcelError);
         }
         public override bool ReturnsReference => true;
+        public override FunctionParameterInformation GetParameterInfo(int argumentIndex)
+        {
+            if (argumentIndex % 2 == 0)
+            {
+                return FunctionParameterInformation.Condition;
+            }
+            else
+            {
+                return FunctionParameterInformation.UseIfConditionIsTrue;
+            }
+        }
     }
 }

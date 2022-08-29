@@ -41,9 +41,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
             {
                 if(e.ExpressionType==ExpressionType.CellAddress || 
                    e.ExpressionType==ExpressionType.RangeAddress || 
-                   e.ExpressionType==ExpressionType.TableAddress)
+                   e.ExpressionType==ExpressionType.TableAddress ||
+                   e.ExpressionType==ExpressionType.NameValue)
                 {
-                    var a=e.Compile().Address;
+                    var a = e.Compile().Address;
                     if(a!=null)
                     {
                         list.Add((ExpressionWithParent)e);
@@ -51,6 +52,14 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
                     if(e.ExpressionType == ExpressionType.RangeAddress || e.ExpressionType == ExpressionType.TableAddress)
                     {
                         continue;
+                    }
+                }
+                else if(e.ExpressionType==ExpressionType.Function)
+                {
+                    var f = (FunctionExpression)e;
+                    if(f.Function.ReturnsReference)
+                    {
+                        list.Add((ExpressionWithParent)e);
                     }
                 }
                 if(e.HasChildren)

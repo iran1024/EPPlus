@@ -105,5 +105,26 @@ namespace EPPlusTest.FormulaParsing
                 Assert.AreEqual(1, dp._circularReferences.Count);
             }
         }
+        [TestMethod]
+        public void VerifyDefinedNames()
+        {
+            using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets[5];
+                var dp = OptimizedDependencyChainFactory.Create(ws.Cells["A1:A10"], new ExcelCalculationOption() { });
+                Assert.AreEqual(1, dp._circularReferences.Count);
+            }
+        }
+        [TestMethod]
+        public void VerifyIfFunction()
+        {
+            using (var p = OpenTemplatePackage("CalculationTwr.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets[6];
+                var dp = OptimizedDependencyChainFactory.Create(ws.Cells, new ExcelCalculationOption() { });
+                //Assert.AreEqual(1, dp._circularReferences.Count);
+            }
+        }
+
     }
 }
