@@ -3481,5 +3481,97 @@ namespace EPPlusTest
                 SaveAndCleanup(p);
             }
         }
+        [TestMethod]
+        public void I690InsertRow()
+        {
+            using (var pck = new ExcelPackage())
+            {
+                var sheet1 = pck.Workbook.Worksheets.Add("Sheet1");
+                pck.Workbook.Names.Add("ColumnRange", new ExcelRangeBase(sheet1, "Sheet1!$C:$C"));
+
+                var rangeAddress = pck.Workbook.Names["ColumnRange"].Address;
+
+                sheet1.InsertRow(1, 1);
+
+                Assert.AreEqual(pck.Workbook.Names["ColumnRange"].Address, rangeAddress);
+            }
+        }
+
+        [TestMethod]
+        public void I690InsertColumn()
+        {
+            using (var pck = new ExcelPackage())
+            {
+                var sheet1 = pck.Workbook.Worksheets.Add("Sheet1");
+                pck.Workbook.Names.Add("RowRange", new ExcelRangeBase(sheet1, "Sheet1!$7:$7"));
+
+                var rangeAddress = pck.Workbook.Names["RowRange"].Address;
+
+                sheet1.InsertColumn(1, 1);
+
+                Assert.AreEqual(pck.Workbook.Names["RowRange"].Address, rangeAddress);
+            }
+        }
+        [TestMethod]
+        public void I690DeleteRow()
+        {
+            using (var pck = new ExcelPackage())
+            {
+                var sheet1 = pck.Workbook.Worksheets.Add("Sheet1");
+                pck.Workbook.Names.Add("ColumnRange", new ExcelRangeBase(sheet1, $"Sheet1!$C2:$C{ExcelPackage.MaxRows}"));
+
+                var rangeAddress = pck.Workbook.Names["ColumnRange"].Address;
+
+                sheet1.DeleteRow(1, 1);
+
+                Assert.AreEqual("Sheet1!$C:$C", pck.Workbook.Names["ColumnRange"].Address);
+            }
+        }
+
+        [TestMethod]
+        public void I690DeleteColumn()
+        {
+            using (var pck = new ExcelPackage())
+            {
+                var sheet1 = pck.Workbook.Worksheets.Add("Sheet1");
+                pck.Workbook.Names.Add("RowRange", new ExcelRangeBase(sheet1, $"Sheet1!$B$7:$XFD$7"));
+
+                var rangeAddress = pck.Workbook.Names["RowRange"].Address;
+
+                sheet1.DeleteColumn(1, 1);
+
+                Assert.AreEqual("Sheet1!$7:$7",pck.Workbook.Names["RowRange"].Address);
+             }
+        }
+        [TestMethod]
+        public void s330()
+        {
+            using (var p = OpenTemplatePackage("s330.xlsm"))
+            {
+                p.Workbook.VbaProject.Signature.Certificate = null;
+                SaveAndCleanup(p);
+            }
+        }
+        [TestMethod]
+        public void i694()
+        {
+            using (var p = OpenPackage("i694.xlsx", true))
+            {
+                var wb = p.Workbook;
+                var ws = wb.Worksheets.Add("test");
+
+                for (var colNum = 1; colNum <= 5; colNum++)
+                {
+                    ws.Cells[1, colNum].Value = $"Column_{colNum}";
+                    ws.Column(colNum).OutlineLevel = 1;
+                    ws.Column(colNum).Collapsed = true;
+                    ws.Column(colNum).Hidden = true;
+
+                }
+
+                SaveAndCleanup(p);
+            }
+        }
+
     }
 }

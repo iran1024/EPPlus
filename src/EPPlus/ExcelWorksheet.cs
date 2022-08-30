@@ -2083,7 +2083,7 @@ namespace OfficeOpenXml
             }
         }
 
-#region Worksheet Public Methods
+    #region Worksheet Public Methods
 
         ///// <summary>
         ///// Provides access to an individual cell within the worksheet.
@@ -2597,6 +2597,7 @@ namespace OfficeOpenXml
                     foreach (ExcelDrawing d in Drawings)
                     {
                         d.AdjustPositionAndSize();
+                        d.UpdatePositionAndSizeXml();
                         HandleSaveForIndividualDrawings(d);
                     }
                     Packaging.ZipPackagePart partPack = Drawings.Part;
