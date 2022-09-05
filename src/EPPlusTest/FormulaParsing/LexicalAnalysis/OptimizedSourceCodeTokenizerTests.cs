@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using OfficeOpenXml.FormulaParsing.ExpressionGraph;
+
 namespace EPPlusTest.FormulaParsing.LexicalAnalysis
 {
     [TestClass]
@@ -541,6 +543,27 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             Assert.AreEqual(11, tokens.Count);
             Assert.AreEqual(TokenType.ClosingParenthesis, tokens[5].TokenType);
             Assert.AreEqual(TokenType.OpeningParenthesis, tokens[6].TokenType);
+        }
+        [TestMethod]
+        public void CreateRpnExpressions()
+        {
+            var graph = new ExpressionGraphReversedPolishNotation();
+
+            var formula = "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3";
+            var tokens = _tokenizer.Tokenize(formula);
+            var exps = graph.CreateExpressionList(tokens);
+
+            formula = "sin(max(2, 3) / 3 * pi())";
+            tokens = _tokenizer.Tokenize(formula);
+            exps = graph.CreateExpressionList(tokens);
+
+            formula = "(( 1 -(- 2)-( 3 + 4 + 5 ))/( 6 + 7 * 8 - 9) * 10 )";
+            tokens = _tokenizer.Tokenize(formula);
+            exps = graph.CreateExpressionList(tokens);
+
+            formula = "( 1 + 2 ) * ( 3 / 4 ) ^ ( 5 + 6 )";
+            tokens = _tokenizer.Tokenize(formula);
+            exps = graph.CreateExpressionList(tokens);
         }
     }
 }

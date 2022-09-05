@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using static OfficeOpenXml.ExcelAddressBase;
-using OfficeOpenXml.FormulaParsing.ExpressionGraph;
 using OfficeOpenXml.Core.CellStore;
 
 namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
@@ -15,7 +14,6 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         internal int StartRow, StartCol;
         internal static ISourceCodeTokenizer _tokenizer = OptimizedSourceCodeTokenizer.Default;
         internal IList<Token> Tokens;
-        internal ExpressionTree ExpressionTree;
         internal IExpressionCompiler _compiler;
         internal int AddressExpressionIndex;
         internal CellStoreEnumerator<object> _formulaEnumerator;
@@ -43,9 +41,25 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             //SetTokenInfos();
 
             var ctx = ws.Workbook.FormulaParser.ParsingContext;
-            var graphBuilder = ws.Workbook.FormulaParser.GraphBuilder;            
-            ExpressionTree = graphBuilder.Build(Tokens);
-         }
+        }
+        private ExpressionTree _expressionTree = null;
+        public ExpressionTree ExpressionTree
+        {
+            get
+            {
+                if (_expressionTree == null)
+                {
+                    var graphBuilder = _ws.Workbook.FormulaParser.GraphBuilder;
+                    _expressionTree = graphBuilder.Build(Tokens);
+                }
+                return _expressionTree;
+            }
+            set
+            {
+                _expressionTree = value;
+            }
+
+        }
         internal void Compile(List<FormulaRangeAddress> addresses)
         {
             addresses = new List<FormulaRangeAddress>();
