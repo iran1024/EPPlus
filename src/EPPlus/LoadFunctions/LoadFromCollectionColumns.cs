@@ -65,6 +65,7 @@ namespace OfficeOpenXml.LoadFunctions
             if (type.HasMemberWithPropertyOfType<EpplusTableColumnAttribute>())
             {
                 sort = true;
+                var index = 0;
                 foreach (var member in members)
                 {
                     var hPrefix = default(string);
@@ -126,7 +127,11 @@ namespace OfficeOpenXml.LoadFunctions
                     var epplusColumnAttr = member.GetFirstAttributeOfType<EpplusTableColumnAttribute>();
                     if (epplusColumnAttr != null)
                     {
-                        if(!string.IsNullOrEmpty(epplusColumnAttr.Header))
+                        if(!string.IsNullOrEmpty(epplusColumnAttr.Header) && !string.IsNullOrEmpty(headerPrefix))
+                        {
+                            header = $"{headerPrefix} {epplusColumnAttr.Header}";
+                        }
+                        else
                         {
                             header = epplusColumnAttr.Header;
                         }
@@ -147,15 +152,20 @@ namespace OfficeOpenXml.LoadFunctions
                         totalsRowLabel = epplusColumnAttr.TotalsRowLabel;
                         totalsRowFormula = epplusColumnAttr.TotalsRowFormula;
                     }
-                    header = string.IsNullOrEmpty(header) ? member.Name : header;
-                    if (!string.IsNullOrEmpty(hPrefix))
+                    else if(!string.IsNullOrEmpty(headerPrefix))
                     {
-                        header = hPrefix;
+                        header = string.IsNullOrEmpty(header) ? member.Name : header;
+                        header = $"{headerPrefix} {header}";
+                    }
+                    else
+                    {
+                        header = string.IsNullOrEmpty(header) ? member.Name : header;
                     }
                     result.Add(new ColumnInfo
                     {
                         Header = header,
                         SortOrder = sortOrder,
+                        Index = index++,
                         SortOrderLevels = colInfoSortOrderList,
                         MemberInfo = member,
                         NumberFormat = numberFormat,
@@ -275,7 +285,7 @@ namespace OfficeOpenXml.LoadFunctions
                         if (aVal.CompareTo(bVal) == 0) continue;
                         return aVal.CompareTo(bVal);
                     }
-                    return 0;
+                    return a.Index.CompareTo(b.Index);
                 }
             });
             result.ForEach(x => x.Index = index++);

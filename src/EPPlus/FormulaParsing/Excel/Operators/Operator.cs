@@ -85,11 +85,6 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             return _implementation(left, right, ctx);
         }
 
-        public override string ToString()
-        {
-            return "Operator: " + _operator;
-        }
-
         private static bool CanDoNumericOperation(CompileResult l, CompileResult r)
         {
             return (l.IsNumeric || l.IsNumericString || l.IsPercentageString || l.IsDateString || l.Result is IRangeInfo) &&
