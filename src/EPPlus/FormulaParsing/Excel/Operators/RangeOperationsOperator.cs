@@ -274,8 +274,8 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
             }
             else
             {
-                var col = range.Address.Start.Column + colOffset;
-                var row = range.Address.Start.Row + rowOffset;
+                var col = range.Address.FromCol + colOffset;
+                var row = range.Address.FromRow + rowOffset;
                 return range.GetValue(row, col);
             }
         }

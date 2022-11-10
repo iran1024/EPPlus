@@ -271,81 +271,35 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                 {
                     _colon = new Operator(Operators.Colon, PrecedenceColon, (l, r, ctx) =>
                       {
-                          FormulaRangeAddress result=l.Address;
-                          
-                          if (l.Result is FormulaRangeAddress ra)
+                          FormulaRangeAddress result;
+                          if (l.Address != null)
                           {
-                              result = ra;
-                              if (ra.WorksheetIx < -1)
+                              result = l.Address;
+                              if (result.Address.WorksheetIx < -1)
                               {
                                   result.WorksheetIx = (short)ctx.CurrentCell.WorksheetIx;
                               }
                           }
                           else
                           {
-                              if (l.Result is IRangeInfo lri)
-                              {
-                                  result = new FormulaRangeAddress(ctx);
-                                  result.WorksheetIx = lri.Address.WorksheetIx < -1 ? (short)ctx.CurrentCell.WorksheetIx : lri.Address.WorksheetIx;
-                                  result.FromRow = lri.Address.FromRow;
-                                  result.FromCol = lri.Address.FromCol;
-                                  result.ToRow = lri.Address.ToRow;
-                                  result.ToCol = lri.Address.ToCol;
-                              }
+                              return new AddressCompileResult(eErrorType.Value);
                           }
-                          
-                          //if (r.Result is FormulaCellAddress rr)
+                          //else
                           //{
-                          //    if (result.WorksheetIx != rr.WorksheetIx)
+                          //    if (l.Result is IRangeInfo lri)
                           //    {
-                          //        result.WorksheetIx = -1;
-                          //    }
-                          //    else
-                          //    {
-                          //        if (result.FromRow > rr.Row)
-                          //        {
-                          //            if (result.ToCol == 0)
-                          //            {
-                          //                result.ToCol = result.FromCol;
-                          //            }
-                          //            result.FromRow = rr.Row;
-                          //        }
-                          //        else
-                          //        {
-                          //            if (rr.Row == 0 || rr.Row > result.ToRow) result.ToRow = rr.Row;
-                          //        }
-
-                          //        if (result.FromCol > rr.Col)
-                          //        {
-                          //            if (result.ToCol == 0)
-                          //            {
-                          //                result.ToCol = result.FromCol;
-                          //            }
-                          //            result.FromCol = rr.Col;
-                          //        }
-                          //        else
-                          //        {
-                          //            if (rr.Col == 0 || rr.Col > result.ToCol) result.ToCol = rr.Col;
-                          //        }
+                          //        result = new FormulaRangeAddress(ctx);
+                          //        result.WorksheetIx = lri.Address.WorksheetIx < -1 ? (short)ctx.CurrentCell.WorksheetIx : lri.Address.WorksheetIx;
+                          //        result.FromRow = lri.Address.FromRow;
+                          //        result.FromCol = lri.Address.FromCol;
+                          //        result.ToRow = lri.Address.ToRow;
+                          //        result.ToCol = lri.Address.ToCol;
                           //    }
                           //}
-                          /*else*/ if (r.Result is IRangeInfo rri)
+                          
+                          if (r.Address != null)
                           {
-                              if (result.WorksheetIx != rri.Address.WorksheetIx && r.Address.WorksheetIx != short.MinValue)
-                              {
-                                  result.WorksheetIx = -1;
-                              }
-                              else
-                              {
-                                  result.FromRow = result.FromRow < rri.Address.FromRow ? result.FromRow : rri.Address.FromRow;
-                                  result.FromCol = result.FromCol < rri.Address.FromCol ? result.FromCol : rri.Address.FromCol;
-                                  result.ToRow = result.ToRow > rri.Address.ToRow ? result.ToRow : rri.Address.ToRow;
-                                  result.ToCol = result.ToCol > rri.Address.ToCol ? result.ToCol : rri.Address.ToCol;
-                              }
-                          }
-                          else if(r.Address!=null)
-                          {
-                              if (result.WorksheetIx != r.Address.WorksheetIx && r.Address.WorksheetIx!=short.MinValue)
+                              if (result.WorksheetIx != r.Address.WorksheetIx && r.Address.WorksheetIx != short.MinValue)
                               {
                                   result.WorksheetIx = -1;
                               }
@@ -353,10 +307,29 @@ namespace OfficeOpenXml.FormulaParsing.Excel.Operators
                               {
                                   result.FromRow = result.FromRow < r.Address.FromRow ? result.FromRow : r.Address.FromRow;
                                   result.FromCol = result.FromCol < r.Address.FromCol ? result.FromCol : r.Address.FromCol;
-                                  result.ToRow = result.ToRow > r.Address.ToRow ? result.ToRow : r.Address.ToRow;
+                                  result.ToRow = result.ToRow > r.Address.ToRow ? result.ToRow : r.Address.ToRow;   
                                   result.ToCol = result.ToCol > r.Address.ToCol ? result.ToCol : r.Address.ToCol;
+                                  
                               }
                           }
+                          else
+                          {
+                                  return new AddressCompileResult(eErrorType.Value);
+                          }
+                          //else if(r.Address!=null)
+                          //{
+                          //    if (result.WorksheetIx != r.Address.WorksheetIx && r.Address.WorksheetIx!=short.MinValue)
+                          //    {
+                          //        result.WorksheetIx = -1;
+                          //    }
+                          //    else
+                          //    {
+                          //        result.FromRow = result.FromRow < r.Address.FromRow ? result.FromRow : r.Address.FromRow;
+                          //        result.FromCol = result.FromCol < r.Address.FromCol ? result.FromCol : r.Address.FromCol;
+                          //        result.ToRow = result.ToRow > r.Address.ToRow ? result.ToRow : r.Address.ToRow;
+                          //        result.ToCol = result.ToCol > r.Address.ToCol ? result.ToCol : r.Address.ToCol;
+                          //    }
+                          //}
 
                           return new AddressCompileResult(new RangeInfo(result, ctx), DataType.ExcelRange,result);
                           throw new ExcelErrorValueException(eErrorType.Ref);

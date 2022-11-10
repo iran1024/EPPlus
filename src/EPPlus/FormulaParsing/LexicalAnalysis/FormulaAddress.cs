@@ -740,6 +740,13 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         /// </summary>
         public int WorksheetIx;
         public int Row, Column;
+        public string Address
+        {
+            get
+            {
+                return ExcelAddressBase.GetAddress(Row, Col);
+            }
+        }
     }
     public class FormulaAddressBase
     {
@@ -756,7 +763,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         /// </summary>
         public short WorksheetIx = short.MinValue;
     }
-    public class FormulaRangeAddress : FormulaAddressBase, IComparable<FormulaRangeAddress>
+    public class FormulaRangeAddress : FormulaAddressBase, IAddressInfo, IComparable<FormulaRangeAddress>
     {
         public ParsingContext _context;
         internal FormulaRangeAddress()
@@ -770,6 +777,13 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         public int FromRow, FromCol, ToRow, ToCol;
         internal FixedFlag FixedFlag;
 
+        public bool IsSingleCell
+        {
+            get
+            {
+                return FromRow == ToRow && FromCol == ToCol;
+            }
+        }
         public static FormulaRangeAddress Empty
         {
             get { return new FormulaRangeAddress(); }
@@ -884,39 +898,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
                 return 0;
             }
         }
-
-        internal ExcelCellAddress _start = null;
-        /// <summary>
-        /// Gets the row and column of the top left cell.
-        /// </summary>
-        /// <value>The start row column.</value>
-        public ExcelCellAddress Start
-        {
-            get
-            {
-                if (_start == null)
-                {
-                    _start = new ExcelCellAddress(FromRow, FromCol);
-                }
-                return _start;
-            }
-        }
-        internal ExcelCellAddress _end = null;
-        /// <summary>
-        /// Gets the row and column of the bottom right cell.
-        /// </summary>
-        /// <value>The end row column.</value>
-        public ExcelCellAddress End
-        {
-            get
-            {
-                if (_end == null)
-                {
-                    _end = new ExcelCellAddress(ToRow, ToCol);
-                }
-                return _end;
-            }
-        }
+        public FormulaRangeAddress Address => this;
     }
     public class FormulaTableAddress : FormulaRangeAddress
     {

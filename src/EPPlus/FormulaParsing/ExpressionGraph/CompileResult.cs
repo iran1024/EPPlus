@@ -62,9 +62,9 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public CompileResult(object result, DataType dataType, int excelAddressReferenceId)
         {
-            if(result is ExcelDoubleCellValue)
+            if(result is ExcelDoubleCellValue v)
             {
-                Result = ((ExcelDoubleCellValue)result).Value;
+                Result = v.Value;
             }
             else
             {

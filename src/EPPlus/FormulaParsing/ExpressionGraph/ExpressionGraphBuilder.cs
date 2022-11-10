@@ -36,7 +36,6 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
         {
 
         }
-
         public ExpressionGraphBuilder(IExpressionFactory expressionFactory, ParsingContext parsingContext)
         {
             _expressionFactory = expressionFactory;

@@ -19,7 +19,7 @@ using System.Text;
 
 namespace OfficeOpenXml.FormulaParsing
 {
-    public interface IRangeInfo : IEnumerator<ICellInfo>, IEnumerable<ICellInfo>
+    public interface IRangeInfo : IAddressInfo, IEnumerator<ICellInfo>, IEnumerable<ICellInfo>
     {
         /// <summary>
         /// If the range is empty
@@ -39,11 +39,7 @@ namespace OfficeOpenXml.FormulaParsing
         /// </summary>
         /// <returns>Number of cells</returns>
         int GetNCells();
-        /// <summary>
-        /// The address.
-        /// </summary>
-        //ExcelAddressBase Address { get; }
-        FormulaRangeAddress Address { get; }
+
         /// <summary>
         /// Size of the range, i.e. number of Cols and number of Rows
         /// </summary>
@@ -66,5 +62,13 @@ namespace OfficeOpenXml.FormulaParsing
         /// The worksheet 
         /// </summary>
         ExcelWorksheet Worksheet { get; }
+    }
+    public interface IAddressInfo
+    {
+        /// <summary>
+        /// The address.
+        /// </summary>
+        //ExcelAddressBase Address { get; }
+        FormulaRangeAddress Address { get; }
     }
 }

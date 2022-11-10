@@ -1,4 +1,4 @@
-/*************************************************************************************************
+﻿/*************************************************************************************************
   Required Notice: Copyright (C) EPPlus Software AB. 
   This software is licensed under PolyForm Noncommercial License 1.0.0 
   and may only be used for noncommercial purposes 
@@ -8,22 +8,22 @@
  *************************************************************************************************
   Date               Author                       Change
  *************************************************************************************************
-  01/27/2020         EPPlus Software AB       Initial release EPPlus 5
+  11/07/2022         EPPlus Software AB       Initial release EPPlus 6.2
  *************************************************************************************************/
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
-namespace OfficeOpenXml.FormulaParsing.Exceptions
+namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.Rpn
 {
-    public class InvalidFormulaException : Exception
+    internal class RpnFormulaCell
     {
-        public InvalidFormulaException(string msg)
-            : base( msg)
+        public RpnFormulaCell()
         {
+            _expressionStack = new Stack<RpnExpression>();
+            _funcStackPosition = new Stack<int>();
 
         }
+        internal Stack<RpnExpression> _expressionStack;
+        internal Stack<int> _funcStackPosition;
+
     }
 }

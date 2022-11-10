@@ -18,10 +18,10 @@ using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 namespace OfficeOpenXml.FormulaParsing.Exceptions
 {
-    public class InvalidFormulaException : Exception
+    public class UnrecognizedTokenException : Exception
     {
-        public InvalidFormulaException(string msg)
-            : base( msg)
+        public UnrecognizedTokenException(Token token)
+            : base( "Unrecognized token: " + token.Value)
         {
 
         }

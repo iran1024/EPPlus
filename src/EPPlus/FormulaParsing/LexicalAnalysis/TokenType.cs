@@ -171,5 +171,6 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         /// Represents a cell address.
         /// </summary>
         CellAddress = (ulong)1 << 36,
+        StartFunctionArguments = (ulong)1 << 37,
     }
 }
