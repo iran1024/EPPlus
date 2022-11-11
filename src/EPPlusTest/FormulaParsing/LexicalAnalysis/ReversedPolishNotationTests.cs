@@ -5,6 +5,7 @@ using OfficeOpenXml.FormulaParsing.ExcelUtilities;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.Rpn;
 using OfficeOpenXml.FormulaParsing.ExpressionGraph.Rpn.FunctionCompilers;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using System;
 
 namespace EPPlusTest.FormulaParsing.LexicalAnalysis
 {
@@ -15,7 +16,6 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
         ParsingContext _parsingContext;
         RpnExpressionGraph _graph;
         private ISourceCodeTokenizer _tokenizer;
-        private RpnFunctionCompilerFactory _functionCompilerFactory;
        [TestInitialize]
         public void Setup()
         {
@@ -30,6 +30,30 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             _graph = new RpnExpressionGraph(_parsingContext);
             _tokenizer = OptimizedSourceCodeTokenizer.Default;
 
+            SetUpWorksheet1();
+            SetUpWorksheet2();
+        }
+
+        private void SetUpWorksheet2()
+        {
+            var ws2 = _package.Workbook.Worksheets.Add("Sheet2");
+            ws2.Cells["A1:A3"].Value = 4;
+
+            ws2.Cells["C2"].Value = "Col 1";
+            ws2.Cells["D2"].Value = "Col 2";
+
+            ws2.Cells["C3"].Value = 1;
+            ws2.Cells["D3"].Value = new DateTime(2022, 10, 01);
+
+            ws2.Cells["C4"].Value = 2;
+            ws2.Cells["D4"].Value = new DateTime(2022, 11, 01);
+
+
+            ws2.Tables.Add(ws2.Cells["C2:D4"], "Table1");
+        }
+
+        private void SetUpWorksheet1()
+        {
             var ws1 = _package.Workbook.Worksheets.Add("Sheet1");
             ws1.Cells["A1"].Value = 1;
             ws1.Cells["B1"].Value = 2;
@@ -41,9 +65,6 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
 
             _package.Workbook.Names.AddValue("WorkbookDefinedNameValue", 1);
             ws1.Names.AddValue("WorksheetDefinedNameValue", "Name Value");
-
-            var ws2 = _package.Workbook.Worksheets.Add("Sheet2");
-            ws2.Cells["A1:A3"].Value = 4;
         }
 
         [TestMethod]
@@ -111,15 +132,15 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             var rangeAddress = _parsingContext.RangeAddressFactory.Create("sheet1", 4, 1);
             using (_parsingContext.Scopes.NewScope(rangeAddress))
             {
-                for (int i = 0; i < 1000000; i++)
-                {
-                    var formula = "SUM(A1:B1+A2:B2)+1";
-                    var tokens = _tokenizer.Tokenize(formula);
-                    var exps = _graph.CreateExpressionList(tokens);
-                    var cr = _graph.Execute(exps);
+                //for (int i = 0; i < 1000000; i++)
+                //{
+                var formula = "SUM(A1:B1+A2:B2)+1";
+                var tokens = _tokenizer.Tokenize(formula);
+                var exps = _graph.CreateExpressionList(tokens);
+                var cr = _graph.Execute(exps);
 
-                    Assert.AreEqual(34, cr.ResultNumeric);
-                }
+                Assert.AreEqual(34, cr.ResultNumeric);
+                //}
             }
         }
         [TestMethod]
@@ -138,7 +159,39 @@ namespace EPPlusTest.FormulaParsing.LexicalAnalysis
             var tokens = _tokenizer.Tokenize(formula);
             var exps = _graph.CreateExpressionList(tokens);
             var cr = _graph.Execute(exps);
-            Assert.AreEqual("Test 2", cr.Result);
+            Assert.AreEqual(10D, cr.Result);
+        }
+        [TestMethod]
+        public void Calculate_ArrayAdditionWithRange()
+        {
+            var formula = "sum({1,2,3;3,4,5}+A1:C2)";
+            var tokens = _tokenizer.Tokenize(formula);
+            var exps = _graph.CreateExpressionList(tokens);
+            var cr = _graph.Execute(exps);
+            Assert.AreEqual(84D, cr.Result);
+        }
+        [TestMethod]
+        public void Calculate_TableAddress()
+        {
+            var rangeAddress = _parsingContext.RangeAddressFactory.Create("sheet1", 4, 1);
+            using (_parsingContext.Scopes.NewScope(rangeAddress))
+            {
+                var formula = "Sum(Table1[col 1])";
+                var tokens = _tokenizer.Tokenize(formula);
+                var exps = _graph.CreateExpressionList(tokens);
+                var cr = _graph.Execute(exps);
+                Assert.AreEqual(3D, cr.Result);
+            }
+        }
+
+        [TestMethod]
+        public void Calculate_TableCell()
+        {
+            var formula = "sum({1,2,3;3,4,5}+A1:C2)";
+            var tokens = _tokenizer.Tokenize(formula);
+            var exps = _graph.CreateExpressionList(tokens);
+            var cr = _graph.Execute(exps);
+            Assert.AreEqual(84D, cr.Result);
         }
 
         [TestMethod]

@@ -744,7 +744,11 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
         {
             get
             {
-                return ExcelAddressBase.GetAddress(Row, Col);
+                if (Row > 1 && Column > 1)
+                {
+                    return ExcelAddressBase.GetAddress(Row, Column);
+                }
+                return "";
             }
         }
     }
@@ -920,6 +924,7 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
             else if(WorksheetIx == short.MinValue)
             {
                 table = package.Workbook.GetTable(TableName);
+                WorksheetIx = (short)table.WorkSheet.PositionId;
             }
             else
             {

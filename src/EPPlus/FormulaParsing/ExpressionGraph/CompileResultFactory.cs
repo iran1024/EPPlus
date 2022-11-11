@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using OfficeOpenXml.FormulaParsing;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 
 namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
@@ -28,81 +29,77 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph
 
         public static CompileResult Create(object obj, int excelAddressReferenceId)
         {
-            if ((obj is INameInfo))
-            {
-                obj = ((INameInfo)obj).Value;
-            }
             if (obj is IRangeInfo)
             {
                 obj = ((IRangeInfo)obj).GetOffset(0, 0);
+            }
+            else if ((obj is INameInfo))
+            {
+                obj = ((INameInfo)obj).Value;
             }
             if (obj == null) return new CompileResult(null, DataType.Empty);
             var t = obj.GetType();
-
-            if (t.Equals(typeof(string)))
+            var tc = Type.GetTypeCode(t);
+            switch (tc)
             {
-                return new CompileResult(obj, DataType.String, excelAddressReferenceId);
+                case TypeCode.String:
+                   return new CompileResult(obj, DataType.String, excelAddressReferenceId);
+                case TypeCode.Double:
+                case TypeCode.Decimal:
+                case TypeCode.Single:
+                    return new CompileResult(obj, DataType.Decimal, excelAddressReferenceId);
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                    return new CompileResult(obj, DataType.Integer, excelAddressReferenceId);
+                case TypeCode.Boolean:
+                    return new CompileResult(obj, DataType.Boolean, excelAddressReferenceId);
+                case TypeCode.DateTime:
+                    return new CompileResult(((System.DateTime)obj).ToOADate(), DataType.Date, excelAddressReferenceId);
+                default:
+                    if (t.Equals(typeof(ExcelErrorValue)))
+                    {
+                        return new CompileResult(obj, DataType.ExcelError, excelAddressReferenceId);
+                    }
+                    throw new ArgumentException("Non supported type " + t.FullName);
             }
-            if (t.Equals(typeof(double)) || obj is decimal || obj is float)
-            {
-                return new CompileResult(obj, DataType.Decimal, excelAddressReferenceId);
-            }
-            if (t.Equals(typeof(int)) || obj is long || obj is short)
-            {
-                return new CompileResult(obj, DataType.Integer, excelAddressReferenceId);
-            }
-            if (t.Equals(typeof(bool)))
-            {
-                return new CompileResult(obj, DataType.Boolean, excelAddressReferenceId);
-            }
-            if (t.Equals(typeof(ExcelErrorValue)))
-            {
-                return new CompileResult(obj, DataType.ExcelError, excelAddressReferenceId);
-            }
-            if (t.Equals(typeof(System.DateTime)))
-            {
-                return new CompileResult(((System.DateTime)obj).ToOADate(), DataType.Date, excelAddressReferenceId);
-            }
-            throw new ArgumentException("Non supported type " + t.FullName);
         }
         public static CompileResult Create(object obj, int excelAddressReferenceId, FormulaRangeAddress address)
         {
-            if ((obj is INameInfo))
+            if (obj is IRangeInfo ri)
             {
-                obj = ((INameInfo)obj).Value;
+                obj = ri.GetOffset(0, 0);
             }
-            if (obj is IRangeInfo)
+            else if ((obj is INameInfo ni))
             {
-                obj = ((IRangeInfo)obj).GetOffset(0, 0);
+                obj = ni.Value;
             }
             if (obj == null) return new AddressCompileResult(null, DataType.Empty, address);
             var t = obj.GetType();
-            
-            if (t.Equals(typeof(string)))
+            var tc = Type.GetTypeCode(t);
+            switch (tc)
             {
-                return new AddressCompileResult(obj, DataType.String, address);
+                case TypeCode.String:
+                    return new AddressCompileResult(obj, DataType.String, address);
+                case TypeCode.Double:
+                case TypeCode.Decimal:
+                case TypeCode.Single:
+                    return new AddressCompileResult(obj, DataType.Decimal, address);
+                case TypeCode.Int16:
+                case TypeCode.Int32:
+                case TypeCode.Int64:
+                        return new AddressCompileResult(obj, DataType.Integer, address);
+                case TypeCode.Boolean:
+                    return new AddressCompileResult(obj, DataType.Boolean, address);
+                case TypeCode.DateTime:
+                    return new AddressCompileResult(((System.DateTime)obj).ToOADate(), DataType.Date, address);
+                default:
+                    if (t.Equals(typeof(ExcelErrorValue)))
+                    {
+                        return new AddressCompileResult(obj, DataType.ExcelError, address);
+                    }
+                    throw new ArgumentException("Non supported type " + t.FullName);
             }
-            if (t.Equals(typeof(double)) || obj is decimal || obj is float)
-            {
-                return new AddressCompileResult(obj, DataType.Decimal, address);
-            }
-            if (t.Equals(typeof(int)) || obj is long || obj is short)
-            {
-                return new AddressCompileResult(obj, DataType.Integer, address);
-            }
-            if (t.Equals(typeof(bool)))
-            {
-                return new AddressCompileResult(obj, DataType.Boolean, address);
-            }
-            if (t.Equals(typeof (ExcelErrorValue)))
-            {
-                return new AddressCompileResult(obj, DataType.ExcelError, address);
-            }
-            if (t.Equals(typeof(System.DateTime)))
-            {
-                return new AddressCompileResult(((System.DateTime)obj).ToOADate(), DataType.Date, address);
-            }
-            throw new ArgumentException("Non supported type " + t.FullName);
         }
     }
 }

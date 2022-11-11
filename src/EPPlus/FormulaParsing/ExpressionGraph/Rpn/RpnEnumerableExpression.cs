@@ -14,6 +14,7 @@ using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using OfficeOpenXml.FormulaParsing.Ranges;
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 
@@ -22,65 +23,39 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.Rpn
     /// <summary>
     /// This expression represents a literal array where rows and cols are separated with comma and semicolon.
     /// </summary>
-    public class RpnEnumerableExpression : RpnExpression
+    internal class RpnEnumerableExpression : RpnExpression
     {
         private readonly List<List<object>> _matrix;
+        private bool _isNegated;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="expressionCompiler"></param>
-        /// <param name="ctx"></param>
-        public RpnEnumerableExpression(List<List<object>> matrix, ParsingContext ctx)
+        internal RpnEnumerableExpression(List<List<object>> matrix, ParsingContext ctx)
             : base(ctx)
         {
             _matrix = matrix;
         }
         internal override ExpressionType ExpressionType => ExpressionType.Enumerable;
 
-        ///// <summary>
-        ///// Compiles the expression into a <see cref="CompileResult"/>
-        ///// </summary>
-        ///// <returns></returns>
-        //public override CompileResult Compile()
-        //{
-        //    var rangeDef = GetRangeDefinition();
-        //    var result = new InMemoryRange(rangeDef);
-        //    var rowIx = 0;
-        //    var colIx = 0;
-        //    for(var ix = 0; ix < _matrix.Count; ix++)
-        //    {
-        //        var childExpression = Children[ix];
-        //        var childResult = _expressionCompiler.Compile(new List<Expression> { childExpression }).Result;
-        //        result.SetValue(rowIx, colIx, childResult);
-        //        if (ix < _separators.Count)
-        //        {
-        //            if (_separators[ix].TokenTypeIsSet(TokenType.SemiColon))
-        //            {
-        //                rowIx++;
-        //                colIx = 0;
-        //            }
-        //            else if (_separators[ix].TokenTypeIsSet(TokenType.Comma))
-        //            {
-        //                colIx++;
-        //            }
-        //        }
-        //    }
-        //    return new CompileResult(result, DataType.ExcelRange);
-        //}
+        /// <summary>
+        /// Compiles the expression into a <see cref="CompileResult"/>
+        /// </summary>
+        /// <returns></returns>
+        public override CompileResult Compile()
+        {
+            var rangeDef = new RangeDefinition(_matrix.Count, (short)_matrix[0].Count);
+            var result = new InMemoryRange(rangeDef);
+            for (var r = 0; r < _matrix.Count; r++)
+            {
+                for (var c = 0; c < _matrix[r].Count; c++)
+                {
+                    result.SetValue(r, c, _matrix[r][c]);
+                }
+            }
+            return new CompileResult(result, DataType.ExcelRange);
+        }
 
-        //private RangeDefinition GetRangeDefinition()
-        //{
-        //    short nCols = 1;
-        //    var ix = 0;
-        //    while(ix < _separators.Count && _separators[ix].TokenTypeIsSet(TokenType.Comma))
-        //    {
-        //        ix++;
-        //        nCols++;
-        //    }
-        //    var nRows = 1;
-        //    nRows += _separators.Count(x => x.TokenTypeIsSet(TokenType.SemiColon));
-        //    return new RangeDefinition(nRows, nCols);
-        //}
+        public override void Negate()
+        {
+            _isNegated = !_isNegated;
+        }
     }
 }

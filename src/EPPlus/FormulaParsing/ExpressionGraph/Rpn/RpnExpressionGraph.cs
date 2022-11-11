@@ -11,6 +11,7 @@
   11/07/2022         EPPlus Software AB       Initial release EPPlus 6.2
  *************************************************************************************************/
 using OfficeOpenXml.FormulaParsing.Excel.Functions;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using OfficeOpenXml.FormulaParsing.Excel.Operators;
 using OfficeOpenXml.FormulaParsing.Exceptions;
@@ -83,11 +84,10 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.Rpn
                         break;
 
                     case TokenType.Function:
-                        expressions.Add(new Token("", TokenType.StartFunctionArguments));
+                        expressions.Add(new Token(TokenType.StartFunctionArguments));
                         operatorStack.Push(token);
                         break;
                     case TokenType.Comma:
-                    case TokenType.SemiColon:
                         while (operatorStack.Peek().TokenType == TokenType.Operator)
                         {
                             expressions.Add(operatorStack.Pop());
@@ -263,9 +263,13 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.Rpn
                     case TokenType.StartFunctionArguments:
                         cell._funcStackPosition.Push(s.Count);
                         break;
+                    case TokenType.TableName:
+                        GetTableAddress(exps, ref i, out FormulaTableAddress tableAddress);
+                        s.Push(new RpnTableAddressExpression(tableAddress, _parsingContext));
+                        break;
                     case TokenType.OpeningEnumerable:
-                        i = GetArray(exps, i, out List<List<object>> array);
-                        s.Push(new RpnEnumerableExpression(array, _parsingContext);
+                        GetArray(exps, ref i, out List<List<object>> array);
+                        s.Push(new RpnEnumerableExpression(array, _parsingContext));
                         break;
                     case TokenType.Operator:
                         ApplyOperator(t, cell);
@@ -275,11 +279,55 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.Rpn
             return s.Pop().Compile();
         }
 
-        private int GetArray(List<Token> exps, int i, out List<List<object>> matrix)
+        private void GetTableAddress(List<Token> exps, ref int i, out FormulaTableAddress tableAddress)
+        {
+            tableAddress = new FormulaTableAddress() { TableName = exps[i].Value };
+            var bracketCount = ++i < exps.Count && exps[i].TokenType==TokenType.OpeningBracket ? 1 : 0;
+            while (bracketCount > 0 && i++ < exps.Count)
+            {
+                var t = exps[i];
+                switch(t.TokenType)
+                {
+                    case TokenType.OpeningBracket:
+                        bracketCount++;
+                        break;
+                    case TokenType.ClosingBracket:
+                        bracketCount--;
+                        break;
+                    case TokenType.TableColumn:
+                        if (string.IsNullOrEmpty(tableAddress.ColumnName1))
+                        {
+                            tableAddress.ColumnName1=t.Value;
+                        }
+                        else
+                        {
+                            tableAddress.ColumnName2 = t.Value;
+                        }
+                        break;
+                    case TokenType.TablePart:
+                        if (string.IsNullOrEmpty(tableAddress.TablePart1))
+                        {
+                            tableAddress.TablePart1 = t.Value;
+                        }
+                        else
+                        {
+                            tableAddress.TablePart2 = t.Value;
+                        }
+                        break;
+                    case TokenType.Colon:
+                        break;
+                    default:
+                        throw new InvalidFormulaException($"Invalid Table Formula in cell {_parsingContext.CurrentCell.Address}");
+                }
+            }
+            tableAddress.SetTableAddress(_parsingContext.Package);
+        }
+        private void GetArray(List<Token> exps, ref int i, out List<List<object>> matrix)
         {            
             matrix= new List<List<object>>();   
             var array = new List<object>();
-            while (i++ < exps.Count && exps[i].TokenType != TokenType.Enumerable)
+            matrix.Add(array);
+            while (i++ < exps.Count && exps[i].TokenType != TokenType.ClosingEnumerable)
             {
                 var t = exps[i];
                 switch (t.TokenType)
@@ -297,27 +345,25 @@ namespace OfficeOpenXml.FormulaParsing.ExpressionGraph.Rpn
                         array.Add(t.Value);
                         break;
                     case TokenType.SemiColon:
-                        matrix.Add(array);
                         array = new List<object>();
+                        matrix.Add(array);
                         break;
-                    case TokenType.Enumerable:
+                    case TokenType.ClosingEnumerable:
                         break;
                     default:
                         throw new InvalidFormulaException("Array contains invalid tokens. Cell "+ _parsingContext.CurrentCell.WorksheetIx);
                 }
             }
-            if(i==exps.Count || exps[i].TokenType != TokenType.Enumerable)
+            if(i==exps.Count || exps[i].TokenType != TokenType.ClosingEnumerable)
             {
                 throw new InvalidFormulaException("Array is not closed. Cell " + _parsingContext.CurrentCell.WorksheetIx);
             }
-            return i+1;
         }
 
         private void ExecFunc(Token t, RpnFormulaCell cell)
         {
             var f = _parsingContext.Configuration.FunctionRepository.GetFunction(t.Value);
             var args = GetFunctionArguments(cell);
-            //var compilerFactory = new RpnFunctionCompilerFactory(_parsingContext.Configuration.FunctionRepository, _parsingContext);
             var compiler = _functionCompilerFactory.Create(f);
             var result = compiler.Compile(args);
             PushResult(cell, result);

@@ -23,6 +23,12 @@ namespace OfficeOpenXml.FormulaParsing.LexicalAnalysis
     public struct Token
     {
         const ushort IS_NEGATED=0x0001;
+        internal Token(TokenType tokenType)            
+        {
+            TokenType = tokenType;
+            Value = null;
+            _flags = 0;
+        }
         /// <summary>
         /// Constructor
         /// </summary>

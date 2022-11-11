@@ -256,7 +256,7 @@ namespace EPPlusTest.FormulaParsing.ExpressionGraph
 
             var enumerableExpression = funcArgExpression.Children.First();
 
-            Assert.IsInstanceOfType(enumerableExpression, typeof(RpnEnumerableExpression));
+            Assert.IsInstanceOfType(enumerableExpression, typeof(EnumerableExpression));
             Assert.AreEqual(2, enumerableExpression.Children.Count(), "Enumerable.Count was not 2");
         }
 
