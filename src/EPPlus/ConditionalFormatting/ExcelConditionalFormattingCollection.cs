@@ -30,7 +30,7 @@ namespace OfficeOpenXml.ConditionalFormatting
     /// Conditional Formatting has been created changes to the properties will affect the workbook immediately.
     /// </para>
     /// <para>
-    /// Each type of Conditional Formatting Rule has diferente set of properties.
+    /// Each type of Conditional Formatting Rule has different set of properties.
     /// </para>
     /// <code>
     /// // Add a Three Color Scale conditional formatting

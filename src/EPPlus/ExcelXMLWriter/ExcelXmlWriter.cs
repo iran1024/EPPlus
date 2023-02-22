@@ -72,9 +72,14 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 UpdateMergedCells(sw, prefix);
             }
 
-            if (_ws.GetNode("d:dataValidations") != null)
+            //ConditionalFormatting nodes have no parentNode so take start of next node and write above it.
+            int start = startOfNode, end = endOfNode;
+            GetBlock.Pos(xml, "dataValidations", ref start, ref end);
+
+            FindNodePositionAndClearIt(sw, xml, "dataValidations", ref startOfNode, ref endOfNode);
+
+            if (_ws.DataValidations.Count > 0)
             {
-                FindNodePositionAndClearIt(sw, xml, "dataValidations", ref startOfNode, ref endOfNode);
                 sw.Write(UpdateDataValidation(prefix));
             }
 

@@ -53,6 +53,23 @@ namespace EPPlusTest.ConditionalFormatting
             SaveAndCleanup(_pck);
         }
 
+        [TestMethod]
+        public void DevelopmentCheck()
+        {
+            var ws = _pck.Workbook.Worksheets.Add("GreaterThan");
+
+            for (int i = 1; i < 7; i++)
+            {
+                ws.Cells[$"A{i}"].Value = i;
+            }
+
+            //var cfRule = ws.ConditionalFormatting.AddThreeColorScale(ws.Cells["B2:G11"]);
+            var rule = ws.ConditionalFormatting.AddGreaterThan(new ExcelAddress("A1:A7"));
+            rule.Formula = "1";
+            rule.Style.Fill.BackgroundColor.SetColor(Color.Red);
+            _pck.SaveAs("C:\\epplusTest\\Workbooks\\GreaterTest.xlsx");
+        }
+
         /// <summary>
         /// 
         /// </summary>

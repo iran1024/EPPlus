@@ -2896,6 +2896,7 @@ namespace OfficeOpenXml
                 CreateNode("d:cols");
                 CreateNode("d:sheetData");
                 CreateNode("d:mergeCells");
+                CreateNode("d:dataValidations");
                 CreateNode("d:hyperlinks");
                 CreateNode("d:rowBreaks");
                 CreateNode("d:colBreaks");
@@ -2907,19 +2908,12 @@ namespace OfficeOpenXml
                     WorksheetXml.DocumentElement.SetAttributeNode("Ignorable", ExcelPackage.schemaMarkupCompatibility);
                     WorksheetXml.DocumentElement.SetAttribute("Ignorable", "xr");
 
-                    if (DataValidations.HasValidationType(InternalValidationType.DataValidation))
+                    if (DataValidations.HasValidationType(InternalValidationType.ExtLst))
                     {
-                        var node = (XmlElement)CreateNode("d:dataValidations");
-
-                        if (DataValidations.HasValidationType(InternalValidationType.ExtLst) &&
-                            GetNode("d:extLst") == null)
+                        if (GetNode("d:extLst") == null)
                         {
                             CreateNode("d:extLst");
                         }
-                    }
-                    else if (GetNode("d:extLst") == null)
-                    {
-                        CreateNode("d:extLst");
                     }
                 }
 
