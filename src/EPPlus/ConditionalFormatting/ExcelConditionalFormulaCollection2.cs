@@ -4,24 +4,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 
-namespace OfficeOpenXml.ConditionalFormatting.Rules2
+namespace OfficeOpenXml.ConditionalFormatting
 {
-    internal class ExcelConditionalFormattingCollection : IEnumerable<ExcelConditionalFormattingRule>
+    internal class ExcelConditionalFormattingCollection2 : IEnumerable<Rules2.ExcelConditionalFormattingRule>
     {
-        List<ExcelConditionalFormattingRule> _rules;
+        List<Rules2.ExcelConditionalFormattingRule> _rules;
         ExcelWorksheet _ws;
         int LastPriority = 0;
 
-        internal ExcelConditionalFormattingCollection(ExcelWorksheet ws)
+        internal ExcelConditionalFormattingCollection2(ExcelWorksheet ws)
         {
             _ws = ws;
+            _rules = new List<Rules2.ExcelConditionalFormattingRule>();
         }
 
-        internal ExcelConditionalFormattingCollection(XmlReader xr)
+        internal ExcelConditionalFormattingCollection2(XmlReader xr)
         {
         }
 
-        IEnumerator<ExcelConditionalFormattingRule> IEnumerable<ExcelConditionalFormattingRule>.GetEnumerator()
+        IEnumerator<Rules2.ExcelConditionalFormattingRule> IEnumerable<Rules2.ExcelConditionalFormattingRule>.GetEnumerator()
         {
             return _rules.GetEnumerator();
         }
@@ -46,7 +47,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             // address = ValidateAddress(address);
 
             // Create the Rule according to the correct type, address and priority
-            ExcelConditionalFormattingRule cfRule = ExcelConditionalFormattingRuleFactory.Create(
+            Rules2.ExcelConditionalFormattingRule cfRule = Rules2.ExcelConditionalFormattingRuleFactory.Create(
               type,
               address,
               LastPriority++,

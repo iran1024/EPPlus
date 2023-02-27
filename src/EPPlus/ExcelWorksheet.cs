@@ -3111,6 +3111,22 @@ namespace OfficeOpenXml
             }
         }
 
+        private ExcelConditionalFormattingCollection2 _conditionalFormatting2 = null;
+
+
+        internal ExcelConditionalFormattingCollection2 ConditionalAttempt
+        {
+            get
+            {
+                CheckSheetTypeAndNotDisposed();
+                if (_conditionalFormatting2 == null)
+                {
+                    _conditionalFormatting2 = new ExcelConditionalFormattingCollection2(this);
+                }
+                return _conditionalFormatting2;
+            }
+        }
+
         ExcelIgnoredErrorCollection _ignoredErrors = null;
         /// <summary>
         /// Ignore Errors for the specified ranges and error types.

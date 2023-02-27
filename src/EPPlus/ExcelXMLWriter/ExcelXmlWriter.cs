@@ -11,6 +11,7 @@
   02/10/2023       EPPlus Software AB       Initial release EPPlus 6.2
  *************************************************************************************************/
 using OfficeOpenXml.Compatibility;
+using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.Constants;
 using OfficeOpenXml.Core.CellStore;
 using OfficeOpenXml.DataValidation;
@@ -75,6 +76,8 @@ namespace OfficeOpenXml.ExcelXMLWriter
             //ConditionalFormatting nodes have no parentNode so take start of next node and write above it.
             int start = startOfNode, end = endOfNode;
             GetBlock.Pos(xml, "dataValidations", ref start, ref end);
+
+            sw.Write(UpdateConditionalFormattings(prefix));
 
             FindNodePositionAndClearIt(sw, xml, "dataValidations", ref startOfNode, ref endOfNode);
 
@@ -885,6 +888,121 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 $"xmlns:x14=\"{ExcelPackage.schemaMainX14}\" uri=\"{{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}}\" " + $"xmlns:xm=\"{ExcelPackage.schemaMainXm}\"")
             );
             cache.Append("</ext>");
+
+            return cache.ToString();
+        }
+
+        private string UpdateConditionalFormattingAttributes(
+            ConditionalFormatting.Rules2.ExcelConditionalFormattingRule conditionalFormat)
+        {
+            StringBuilder cache = new StringBuilder();
+
+            if (conditionalFormat.DxfId != -1)
+            {
+                cache.Append($"dxfId=\"{conditionalFormat.DxfId}\" ");
+            }
+
+            cache.Append($"priority=\"{conditionalFormat.Priority}\" ");
+
+            if (conditionalFormat.StopIfTrue)
+            {
+                cache.Append($"stopIfTrue=\"1\" ");
+            }
+
+            if ((bool)conditionalFormat.AboveAverage)
+            {
+                cache.Append($"aboveAverage=\"1\" ");
+            }
+
+            if ((bool)conditionalFormat.Percent)
+            {
+                cache.Append($"percent=\"1\" ");
+            }
+
+            if ((bool)conditionalFormat.Bottom)
+            {
+                cache.Append($"bottom=\"1\" ");
+            }
+
+            if (conditionalFormat.Operator != eExcelConditionalFormattingOperatorType.LessThan)
+            {
+                cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
+            }
+
+            if (string.IsNullOrEmpty(conditionalFormat.Text) == false)
+            {
+                cache.Append($"text=\"{conditionalFormat.Text}\" ");
+            }
+
+            if (conditionalFormat.TimePeriod != eExcelConditionalFormattingTimePeriodType.Today)
+            {
+                cache.Append($"timePeriod=\"{conditionalFormat.TimePeriod.ToEnumString()}\" ");
+            }
+
+            if (conditionalFormat._rank != 0)
+            {
+                cache.Append($"rank=\"{conditionalFormat.Rank}\" ");
+            }
+
+            if (conditionalFormat.StdDev != 0)
+            {
+                cache.Append($"stdDev=\"{conditionalFormat.StdDev}\" ");
+            }
+
+            if ((bool)conditionalFormat.EqualAverage)
+            {
+                cache.Append("equalAverage=\"1\" ");
+            }
+
+            return cache.ToString();
+        }
+
+        private string UpdateConditionalFormattings(string prefix)
+        {
+            var cache = new StringBuilder();
+
+            foreach (var conditionalFormat in _ws.ConditionalAttempt)
+            {
+                cache.Append($"<conditionalFormatting sqref=\"{conditionalFormat.Address}\">");
+                cache.Append($"<cfRule type=\"{conditionalFormat.Type.ToEnumString()}\" ");
+
+                cache.Append(UpdateConditionalFormattingAttributes(conditionalFormat));
+                cache.Append($">");
+
+
+                if (string.IsNullOrEmpty(conditionalFormat.Formula) == false)
+                {
+                    cache.Append("<formula>\"" + conditionalFormat.Formula + "\"</formula>");
+                    if (string.IsNullOrEmpty(conditionalFormat.Formula2) == false)
+                    {
+                        cache.Append("<formula2>" + conditionalFormat.Formula2 + "</formula2>");
+                    }
+                }
+
+                if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.TwoColorScale ||
+                   conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeColorScale)
+                {
+
+                }
+
+                if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.DataBar)
+                {
+
+                }
+
+                if (new[]{
+                    eExcelConditionalFormattingRuleType.ThreeIconSet,
+                    eExcelConditionalFormattingRuleType.FourIconSet,
+                    eExcelConditionalFormattingRuleType.FiveIconSet }.Contains(conditionalFormat.Type))
+                {
+
+                }
+
+                //TODO: Add support for potential extLst reference in normal formatting
+
+                cache.Append($"</cfRule>");
+                cache.Append($"</conditionalFormatting>");
+            }
 
             return cache.ToString();
         }

@@ -29,8 +29,9 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         public bool PivotTable { get; set; }
         public ExcelDxfStyleConditionalFormatting Style { get; set; }
 
-        private UInt16 _stdDev;
+        internal UInt16 _stdDev = 0;
 
+        //0 is not allowed and will be converted to 1
         public UInt16 StdDev
         {
             get
@@ -43,7 +44,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             }
         }
 
-        private UInt16 _rank;
+        internal UInt16 _rank = 0;
 
         /// <summary>
         /// Rank (zero is not allowed and will be converted to 1)
@@ -59,6 +60,8 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 _rank = value == 0 ? (UInt16)1 : value;
             }
         }
+
+        public string Text = null;
 
         private ExcelWorksheet _ws;
 
