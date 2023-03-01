@@ -24,10 +24,27 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
         public eExcelConditionalFormattingRuleType Type { get; set; }
         public ExcelAddress Address { get; set; }
-        public int Priority { get; set; }
+        public int Priority { get; set; } = 1;
         public bool StopIfTrue { get; set; }
         public bool PivotTable { get; set; }
-        public ExcelDxfStyleConditionalFormatting Style { get; set; }
+
+        ExcelDxfStyleConditionalFormatting _style;
+
+        /// <summary>
+        /// The style
+        /// </summary>
+        public ExcelDxfStyleConditionalFormatting Style
+        {
+            get
+            {
+                if (_style == null)
+                {
+                    _style = new ExcelDxfStyleConditionalFormatting(_ws.NameSpaceManager, null, _ws.Workbook.Styles, null);
+                }
+                return _style;
+            }
+        }
+        //public ExcelDxfStyleConditionalFormatting Style { get; set; }
 
         internal UInt16 _stdDev = 0;
 
@@ -65,7 +82,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
         private ExcelWorksheet _ws;
 
-        private int _DxfId = -1;
+        private int _dxfId = -1;
 
         /// <summary>
         /// The DxfId (Differential Formatting style id)
@@ -74,12 +91,10 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         {
             get
             {
-                return _DxfId;
+                return _dxfId;
             }
             set
-            {
-                _DxfId = value;
-            }
+            { _dxfId = value; }
         }
 
         #region Constructors
@@ -113,6 +128,11 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             Priority = priority;
             Type = type;
 
+            if (DxfId >= 0 && DxfId < worksheet.Workbook.Styles.Dxfs.Count)
+            {
+                worksheet.Workbook.Styles.Dxfs[DxfId].AllowChange = true;  //This Id is referenced by CF, so we can use it when we save.
+                _style = ((ExcelDxfStyleBase)worksheet.Workbook.Styles.Dxfs[DxfId]).ToDxfConditionalFormattingStyle();    //Clone, so it can be altered without affecting other dxf styles
+            }
         }
         #endregion Constructors
 
@@ -228,12 +248,12 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         /// <summary>
         /// TimePeriod
         /// </summary>
-        internal protected eExcelConditionalFormattingTimePeriodType TimePeriod { get; set; }
+        internal protected eExcelConditionalFormattingTimePeriodType TimePeriod { get; set; } = eExcelConditionalFormattingTimePeriodType.Today;
 
         /// <summary>
         /// Operator
         /// </summary>
-        internal protected eExcelConditionalFormattingOperatorType Operator { get; set; }
+        internal protected eExcelConditionalFormattingOperatorType Operator { get; set; } = eExcelConditionalFormattingOperatorType.LessThan;
 
         /// <summary>
         /// Formula
@@ -264,10 +284,14 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             }
         }
 
-        internal void SetStyle(ExcelDxfStyleConditionalFormatting style)
+        public void SetStyle(ExcelDxfStyleConditionalFormatting style)
         {
-            Style = style;
-            DxfId = int.MinValue;
+            _style = style;
+        }
+
+        internal string GetAttributeType()
+        {
+            return ExcelConditionalFormattingRuleType.GetAttributeByType(Type);
         }
     }
 }

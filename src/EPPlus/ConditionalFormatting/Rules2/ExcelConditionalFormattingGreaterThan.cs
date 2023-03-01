@@ -19,7 +19,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
           ExcelWorksheet worksheet)
           : base(eExcelConditionalFormattingRuleType.GreaterThan, address, priority, worksheet)
         {
-            //Operator = eExcelConditionalFormattingOperatorType.GreaterThan;
+            Operator = eExcelConditionalFormattingOperatorType.GreaterThan;
             //Formula = string.Empty;
         }
 

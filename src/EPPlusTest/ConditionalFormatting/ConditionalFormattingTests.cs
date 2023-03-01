@@ -447,6 +447,10 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var cf = wks.ConditionalAttempt.AddGreaterThan(new ExcelAddress(cfAddress));
                 cf.Formula = "5.5";
+                cf.Style.Fill.BackgroundColor.SetColor(Color.Red);
+                cf.Style.Font.Color.SetColor(Color.White);
+
+                //((ExcelConditionalFormattingRule)cf).SetStyle(ExcelDxfStyleConditionalFormatting);
 
                 pck.SaveAs("C:\\epplusTest\\Workbooks\\conditionalTest.xlsx");
 

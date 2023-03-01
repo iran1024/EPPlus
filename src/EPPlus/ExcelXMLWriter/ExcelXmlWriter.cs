@@ -909,9 +909,9 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 cache.Append($"stopIfTrue=\"1\" ");
             }
 
-            if ((bool)conditionalFormat.AboveAverage)
+            if (conditionalFormat.AboveAverage == false)
             {
-                cache.Append($"aboveAverage=\"1\" ");
+                cache.Append($"aboveAverage=\"0\" ");
             }
 
             if ((bool)conditionalFormat.Percent)
@@ -964,7 +964,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
             foreach (var conditionalFormat in _ws.ConditionalAttempt)
             {
                 cache.Append($"<conditionalFormatting sqref=\"{conditionalFormat.Address}\">");
-                cache.Append($"<cfRule type=\"{conditionalFormat.Type.ToEnumString()}\" ");
+                cache.Append($"<cfRule type=\"{conditionalFormat.GetAttributeType()}\" ");
 
                 cache.Append(UpdateConditionalFormattingAttributes(conditionalFormat));
                 cache.Append($">");
@@ -972,7 +972,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                 if (string.IsNullOrEmpty(conditionalFormat.Formula) == false)
                 {
-                    cache.Append("<formula>\"" + conditionalFormat.Formula + "\"</formula>");
+                    cache.Append("<formula>" + conditionalFormat.Formula + "</formula>");
                     if (string.IsNullOrEmpty(conditionalFormat.Formula2) == false)
                     {
                         cache.Append("<formula2>" + conditionalFormat.Formula2 + "</formula2>");

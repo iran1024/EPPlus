@@ -12,18 +12,12 @@
  *************************************************************************************************/
 using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.Constants;
-using OfficeOpenXml.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Xml;
 
 namespace OfficeOpenXml.Style.Dxf
 {
     internal static class DxfStyleHandler
-    {        
+    {
         internal static void Load(ExcelWorkbook wb, ExcelStyles styles, ExcelStyleCollection<ExcelDxfStyleBase> dxfs, string path)
         {
             //dxfsPath
@@ -46,7 +40,7 @@ namespace OfficeOpenXml.Style.Dxf
                 var parent = stylesTo.GetNode(path);
                 var node = stylesTo.TopNode.OwnerDocument.CreateElement("d:dxf", ExcelPackage.schemaMain);
                 parent.AppendChild(node);
-                node.InnerXml = copy._helper.TopNode.InnerXml;                
+                node.InnerXml = copy._helper.TopNode.InnerXml;
                 var dxf = new ExcelDxfStyle(stylesTo.NameSpaceManager, node, stylesTo, null);
                 stylesTo.Dxfs.Add(copy.Id, dxf);
                 return stylesTo.Dxfs.Count - 1;
@@ -62,7 +56,7 @@ namespace OfficeOpenXml.Style.Dxf
             //Set dxf styling for conditional Formatting
             XmlNode dxfsNode = wb.Styles.TopNode.SelectSingleNode(ExcelStyles.DxfsPath, wb.NameSpaceManager);
             UpdateTableStyles(wb, wb.Styles, dxfsNode);
-            UpdateDxfXmlWorksheet(wb, wb.Styles, dxfsNode);            
+            UpdateDxfXmlWorksheet(wb, wb.Styles, dxfsNode);
             if (dxfsNode != null) (dxfsNode as XmlElement).SetAttribute("count", wb.Styles.Dxfs.Count.ToString());
 
             UpdateSlicerStyles(wb, wb.Styles, dxfsNode);
@@ -72,10 +66,10 @@ namespace OfficeOpenXml.Style.Dxf
         {
             foreach (var ts in styles.TableStyles)
             {
-                foreach(var element in ts._dic.Values)
+                foreach (var element in ts._dic.Values)
                 {
                     AddDxfNode(styles.Dxfs, dxfsNode, element.Style);
-                    if(element.Style.DxfId>=0)
+                    if (element.Style.DxfId >= 0)
                     {
                         element.CreateNode();
                     }
@@ -128,7 +122,7 @@ namespace OfficeOpenXml.Style.Dxf
                 tbl.HeaderRowDxfId = AddDxfNode(styles.Dxfs, dxfsNode, tbl.HeaderRowStyle);
                 tbl.DataDxfId = AddDxfNode(styles.Dxfs, dxfsNode, tbl.DataStyle);
                 tbl.TotalsRowDxfId = AddDxfNode(styles.Dxfs, dxfsNode, tbl.TotalsRowStyle);
-                
+
                 tbl.HeaderRowBorderDxfId = AddDxfBorderNode(styles, dxfsNode, tbl.HeaderRowBorderStyle);
                 tbl.TableBorderDxfId = AddDxfBorderNode(styles, dxfsNode, tbl.TableBorderStyle);
 
@@ -146,7 +140,7 @@ namespace OfficeOpenXml.Style.Dxf
             if (ws.HasLoadedPivotTables == false) return;
             foreach (var pt in ws.PivotTables)
             {
-                for(int i= 0; i< pt.Styles.Count;i++)
+                for (int i = 0; i < pt.Styles.Count; i++)
                 {
                     var pas = pt.Styles[i];
                     if (pas.Style.HasValue)
@@ -164,7 +158,7 @@ namespace OfficeOpenXml.Style.Dxf
 
         private static int? AddDxfBorderNode(ExcelStyles styles, XmlNode dxfsNode, ExcelDxfBorderBase borderStyle)
         {
-            if(borderStyle.HasValue)
+            if (borderStyle.HasValue)
             {
                 var ix = styles.Dxfs.FindIndexById(borderStyle.Id);
                 if (ix < 0)
@@ -226,6 +220,27 @@ namespace OfficeOpenXml.Style.Dxf
                     }
                 }
             }
+
+            foreach (var cf in ws.ConditionalAttempt)
+            {
+                if (cf.Style.HasValue)
+                {
+                    int ix = dxfs.FindIndexById(cf.Style.Id);
+                    if (ix < 0)
+                    {
+                        cf.DxfId = dxfs.Count;
+                        dxfs.Add(cf.Style.Id, cf.Style);
+                        var elem = dxfsNode.OwnerDocument.CreateElement("dxf", ExcelPackage.schemaMain);
+                        cf.Style.CreateNodes(new XmlHelperInstance(ws.NameSpaceManager, elem), "");
+                        dxfsNode.AppendChild(elem);
+                    }
+                    else
+                    {
+                        cf.DxfId = ix;
+                    }
+                }
+            }
+
         }
     }
 }
