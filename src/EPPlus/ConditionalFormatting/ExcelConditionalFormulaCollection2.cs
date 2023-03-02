@@ -20,24 +20,57 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         internal ExcelConditionalFormattingCollection2(XmlReader xr)
         {
-            string address = xr.GetAttribute("sqref");
-
-            while (xr.Read())
+            while (xr.LocalName == "conditionalFormatting")
             {
-                if (xr.LocalName != "conditionalFormatting")
-                {
-                    xr.Read(); //Read beyond the end element
-                    break;
-                }
+                string address = xr.GetAttribute("sqref");
 
                 if (xr.NodeType == XmlNodeType.Element)
                 {
+                    xr.Read();
                     var cf = Rules2.ExcelConditionalFormattingRuleFactory.Create(address, xr);
                     //_validations.Add(validation);
                     //_validationsRD.Add(validation.Address._fromRow, validation.Address._fromCol,
                     //                   validation.Address._toRow, validation.Address._toCol, validation);
                 }
+
+                xr.Read();
+                xr.Read();
             }
+
+            ////string address = xr.GetAttribute("sqref");
+
+            //if (xr.LocalName != "cfRule")
+            //{
+            //    xr.Read();
+            //    xr.Read(); //Read beyond the end element
+            //    ////Read beyond the end element
+            //    //break;
+            //}
+
+            //if (xr.NodeType == XmlNodeType.Element)
+            //{
+            //    var cf = Rules2.ExcelConditionalFormattingRuleFactory.Create(address, xr);
+            //    //_validations.Add(validation);
+            //    //_validationsRD.Add(validation.Address._fromRow, validation.Address._fromCol,
+            //    //                   validation.Address._toRow, validation.Address._toCol, validation);
+            //}
+
+            //while (xr.Read())
+            //{
+            //    if (xr.LocalName != "cfRule")
+            //    {
+            //        xr.Read(); //Read beyond the end element
+            //        break;
+            //    }
+
+            //    if (xr.NodeType == XmlNodeType.Element)
+            //    {
+            //        var cf = Rules2.ExcelConditionalFormattingRuleFactory.Create(address, xr);
+            //        //_validations.Add(validation);
+            //        //_validationsRD.Add(validation.Address._fromRow, validation.Address._fromCol,
+            //        //                   validation.Address._toRow, validation.Address._toCol, validation);
+            //    }
+            //}
         }
 
 

@@ -1285,6 +1285,7 @@ namespace OfficeOpenXml
             var nextElementLength = GetAttributeLength(xr);
             stream.SetWriteToBuffer();
             LoadMergeCells(xr);
+
             var nextElement = "conditionalFormatting";
             if (xr.ReadUntil(1, NodeOrders.WorksheetTopElementOrder, nextElement))
             {
@@ -1916,7 +1917,7 @@ namespace OfficeOpenXml
         /// <param name="xr"></param>
         private void LoadMergeCells(XmlReader xr)
         {
-            if (xr.ReadUntil(1, "mergeCells", "dataValidations", "hyperlinks", "rowBreaks", "colBreaks", "extLst") && !xr.EOF)
+            if (xr.ReadUntil(1, "mergeCells", "conditionalFormatting", "dataValidations", "hyperlinks", "rowBreaks", "colBreaks", "extLst") && !xr.EOF)
             {
                 while (xr.Read())
                 {

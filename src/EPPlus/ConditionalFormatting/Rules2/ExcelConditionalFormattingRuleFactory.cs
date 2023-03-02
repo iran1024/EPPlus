@@ -186,6 +186,9 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 cfType = op;
             }
 
+            //Capitalize first letter
+            cfType = cfType[0].ToString().ToUpper() + cfType.Substring(1);
+
             eExcelConditionalFormattingRuleType eType = (eExcelConditionalFormattingRuleType)
                                                            Enum.Parse(typeof(eExcelConditionalFormattingRuleType),
                                                            cfType);
@@ -194,8 +197,8 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
             if (type != null)
             {
-                ConstructorInfo ctor = type.GetConstructor(new[] { typeof(XmlReader) });
-                object instance = ctor.Invoke(new object[] { xr });
+                ConstructorInfo ctor = type.GetConstructor(new[] { typeof(string), typeof(XmlReader) });
+                object instance = ctor.Invoke(new object[] { address, xr });
                 return (ExcelConditionalFormattingRule)instance;
             }
             throw new Exception("Conditional Formatting Type Not Found");
