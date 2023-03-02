@@ -10,7 +10,7 @@ namespace OfficeOpenXml.ConditionalFormatting
     {
         List<Rules2.ExcelConditionalFormattingRule> _rules;
         ExcelWorksheet _ws;
-        int LastPriority = 0;
+        int LastPriority = 1;
 
         internal ExcelConditionalFormattingCollection2(ExcelWorksheet ws)
         {
@@ -20,7 +20,27 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         internal ExcelConditionalFormattingCollection2(XmlReader xr)
         {
+            string address = xr.GetAttribute("sqref");
+
+            while (xr.Read())
+            {
+                if (xr.LocalName != "conditionalFormatting")
+                {
+                    xr.Read(); //Read beyond the end element
+                    break;
+                }
+
+                if (xr.NodeType == XmlNodeType.Element)
+                {
+                    var cf = Rules2.ExcelConditionalFormattingRuleFactory.Create(address, xr);
+                    //_validations.Add(validation);
+                    //_validationsRD.Add(validation.Address._fromRow, validation.Address._fromCol,
+                    //                   validation.Address._toRow, validation.Address._toCol, validation);
+                }
+            }
         }
+
+
 
         IEnumerator<Rules2.ExcelConditionalFormattingRule> IEnumerable<Rules2.ExcelConditionalFormattingRule>.GetEnumerator()
         {

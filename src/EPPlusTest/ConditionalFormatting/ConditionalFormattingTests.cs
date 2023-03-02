@@ -450,19 +450,16 @@ namespace EPPlusTest.ConditionalFormatting
                 cf.Style.Fill.BackgroundColor.SetColor(Color.Red);
                 cf.Style.Font.Color.SetColor(Color.White);
 
-                //((ExcelConditionalFormattingRule)cf).SetStyle(ExcelDxfStyleConditionalFormatting);
-
                 pck.SaveAs("C:\\epplusTest\\Workbooks\\conditionalTest.xlsx");
+            }
+        }
 
-                //// Check that the conditional formatting address was set correctly
-                //Assert.AreEqual(1, wks.ConditionalFormatting.Count);
-                //Assert.AreEqual(cfAddress, cf.Address.Address);
-
-                //// Insert enough rows into the worksheet above the conditional formatting rule to push it off the sheet 
-                //wks.InsertRow(5, 10);
-
-                //// Check that the conditional formatting rule no longer exists
-                //Assert.AreEqual(0, wks.ConditionalFormatting.Count);
+        [TestMethod]
+        public void TestReadingConditionalFormatting()
+        {
+            using (var pck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTest.xlsx"))
+            {
+                var wks = pck.Workbook.Worksheets[0];
             }
         }
     }

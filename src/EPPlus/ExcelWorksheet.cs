@@ -1285,7 +1285,16 @@ namespace OfficeOpenXml
             var nextElementLength = GetAttributeLength(xr);
             stream.SetWriteToBuffer();
             LoadMergeCells(xr);
-            var nextElement = "dataValidations";
+            var nextElement = "conditionalFormatting";
+            if (xr.ReadUntil(1, NodeOrders.WorksheetTopElementOrder, nextElement))
+            {
+                xml = stream.ReadFromEndElement(lastXmlElement, xml, nextElement, false, xr.Prefix);
+                LoadConditionalFormatting(xr);
+                stream.SetWriteToBuffer();
+                lastXmlElement = nextElement;
+            }
+
+            nextElement = "dataValidations";
             if (xr.ReadUntil(1, NodeOrders.WorksheetTopElementOrder, nextElement))
             {
                 xml = stream.ReadFromEndElement(lastXmlElement, xml, nextElement, false, xr.Prefix);
@@ -1612,6 +1621,11 @@ namespace OfficeOpenXml
                 }
                 return _dataValidations;
             }
+        }
+
+        private void LoadConditionalFormatting(XmlReader xr)
+        {
+            _conditionalFormatting2 = new ExcelConditionalFormattingCollection2(xr);
         }
 
         private void LoadDataValidations(XmlReader xr)
