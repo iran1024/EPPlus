@@ -106,6 +106,14 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         {
             Address = new ExcelAddress(address);
 
+            string id = xr.GetAttribute("dxfId");
+
+            if (string.IsNullOrEmpty(id) == false)
+            {
+                DxfId = Convert.ToInt16(id);
+            }
+
+            Priority = int.Parse(xr.GetAttribute("priority"));
         }
 
         /// <summary>
@@ -121,6 +129,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             Require.That(worksheet).IsNotNull();
 
             _ws = worksheet;
+
 
             //string.Format()
             //move writing of root node.

@@ -28,6 +28,8 @@ namespace OfficeOpenXml.ConditionalFormatting
                 {
                     xr.Read();
                     var cf = Rules2.ExcelConditionalFormattingRuleFactory.Create(address, xr);
+
+                    _rules.Add(cf);
                     //_validations.Add(validation);
                     //_validationsRD.Add(validation.Address._fromRow, validation.Address._fromCol,
                     //                   validation.Address._toRow, validation.Address._toCol, validation);

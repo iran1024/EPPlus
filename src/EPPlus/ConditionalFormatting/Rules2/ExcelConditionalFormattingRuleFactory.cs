@@ -164,18 +164,27 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
                 case eExcelConditionalFormattingRuleType.TwoColorScale:
                     return typeof(ExcelConditionalFormattingTwoColorScale);
+
                 case eExcelConditionalFormattingRuleType.ThreeIconSet:
                     return typeof(ExcelConditionalFormattingThreeIconSet);
+
                 case eExcelConditionalFormattingRuleType.FourIconSet:
                     return typeof(ExcelConditionalFormattingFourIconSet);
+
                 case eExcelConditionalFormattingRuleType.FiveIconSet:
                     return typeof(ExcelConditionalFormattingFiveIconSet);
+
                 case eExcelConditionalFormattingRuleType.DataBar:
                     return typeof(ExcelConditionalFormattingDataBar);
+
             }
             return null;
         }
 
+        //Reflection is SLOW. I SWEAR there should be a better way of doing this than switch cases or double switch cases.
+        // I've looked at reflection, compiled expressions, Abstract Factory Methods. But no matter what I do I can't make the current structure play nice.
+        // UUUURgh I just want a neat, efficent and readable way to instantiate MANY alternative child-clases it CAN'T be that rare.
+        //I put out a question on a forum hopefully someone smarter than me knows a way.
         public static ExcelConditionalFormattingRule Create(string address, XmlReader xr)
         {
             string cfType = xr.GetAttribute("type");
@@ -194,6 +203,13 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                                                            cfType);
 
             Type type = GetRuleType(eType);
+
+
+            //bool ReadFromFile;
+            //GetRuleType(ReadFromFile)
+            //eExcelConditionalFormattingRuleType.DataBar.Read
+            //eExcelConditionalFormattingRuleType.DataBar.Create
+
 
             if (type != null)
             {
