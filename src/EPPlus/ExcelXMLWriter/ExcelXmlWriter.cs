@@ -73,10 +73,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 UpdateMergedCells(sw, prefix);
             }
 
-            //ConditionalFormatting nodes have no parentNode so take start of next node and write above it.
-            int start = startOfNode, end = endOfNode;
-            GetBlock.Pos(xml, "dataValidations", ref start, ref end);
-
+            FindNodePositionAndClearIt(sw, xml, "conditionalFormatting", ref startOfNode, ref endOfNode);
             sw.Write(UpdateConditionalFormattings(prefix));
 
             FindNodePositionAndClearIt(sw, xml, "dataValidations", ref startOfNode, ref endOfNode);

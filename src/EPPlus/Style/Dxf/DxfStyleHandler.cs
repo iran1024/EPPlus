@@ -10,7 +10,6 @@
  *************************************************************************************************
   01/29/2021         EPPlus Software AB       EPPlus 5.6
  *************************************************************************************************/
-using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.Constants;
 using System.Xml;
 
@@ -201,25 +200,25 @@ namespace OfficeOpenXml.Style.Dxf
 
         private static void UpdateConditionalFormatting(ExcelWorksheet ws, ExcelStyleCollection<ExcelDxfStyleBase> dxfs, XmlNode dxfsNode)
         {
-            foreach (var cf in ws.ConditionalFormatting)
-            {
-                if (cf.Style.HasValue)
-                {
-                    int ix = dxfs.FindIndexById(cf.Style.Id);
-                    if (ix < 0)
-                    {
-                        ((ExcelConditionalFormattingRule)cf).DxfId = dxfs.Count;
-                        dxfs.Add(cf.Style.Id, cf.Style);
-                        var elem = dxfsNode.OwnerDocument.CreateElement("dxf", ExcelPackage.schemaMain);
-                        cf.Style.CreateNodes(new XmlHelperInstance(ws.NameSpaceManager, elem), "");
-                        dxfsNode.AppendChild(elem);
-                    }
-                    else
-                    {
-                        ((ExcelConditionalFormattingRule)cf).DxfId = ix;
-                    }
-                }
-            }
+            //foreach (var cf in ws.ConditionalFormatting)
+            //{
+            //    if (cf.Style.HasValue)
+            //    {
+            //        int ix = dxfs.FindIndexById(cf.Style.Id);
+            //        if (ix < 0)
+            //        {
+            //            ((ExcelConditionalFormattingRule)cf).DxfId = dxfs.Count;
+            //            dxfs.Add(cf.Style.Id, cf.Style);
+            //            var elem = dxfsNode.OwnerDocument.CreateElement("dxf", ExcelPackage.schemaMain);
+            //            cf.Style.CreateNodes(new XmlHelperInstance(ws.NameSpaceManager, elem), "");
+            //            dxfsNode.AppendChild(elem);
+            //        }
+            //        else
+            //        {
+            //            ((ExcelConditionalFormattingRule)cf).DxfId = ix;
+            //        }
+            //    }
+            //}
 
             foreach (var cf in ws.ConditionalAttempt)
             {

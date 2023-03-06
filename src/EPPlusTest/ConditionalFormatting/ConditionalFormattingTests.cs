@@ -460,6 +460,8 @@ namespace EPPlusTest.ConditionalFormatting
             using (var pck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTest.xlsx"))
             {
                 var wks = pck.Workbook.Worksheets[0];
+
+                pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
             }
         }
     }

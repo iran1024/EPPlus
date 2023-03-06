@@ -1626,7 +1626,7 @@ namespace OfficeOpenXml
 
         private void LoadConditionalFormatting(XmlReader xr)
         {
-            _conditionalFormatting2 = new ExcelConditionalFormattingCollection2(xr);
+            _conditionalFormatting2 = new ExcelConditionalFormattingCollection2(xr, this);
         }
 
         private void LoadDataValidations(XmlReader xr)

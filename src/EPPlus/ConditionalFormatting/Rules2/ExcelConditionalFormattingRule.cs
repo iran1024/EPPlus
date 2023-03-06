@@ -28,7 +28,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         public bool StopIfTrue { get; set; }
         public bool PivotTable { get; set; }
 
-        ExcelDxfStyleConditionalFormatting _style;
+        ExcelDxfStyleConditionalFormatting _style = null;
 
         /// <summary>
         /// The style
@@ -98,14 +98,36 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         }
 
         #region Constructors
-        /// <summary>
+        /// <summary> 
         /// Initalize <see cref="ExcelConditionalFormattingRule"/> from file
         /// </summary>
         /// <param name="xr"></param>
-        internal ExcelConditionalFormattingRule(string address, XmlReader xr)
+        internal ExcelConditionalFormattingRule(ExcelAddress address, eExcelConditionalFormattingRuleType type, ExcelWorksheet ws, XmlReader xr)
         {
-            Address = new ExcelAddress(address);
+            Address = address;
 
+            Priority = int.Parse(xr.GetAttribute("priority"));
+
+            Type = type;
+
+            // Type = (eExcelConditionalFormattingRuleType)Enum.Parse(typeof(eExcelConditionalFormattingRuleType), xr.GetAttribute("type"));
+
+            if (xr.GetAttribute("dxfId") != "")
+            {
+                DxfId = int.Parse(xr.GetAttribute("dxfId"));
+            }
+
+            xr.Read();
+
+            Formula = xr.ReadString();
+
+            _ws = ws;
+
+            if (DxfId >= 0 && DxfId < _ws.Workbook.Styles.Dxfs.Count)
+            {
+                _ws.Workbook.Styles.Dxfs[DxfId].AllowChange = true;  //This Id is referenced by CF, so we can use it when we save.
+                _style = ((ExcelDxfStyleBase)_ws.Workbook.Styles.Dxfs[DxfId]).ToDxfConditionalFormattingStyle();    //Clone, so it can be altered without affecting other dxf styles
+            }
         }
 
         /// <summary>

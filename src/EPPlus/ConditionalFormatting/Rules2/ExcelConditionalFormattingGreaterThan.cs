@@ -27,8 +27,9 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         /// 
         /// </summary>
         /// <param name="xr"></param>
-        internal ExcelConditionalFormattingGreaterThan(string address, XmlReader xr) : base(address, xr)
+        internal ExcelConditionalFormattingGreaterThan(ExcelAddress address, ExcelWorksheet ws, XmlReader xr) : base(address, eExcelConditionalFormattingRuleType.GreaterThan, ws, xr)
         {
+            Operator = eExcelConditionalFormattingOperatorType.GreaterThan;
         }
 
         #endregion Constructors
