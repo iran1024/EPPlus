@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml.ConditionalFormatting.Contracts;
+using System;
 using System.Xml;
 
 namespace OfficeOpenXml.ConditionalFormatting.Rules2
@@ -30,6 +31,8 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         internal ExcelConditionalFormattingGreaterThan(ExcelAddress address, ExcelWorksheet ws, XmlReader xr) : base(address, eExcelConditionalFormattingRuleType.GreaterThan, ws, xr)
         {
             Operator = eExcelConditionalFormattingOperatorType.GreaterThan;
+                (eExcelConditionalFormattingOperatorType)Enum.Parse(
+                 typeof(eExcelConditionalFormattingOperatorType), xr.GetAttribute("Operator"));
         }
 
         #endregion Constructors
