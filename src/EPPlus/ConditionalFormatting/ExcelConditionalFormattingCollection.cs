@@ -69,66 +69,66 @@ namespace OfficeOpenXml.ConditionalFormatting
             worksheet.NameSpaceManager,
             worksheet.WorksheetXml.DocumentElement)
         {
-            Require.Argument(worksheet).IsNotNull("worksheet");
+            //Require.Argument(worksheet).IsNotNull("worksheet");
 
-            _worksheet = worksheet;
-            SchemaNodeOrder = _worksheet.SchemaNodeOrder;
+            //_worksheet = worksheet;
+            //SchemaNodeOrder = _worksheet.SchemaNodeOrder;
 
-            // Look for all the <conditionalFormatting>
-            var conditionalFormattingNodes = TopNode.SelectNodes(
-              "//" + ExcelConditionalFormattingConstants.Paths.ConditionalFormatting,
-              _worksheet.NameSpaceManager);
+            //// Look for all the <conditionalFormatting>
+            //var conditionalFormattingNodes = TopNode.SelectNodes(
+            //  "//" + ExcelConditionalFormattingConstants.Paths.ConditionalFormatting,
+            //  _worksheet.NameSpaceManager);
 
-            // Check if we found at least 1 node
-            if ((conditionalFormattingNodes != null)
-              && (conditionalFormattingNodes.Count > 0))
-            {
-                // Foreach <conditionalFormatting>
-                foreach (XmlNode conditionalFormattingNode in conditionalFormattingNodes)
-                {
-                    // Check if @sqref attribute exists
-                    if (conditionalFormattingNode.Attributes[ExcelConditionalFormattingConstants.Attributes.Sqref] == null)
-                    {
-                        throw new Exception(
-                          ExcelConditionalFormattingConstants.Errors.MissingSqrefAttribute);
-                    }
+            //// Check if we found at least 1 node
+            //if ((conditionalFormattingNodes != null)
+            //  && (conditionalFormattingNodes.Count > 0))
+            //{
+            //    // Foreach <conditionalFormatting>
+            //    foreach (XmlNode conditionalFormattingNode in conditionalFormattingNodes)
+            //    {
+            //        // Check if @sqref attribute exists
+            //        if (conditionalFormattingNode.Attributes[ExcelConditionalFormattingConstants.Attributes.Sqref] == null)
+            //        {
+            //            throw new Exception(
+            //              ExcelConditionalFormattingConstants.Errors.MissingSqrefAttribute);
+            //        }
 
-                    // Get the @sqref attribute    
-                    var refAddress = conditionalFormattingNode.Attributes[ExcelConditionalFormattingConstants.Attributes.Sqref].Value.Replace(" ", ",");
-                    ExcelAddress address = new ExcelAddress(refAddress);
+            //        // Get the @sqref attribute    
+            //        var refAddress = conditionalFormattingNode.Attributes[ExcelConditionalFormattingConstants.Attributes.Sqref].Value.Replace(" ", ",");
+            //        ExcelAddress address = new ExcelAddress(refAddress);
 
-                    // Check for all the <cfRules> nodes and load them
-                    var cfRuleNodes = conditionalFormattingNode.SelectNodes(
-                      ExcelConditionalFormattingConstants.Paths.CfRule,
-                      _worksheet.NameSpaceManager);
+            //        // Check for all the <cfRules> nodes and load them
+            //        var cfRuleNodes = conditionalFormattingNode.SelectNodes(
+            //          ExcelConditionalFormattingConstants.Paths.CfRule,
+            //          _worksheet.NameSpaceManager);
 
-                    // Checking the count of cfRuleNodes "materializes" the collection which prevents a rare infinite loop bug
-                    if (cfRuleNodes.Count == 0)
-                    {
-                        continue;
-                    }
+            //        // Checking the count of cfRuleNodes "materializes" the collection which prevents a rare infinite loop bug
+            //        if (cfRuleNodes.Count == 0)
+            //        {
+            //            continue;
+            //        }
 
-                    // Foreach <cfRule> inside the current <conditionalFormatting>
-                    foreach (XmlNode cfRuleNode in cfRuleNodes)
-                    {
-                        // Check if @type attribute exists
-                        if (cfRuleNode.Attributes[ExcelConditionalFormattingConstants.Attributes.Type] == null)
-                        {
-                            throw new Exception(
-                              ExcelConditionalFormattingConstants.Errors.MissingTypeAttribute);
-                        }
+            //        // Foreach <cfRule> inside the current <conditionalFormatting>
+            //        foreach (XmlNode cfRuleNode in cfRuleNodes)
+            //        {
+            //            // Check if @type attribute exists
+            //            if (cfRuleNode.Attributes[ExcelConditionalFormattingConstants.Attributes.Type] == null)
+            //            {
+            //                throw new Exception(
+            //                  ExcelConditionalFormattingConstants.Errors.MissingTypeAttribute);
+            //            }
 
-                        // Check if @priority attribute exists
-                        if (cfRuleNode.Attributes[ExcelConditionalFormattingConstants.Attributes.Priority] == null)
-                        {
-                            throw new Exception(
-                              ExcelConditionalFormattingConstants.Errors.MissingPriorityAttribute);
-                        }
+            //            // Check if @priority attribute exists
+            //            if (cfRuleNode.Attributes[ExcelConditionalFormattingConstants.Attributes.Priority] == null)
+            //            {
+            //                throw new Exception(
+            //                  ExcelConditionalFormattingConstants.Errors.MissingPriorityAttribute);
+            //            }
 
-                        AddNewCf(address, cfRuleNode);
-                    }
-                }
-            }
+            //            AddNewCf(address, cfRuleNode);
+            //        }
+            //    }
+            //}
         }
 
         private ExcelConditionalFormattingRule AddNewCf(ExcelAddress address, XmlNode cfRuleNode)

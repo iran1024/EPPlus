@@ -22,7 +22,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
             _ws = ws;
 
-            while (xr.LocalName == "conditionalFormatting")
+            while (xr.ReadUntil(1, "conditionalFormatting", "sheetData", "dataValidations", "mergeCells", "hyperlinks", "rowBreaks", "colBreaks", "extLst", "pageMargins"))
             {
                 string address = xr.GetAttribute("sqref");
 

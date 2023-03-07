@@ -12,6 +12,7 @@
  *************************************************************************************************/
 using EPPlusTest.Utils;
 using OfficeOpenXml.Utils;
+using System;
 using System.IO;
 
 namespace OfficeOpenXml
@@ -194,7 +195,8 @@ namespace OfficeOpenXml
 
             Buffer.Flush();
             var xml = System.Text.Encoding.UTF8.GetString(((MemoryStream)Buffer.BaseStream).ToArray());
-            var endElementIx = FindElementPos(xml, endElement, false);
+            var xmlTest = Convert.ToBase64String(((MemoryStream)Buffer.BaseStream).ToArray());
+            var endElementIx = FindElementPos(xml, endElement, false, true);
 
             if (endElementIx < 0) return startXml;
             if (string.IsNullOrEmpty(readToElement))
@@ -227,13 +229,15 @@ namespace OfficeOpenXml
         /// <param name="xml">The xml to search</param>
         /// <param name="element">The element</param>
         /// <param name="returnStartPos">If the position before the start element is returned. If false the end of the end element is returned.</param>
+        /// <param name="findLastInstance">If the first or last instance is to be found</param>
         /// <returns>The position of the element in the input xml</returns>
-        private int FindElementPos(string xml, string element, bool returnStartPos = true)
+        private int FindElementPos(string xml, string element, bool returnStartPos = true, bool findLastInstance = false)
         {
             var ix = 0;
             while (true)
             {
-                ix = xml.IndexOf(element, ix);
+                ix = findLastInstance == false ? xml.IndexOf(element, ix) : xml.LastIndexOf(element);
+
                 if (ix > 0 && ix < xml.Length - 1)
                 {
                     var c = xml[ix + element.Length];

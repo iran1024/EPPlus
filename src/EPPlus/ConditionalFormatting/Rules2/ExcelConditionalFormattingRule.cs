@@ -119,7 +119,17 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
             xr.Read();
 
-            Formula = xr.ReadString();
+            if (xr.LocalName == "formula")
+            {
+                Formula = xr.ReadString();
+                xr.Read();
+
+                if (xr.LocalName == "formula2")
+                {
+                    Formula2 = xr.ReadString();
+                    xr.Read();
+                }
+            }
 
             _ws = ws;
 

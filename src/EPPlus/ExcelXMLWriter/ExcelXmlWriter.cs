@@ -921,10 +921,12 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 cache.Append($"bottom=\"1\" ");
             }
 
-            if (conditionalFormat.Operator != eExcelConditionalFormattingOperatorType.LessThan)
-            {
-                cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
-            }
+            cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
+
+            //if (conditionalFormat.Operator != eExcelConditionalFormattingOperatorType.LessThan)
+            //{
+            //    cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
+            //}
 
             if (string.IsNullOrEmpty(conditionalFormat.Text) == false)
             {
