@@ -3,7 +3,7 @@ using System.Xml;
 
 namespace OfficeOpenXml.ConditionalFormatting.Rules2
 {
-    internal class ExcelConditionalFormattingLessThan : ExcelConditionalFormattingRule, IExcelConditionalFormattingGreaterThan
+    internal class ExcelConditionalFormattingLessThan : ExcelConditionalFormattingRule, IExcelConditionalFormattingLessThan
     {
         public ExcelConditionalFormattingLessThan(
           ExcelAddress address,

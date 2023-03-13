@@ -974,7 +974,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
                     cache.Append("<formula>" + conditionalFormat.Formula + "</formula>");
                     if (string.IsNullOrEmpty(conditionalFormat.Formula2) == false)
                     {
-                        cache.Append("<formula2>" + conditionalFormat.Formula2 + "</formula2>");
+                        cache.Append("<formula>" + conditionalFormat.Formula2 + "</formula>");
                     }
                 }
 

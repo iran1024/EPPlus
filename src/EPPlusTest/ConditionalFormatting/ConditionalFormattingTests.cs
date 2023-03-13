@@ -461,6 +461,26 @@ namespace EPPlusTest.ConditionalFormatting
             {
                 var wks = pck.Workbook.Worksheets[0];
 
+                for (int i = 1; i < 11; i++)
+                {
+                    wks.Cells[i, 5].Value = i;
+                    wks.Cells[i, 6].Value = i;
+                }
+
+                var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
+                betweenFormatting.Formula = "3";
+                betweenFormatting.Formula2 = "8";
+
+                betweenFormatting.Style.Fill.BackgroundColor.Color = Color.Red;
+                betweenFormatting.Style.Font.Color.Color = Color.Orange;
+
+                var lessFormatting = wks.ConditionalAttempt.AddLessThan(new ExcelAddress(1, 6, 10, 6));
+                lessFormatting.Formula = "7";
+
+                lessFormatting.Style.Fill.BackgroundColor.Color = Color.Black;
+                lessFormatting.Style.Font.Color.Color = Color.Violet;
+
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
             }
         }

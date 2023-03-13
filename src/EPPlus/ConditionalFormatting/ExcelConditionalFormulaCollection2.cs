@@ -91,5 +91,21 @@ namespace OfficeOpenXml.ConditionalFormatting
               eExcelConditionalFormattingRuleType.GreaterThan,
               address);
         }
+
+        public IExcelConditionalFormattingLessThan AddLessThan(
+            ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingLessThan)AddRule(
+              eExcelConditionalFormattingRuleType.LessThan,
+              address);
+        }
+
+        public IExcelConditionalFormattingBetween AddBetween(
+            ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingBetween)AddRule(
+              eExcelConditionalFormattingRuleType.Between,
+              address);
+        }
     }
 }
