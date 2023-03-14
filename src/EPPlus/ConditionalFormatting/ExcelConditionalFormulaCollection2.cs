@@ -107,5 +107,19 @@ namespace OfficeOpenXml.ConditionalFormatting
               eExcelConditionalFormattingRuleType.Between,
               address);
         }
+
+        public IExcelConditionalFormattingEqual AddEqual(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingEqual)AddRule(
+              eExcelConditionalFormattingRuleType.Equal,
+              address);
+        }
+
+        public IExcelConditionalFormattingContainsText AddTextContains(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingContainsText)AddRule(
+              eExcelConditionalFormattingRuleType.ContainsText,
+              address);
+        }
     }
 }

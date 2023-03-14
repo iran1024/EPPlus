@@ -17,6 +17,7 @@ using OfficeOpenXml.Core.CellStore;
 using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.DataValidation.Formulas;
 using OfficeOpenXml.DataValidation.Formulas.Contracts;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using OfficeOpenXml.Packaging;
 using OfficeOpenXml.Style.XmlAccess;
 using OfficeOpenXml.Utils;
@@ -971,10 +972,10 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                 if (string.IsNullOrEmpty(conditionalFormat.Formula) == false)
                 {
-                    cache.Append("<formula>" + conditionalFormat.Formula + "</formula>");
+                    cache.Append("<formula>" + ConvertUtil.ExcelEscapeAndEncodeString(conditionalFormat.Formula) + "</formula>");
                     if (string.IsNullOrEmpty(conditionalFormat.Formula2) == false)
                     {
-                        cache.Append("<formula>" + conditionalFormat.Formula2 + "</formula>");
+                        cache.Append("<formula>" + ConvertUtil.ExcelEscapeAndEncodeString(conditionalFormat.Formula2) + "</formula>");
                     }
                 }
 

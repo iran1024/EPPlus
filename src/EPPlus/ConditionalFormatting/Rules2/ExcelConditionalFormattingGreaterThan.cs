@@ -33,6 +33,5 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         }
 
         #endregion Constructors
-
     }
 }

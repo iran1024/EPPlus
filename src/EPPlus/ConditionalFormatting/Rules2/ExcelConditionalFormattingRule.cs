@@ -1,8 +1,12 @@
 ﻿using OfficeOpenXml.ConditionalFormatting.Contracts;
 using OfficeOpenXml.FormulaParsing.Utilities;
+using OfficeOpenXml.Utils;
+
+
 using OfficeOpenXml.Style.Dxf;
 using System;
 using System.Xml;
+
 
 namespace OfficeOpenXml.ConditionalFormatting.Rules2
 {
@@ -288,10 +292,19 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         /// </summary>
         internal protected eExcelConditionalFormattingOperatorType Operator { get; set; } = eExcelConditionalFormattingOperatorType.LessThan;
 
+
+        string _formula;
+        string _formula2;
+
+
         /// <summary>
         /// Formula
         /// </summary>
-        public string Formula { get; set; }
+        public string Formula 
+        { 
+            get { return _formula; } 
+            set { _formula = ConvertUtil.ExcelEscapeAndEncodeString(value); } 
+        }
 
 
         /// <summary>
@@ -299,8 +312,11 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         /// Note, no longer Requires Formula to be set before it.
         /// But will still throw error if both formulas not filled at save time.
         /// </summary>
-        public string Formula2 { get; set; }
-
+        public string Formula2
+        {
+            get { return _formula2; }
+            set { _formula2 = ConvertUtil.ExcelEscapeAndEncodeString(value); }
+        }
         private ExcelConditionalFormattingAsType _as = null;
         /// <summary>
         /// Provides access to type conversion for all conditional formatting rules.

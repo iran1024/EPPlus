@@ -30,11 +30,25 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                        address,
                        priority,
                        worksheet);
+
                 case eExcelConditionalFormattingRuleType.Between:
                     return new ExcelConditionalFormattingBetween(
                        address,
                        priority,
                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.Equal:
+                    return new ExcelConditionalFormattingEqual(
+                       address,
+                       priority,
+                       worksheet);
+
+                case eExcelConditionalFormattingRuleType.ContainsText:
+                    return new ExcelConditionalFormattingContainsText(
+                       address,
+                       priority,
+                       worksheet);
+
             }
 
             throw new InvalidOperationException(
@@ -66,13 +80,20 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             switch (eType)
             {
                 case eExcelConditionalFormattingRuleType.GreaterThan:
-
                     return new ExcelConditionalFormattingGreaterThan(address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.LessThan:
                     return new ExcelConditionalFormattingLessThan(address, ws, xr);
+
                 case eExcelConditionalFormattingRuleType.Between:
                     return new ExcelConditionalFormattingBetween(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.Equal:
+                    return new ExcelConditionalFormattingEqual(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.ContainsText:
+                    return new ExcelConditionalFormattingContainsText(address, ws, xr);
+
             }
 
             throw new InvalidOperationException(

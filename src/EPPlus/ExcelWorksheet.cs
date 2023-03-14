@@ -2911,6 +2911,7 @@ namespace OfficeOpenXml
                 CreateNode("d:cols");
                 CreateNode("d:sheetData");
                 CreateNode("d:mergeCells");
+                CreateNode("d:conditionalFormatting");
                 CreateNode("d:dataValidations");
                 CreateNode("d:hyperlinks");
                 CreateNode("d:rowBreaks");

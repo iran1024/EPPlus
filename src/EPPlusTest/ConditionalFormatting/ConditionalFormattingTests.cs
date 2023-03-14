@@ -30,7 +30,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
 using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 
 namespace EPPlusTest.ConditionalFormatting
 {
@@ -51,23 +53,6 @@ namespace EPPlusTest.ConditionalFormatting
         public static void MyClassCleanup()
         {
             SaveAndCleanup(_pck);
-        }
-
-        [TestMethod]
-        public void DevelopmentCheck()
-        {
-            var ws = _pck.Workbook.Worksheets.Add("GreaterThan");
-
-            for (int i = 1; i < 7; i++)
-            {
-                ws.Cells[$"A{i}"].Value = i;
-            }
-
-            //var cfRule = ws.ConditionalFormatting.AddThreeColorScale(ws.Cells["B2:G11"]);
-            var rule = ws.ConditionalFormatting.AddGreaterThan(new ExcelAddress("A1:A7"));
-            rule.Formula = "1";
-            rule.Style.Fill.BackgroundColor.SetColor(Color.Red);
-            _pck.SaveAs("C:\\epplusTest\\Workbooks\\GreaterTest.xlsx");
         }
 
         /// <summary>
@@ -454,6 +439,21 @@ namespace EPPlusTest.ConditionalFormatting
             }
         }
 
+        static string[] numbers = new string[] 
+        { "zero", 
+          "one", 
+          "two",
+          "three", 
+          "four",
+          "five",
+          "six", 
+          "seven", 
+          "eight", 
+          "nine", 
+          "ten",
+          "eleven" 
+        };
+
         [TestMethod]
         public void TestReadingConditionalFormatting()
         {
@@ -465,6 +465,8 @@ namespace EPPlusTest.ConditionalFormatting
                 {
                     wks.Cells[i, 5].Value = i;
                     wks.Cells[i, 6].Value = i;
+                    wks.Cells[i, 8].Value = i % 2;
+                    wks.Cells[i, 10].Value = numbers[i]; 
                 }
 
                 var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
@@ -480,8 +482,44 @@ namespace EPPlusTest.ConditionalFormatting
                 lessFormatting.Style.Fill.BackgroundColor.Color = Color.Black;
                 lessFormatting.Style.Font.Color.Color = Color.Violet;
 
+                var equalFormatting = wks.ConditionalAttempt.AddEqual(new ExcelAddress(1, 8, 10, 8));
+                equalFormatting.Formula = "1";
+
+                equalFormatting.Style.Fill.BackgroundColor.Color = Color.Black;
+                equalFormatting.Style.Font.Color.Color = Color.Violet;
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
+            }
+        }
+
+        [TestMethod]
+        public void GreaterThanCanReadWrite()
+        {
+            using (var pck = new ExcelPackage())
+            {
+                var ws = pck.Workbook.Worksheets.Add("GreaterThan");
+
+                for (int i = 1; i < 11; i++)
+                {
+                    ws.Cells[i, 1].Value = i;
+                }
+
+                var greaterThanFormatting = ws.ConditionalAttempt.AddGreaterThan(new ExcelAddress(1, 1, 10, 1));
+                greaterThanFormatting.Formula = "3";
+
+                greaterThanFormatting.Style.Fill.BackgroundColor.Color = Color.Black;
+                greaterThanFormatting.Style.Font.Color.Color = Color.Violet;
+
+                pck.Save();
+
+                var readPck = new ExcelPackage(pck.Stream);
+
+                foreach (var format in readPck.Workbook.Worksheets[0].ConditionalAttempt)
+                {
+                    Assert.AreEqual(format.Formula, "3");
+                    Assert.AreEqual(Color.Black.ToArgb(),  format.Style.Fill.BackgroundColor.Color.Value.ToArgb());
+                    Assert.AreEqual(Color.Violet.ToArgb(), format.Style.Font.Color.Color.Value.ToArgb());
+                }
             }
         }
     }
