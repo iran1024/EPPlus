@@ -33,6 +33,8 @@ using OfficeOpenXml.ConditionalFormatting.Contracts;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Runtime.Remoting;
 
 namespace EPPlusTest.ConditionalFormatting
 {
@@ -457,9 +459,9 @@ namespace EPPlusTest.ConditionalFormatting
         [TestMethod]
         public void TestReadingConditionalFormatting()
         {
-            using (var pck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTest.xlsx"))
+            using (var pck = new ExcelPackage())
             {
-                var wks = pck.Workbook.Worksheets[0];
+                var wks = pck.Workbook.Worksheets.Add("FormattingTest");
 
                 for (int i = 1; i < 11; i++)
                 {
@@ -488,7 +490,23 @@ namespace EPPlusTest.ConditionalFormatting
                 equalFormatting.Style.Fill.BackgroundColor.Color = Color.Black;
                 equalFormatting.Style.Font.Color.Color = Color.Violet;
 
+                var containsFormatting = wks.ConditionalAttempt.AddTextContains(new ExcelAddress(1, 10, 10, 10));
+                containsFormatting.ContainText = "o";
+
+                containsFormatting.Style.Fill.BackgroundColor.Color = Color.Blue;
+                containsFormatting.Style.Font.Color.Color = Color.Yellow;
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
+
+                var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
+
+                var formattings = newPck.Workbook.Worksheets[0].ConditionalAttempt;
+
+                Assert.AreEqual(formattings.ToList()[0].Formula, "3");
+                Assert.AreEqual(formattings.ToList()[0].Formula2, "8");
+                Assert.AreEqual(formattings.ToList()[1].Formula, "7");
+                Assert.AreEqual(formattings.ToList()[2].Formula, "1");
+                Assert.AreEqual(formattings.ToList()[3].Text, "o");
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
+using System.Linq;
 
 namespace OfficeOpenXml.Utils
 {
@@ -14,7 +15,8 @@ namespace OfficeOpenXml.Utils
 
                 if(charIndex > 0)
                 {
-                    return s.Substring(index, charIndex);
+                    int test = s.Count();
+                    return s.Substring(index, (charIndex - index));
                 }
             }
 

@@ -121,6 +121,11 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 DxfId = int.Parse(xr.GetAttribute("dxfId"));
             }
 
+            if(!string.IsNullOrEmpty(xr.GetAttribute("text")))
+            {
+                Text = xr.GetAttribute("text");
+            }
+
             xr.Read();
 
             if (xr.LocalName == "formula")
@@ -128,7 +133,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 Formula = xr.ReadString();
                 xr.Read();
 
-                if (xr.LocalName == "formula2")
+                if (xr.LocalName == "formula")
                 {
                     Formula2 = xr.ReadString();
                     xr.Read();
@@ -153,8 +158,8 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         /// <param name="worksheet"></param>
         internal ExcelConditionalFormattingRule(eExcelConditionalFormattingRuleType type, ExcelAddress address, int priority, ExcelWorksheet worksheet)
         {
-            Require.That(address).IsNotNull();
-            Require.That(worksheet).IsNotNull();
+            FormulaParsing.Utilities.Require.That(address).IsNotNull();
+            FormulaParsing.Utilities.Require.That(worksheet).IsNotNull();
 
             _ws = worksheet;
 

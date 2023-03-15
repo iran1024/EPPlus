@@ -55,7 +55,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         if (itemElementNode==null) //Set default values and create attributes if needed
         {
             Operator = eExcelConditionalFormattingOperatorType.NotContains;
-            Text = string.Empty;
+            ContainText = string.Empty;
         }
     }
 
@@ -106,7 +106,7 @@ namespace OfficeOpenXml.ConditionalFormatting
     /// <summary>
     /// The text to search inside the cell
     /// </summary>
-    public string Text
+    public string ContainText
     {
       get
       {
