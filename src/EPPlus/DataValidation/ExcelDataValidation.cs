@@ -90,13 +90,13 @@ namespace OfficeOpenXml.DataValidation
             get
             {
                 if (!string.IsNullOrEmpty(errorStyleString))
-                    return (ExcelDataValidationWarningStyle)Enum.Parse(typeof(ExcelDataValidationWarningStyle), errorStyleString);
+                    return (ExcelDataValidationWarningStyle)Enum.Parse(typeof(ExcelDataValidationWarningStyle), errorStyleString, true);
 
-                return ExcelDataValidationWarningStyle.Undefined;
+                return ExcelDataValidationWarningStyle.undefined;
             }
             set
             {
-                if (value == ExcelDataValidationWarningStyle.Undefined)
+                if (value == ExcelDataValidationWarningStyle.undefined)
                     errorStyleString = null;
                 else
                     errorStyleString = value.ToString();
@@ -168,7 +168,6 @@ namespace OfficeOpenXml.DataValidation
         /// <exception cref="InvalidOperationException">If the state breaks the rules of the validation</exception>
         public virtual void Validate()
         {
-
         }
 
         ExcelDataValidationAsType _as = null;
@@ -184,9 +183,20 @@ namespace OfficeOpenXml.DataValidation
                     _as = new ExcelDataValidationAsType(this);
                 }
                 return _as;
+                }
+                return _as;
             }
         }
 
+        /// <summary>
+        /// Indicates whether this instance is stale, see https://github.com/EPPlusSoftware/EPPlus/wiki/Data-validation-Exceptions
+        /// DEPRECATED as of Epplus 6.2.
+        /// This as validations can no longer be stale since all attributes are now always fresh and held in the system.
+        /// </summary>
+        [Obsolete]
+        public bool IsStale { get; } = false;
+
+        string operatorString = null;
         /// <summary>
         /// Indicates whether this instance is stale, see https://github.com/EPPlusSoftware/EPPlus/wiki/Data-validation-Exceptions
         /// DEPRECATED as of Epplus 6.2.

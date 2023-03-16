@@ -74,13 +74,9 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 UpdateMergedCells(sw, prefix);
             }
 
-            FindNodePositionAndClearIt(sw, xml, "conditionalFormatting", ref startOfNode, ref endOfNode);
-            sw.Write(UpdateConditionalFormattings(prefix));
-
-            FindNodePositionAndClearIt(sw, xml, "dataValidations", ref startOfNode, ref endOfNode);
-
-            if (_ws.DataValidations.Count > 0)
+            if (_ws.GetNode("d:dataValidations") != null)
             {
+                FindNodePositionAndClearIt(sw, xml, "dataValidations", ref startOfNode, ref endOfNode);
                 sw.Write(UpdateDataValidation(prefix));
             }
 
@@ -359,7 +355,6 @@ namespace OfficeOpenXml.ExcelXMLWriter
             var cache = new StringBuilder();
             cache.Append($"<{sheetDataTag}>");
 
-
             FixSharedFormulas(); //Fixes Issue #32
 
             var hasMd = _ws._metadataStore.HasValues;
@@ -573,7 +568,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 cache.Append($"type=\"{_ws.DataValidations[i].ValidationType.TypeToXmlString()}\" ");
             }
 
-            if (_ws.DataValidations[i].ErrorStyle != ExcelDataValidationWarningStyle.Undefined)
+            if (_ws.DataValidations[i].ErrorStyle != ExcelDataValidationWarningStyle.undefined)
             {
                 cache.Append($"errorStyle=\"{_ws.DataValidations[i].ErrorStyle.ToEnumString()}\" ");
             }
@@ -665,20 +660,34 @@ namespace OfficeOpenXml.ExcelXMLWriter
                         string intString = ((ExcelDataValidationFormulaInt)intType.Formula).GetXmlValue();
                         string intString2 = ((ExcelDataValidationFormulaInt)intType.Formula2).GetXmlValue();
 
+                        intString = ConvertUtil.ExcelEscapeAndEncodeString(intString);
+                        intString2 = ConvertUtil.ExcelEscapeAndEncodeString(intString2);
+
                         cache.Append($"<{prefix}formula1>{extNode}{intString}{endExtNode}</{prefix}formula1>");
-                        cache.Append($"<{prefix}formula2>{extNode}{intString2}{endExtNode}</{prefix}formula2>");
+                        if(!string.IsNullOrEmpty(intString2))
+                        {
+                            cache.Append($"<{prefix}formula2>{extNode}{intString2}{endExtNode}</{prefix}formula2>");
+                        }
                         break;
                     case eDataValidationType.Decimal:
                         var decimalType = _ws.DataValidations[i] as ExcelDataValidationWithFormula2<IExcelDataValidationFormulaDecimal>;
                         string decimalString = ((ExcelDataValidationFormulaDecimal)decimalType.Formula).GetXmlValue();
                         string decimalString2 = ((ExcelDataValidationFormulaDecimal)decimalType.Formula2).GetXmlValue();
 
+                        decimalString = ConvertUtil.ExcelEscapeAndEncodeString(decimalString);
+                        decimalString2 = ConvertUtil.ExcelEscapeAndEncodeString(decimalString2);
+
                         cache.Append($"<{prefix}formula1>{extNode}{decimalString}{endExtNode}</{prefix}formula1>");
-                        cache.Append($"<{prefix}formula2>{extNode}{decimalString2}{endExtNode}</{prefix}formula2>");
+                        if (!string.IsNullOrEmpty(decimalString2))
+                        {
+                            cache.Append($"<{prefix}formula2>{extNode}{decimalString2}{endExtNode}</{prefix}formula2>");
+                        }
                         break;
                     case eDataValidationType.List:
                         var listType = _ws.DataValidations[i] as ExcelDataValidationWithFormula<IExcelDataValidationFormulaList>;
                         string listString = ((ExcelDataValidationFormulaList)listType.Formula).GetXmlValue();
+
+                        listString = ConvertUtil.ExcelEscapeAndEncodeString(listString);
 
                         cache.Append($"<{prefix}formula1>{extNode}{listString}{endExtNode}</{prefix}formula1>");
                         break;
@@ -687,20 +696,34 @@ namespace OfficeOpenXml.ExcelXMLWriter
                         string timeString = ((ExcelDataValidationFormulaTime)timeType.Formula).GetXmlValue();
                         string timeString2 = ((ExcelDataValidationFormulaTime)timeType.Formula2).GetXmlValue();
 
+                        timeString = ConvertUtil.ExcelEscapeAndEncodeString(timeString);
+                        timeString2 = ConvertUtil.ExcelEscapeAndEncodeString(timeString2);
+
                         cache.Append($"<{prefix}formula1>{extNode}{timeString}{endExtNode}</{prefix}formula1>");
-                        cache.Append($"<{prefix}formula2>{extNode}{timeString2}{endExtNode}</{prefix}formula2>");
+                        if (!string.IsNullOrEmpty(timeString2) && timeString2 != "0")
+                        {
+                            cache.Append($"<{prefix}formula2>{extNode}{timeString2}{endExtNode}</{prefix}formula2>");
+                        }
                         break;
                     case eDataValidationType.DateTime:
                         var dateTimeType = _ws.DataValidations[i] as ExcelDataValidationWithFormula2<IExcelDataValidationFormulaDateTime>;
                         string dateTimeString = ((ExcelDataValidationFormulaDateTime)dateTimeType.Formula).GetXmlValue();
                         string dateTimeString2 = ((ExcelDataValidationFormulaDateTime)dateTimeType.Formula2).GetXmlValue();
 
+                        dateTimeString = ConvertUtil.ExcelEscapeAndEncodeString(dateTimeString);
+                        dateTimeString2 = ConvertUtil.ExcelEscapeAndEncodeString(dateTimeString2);
+
                         cache.Append($"<{prefix}formula1>{extNode}{dateTimeString}{endExtNode}</{prefix}formula1>");
-                        cache.Append($"<{prefix}formula2>{extNode}{dateTimeString2}{endExtNode}</{prefix}formula2>");
+                        if (!string.IsNullOrEmpty(dateTimeString2))
+                        {
+                            cache.Append($"<{prefix}formula2>{extNode}{dateTimeString2}{endExtNode}</{prefix}formula2>");
+                        }
                         break;
                     case eDataValidationType.Custom:
                         var customType = _ws.DataValidations[i] as ExcelDataValidationWithFormula<IExcelDataValidationFormula>;
                         string customString = ((ExcelDataValidationFormulaCustom)customType.Formula).GetXmlValue();
+
+                        customString = ConvertUtil.ExcelEscapeAndEncodeString(customString);
 
                         cache.Append($"<{prefix}formula1>{extNode}{customString}{endExtNode}</{prefix}formula1>");
                         break;
@@ -886,123 +909,6 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 $"xmlns:x14=\"{ExcelPackage.schemaMainX14}\" uri=\"{{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}}\" " + $"xmlns:xm=\"{ExcelPackage.schemaMainXm}\"")
             );
             cache.Append("</ext>");
-
-            return cache.ToString();
-        }
-
-        private string UpdateConditionalFormattingAttributes(
-            ConditionalFormatting.Rules2.ExcelConditionalFormattingRule conditionalFormat)
-        {
-            StringBuilder cache = new StringBuilder();
-
-            if (conditionalFormat.DxfId != -1)
-            {
-                cache.Append($"dxfId=\"{conditionalFormat.DxfId}\" ");
-            }
-
-            cache.Append($"priority=\"{conditionalFormat.Priority}\" ");
-
-            if (conditionalFormat.StopIfTrue)
-            {
-                cache.Append($"stopIfTrue=\"1\" ");
-            }
-
-            if (conditionalFormat.AboveAverage == false)
-            {
-                cache.Append($"aboveAverage=\"0\" ");
-            }
-
-            if ((bool)conditionalFormat.Percent)
-            {
-                cache.Append($"percent=\"1\" ");
-            }
-
-            if ((bool)conditionalFormat.Bottom)
-            {
-                cache.Append($"bottom=\"1\" ");
-            }
-
-            cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
-
-            //if (conditionalFormat.Operator != eExcelConditionalFormattingOperatorType.LessThan)
-            //{
-            //    cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
-            //}
-
-            if (string.IsNullOrEmpty(conditionalFormat.Text) == false)
-            {
-                cache.Append($"text=\"{conditionalFormat.Text}\" ");
-            }
-
-            if (conditionalFormat.TimePeriod != eExcelConditionalFormattingTimePeriodType.Today)
-            {
-                cache.Append($"timePeriod=\"{conditionalFormat.TimePeriod.ToEnumString()}\" ");
-            }
-
-            if (conditionalFormat._rank != 0)
-            {
-                cache.Append($"rank=\"{conditionalFormat.Rank}\" ");
-            }
-
-            if (conditionalFormat.StdDev != 0)
-            {
-                cache.Append($"stdDev=\"{conditionalFormat.StdDev}\" ");
-            }
-
-            if ((bool)conditionalFormat.EqualAverage)
-            {
-                cache.Append("equalAverage=\"1\" ");
-            }
-
-            return cache.ToString();
-        }
-
-        private string UpdateConditionalFormattings(string prefix)
-        {
-            var cache = new StringBuilder();
-
-            foreach (var conditionalFormat in _ws.ConditionalAttempt)
-            {
-                cache.Append($"<conditionalFormatting sqref=\"{conditionalFormat.Address}\">");
-                cache.Append($"<cfRule type=\"{conditionalFormat.GetAttributeType()}\" ");
-
-                cache.Append(UpdateConditionalFormattingAttributes(conditionalFormat));
-                cache.Append($">");
-
-
-                if (string.IsNullOrEmpty(conditionalFormat.Formula) == false)
-                {
-                    cache.Append("<formula>" + ConvertUtil.ExcelEscapeAndEncodeString(conditionalFormat.Formula) + "</formula>");
-                    if (string.IsNullOrEmpty(conditionalFormat.Formula2) == false)
-                    {
-                        cache.Append("<formula>" + ConvertUtil.ExcelEscapeAndEncodeString(conditionalFormat.Formula2) + "</formula>");
-                    }
-                }
-
-                if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.TwoColorScale ||
-                   conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeColorScale)
-                {
-
-                }
-
-                if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.DataBar)
-                {
-
-                }
-
-                if (new[]{
-                    eExcelConditionalFormattingRuleType.ThreeIconSet,
-                    eExcelConditionalFormattingRuleType.FourIconSet,
-                    eExcelConditionalFormattingRuleType.FiveIconSet }.Contains(conditionalFormat.Type))
-                {
-
-                }
-
-                //TODO: Add support for potential extLst reference in normal formatting
-
-                cache.Append($"</cfRule>");
-                cache.Append($"</conditionalFormatting>");
-            }
 
             return cache.ToString();
         }

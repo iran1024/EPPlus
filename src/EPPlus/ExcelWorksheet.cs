@@ -1285,15 +1285,15 @@ namespace OfficeOpenXml
             var nextElementLength = GetAttributeLength(xr);
             stream.SetWriteToBuffer();
             LoadMergeCells(xr);
+            var nextElement = "dataValidations";
+            if (xr.ReadUntil(1, NodeOrders.WorksheetTopElementOrder, nextElement))
 
             var nextElement = "conditionalFormatting";
             if (xr.ReadUntil(1, NodeOrders.WorksheetTopElementOrder, nextElement))
-            {
                 xml = stream.ReadFromEndElement(lastXmlElement, xml, nextElement, false, xr.Prefix);
                 LoadConditionalFormatting(xr);
                 stream.SetWriteToBuffer();
                 lastXmlElement = nextElement;
-            }
 
             nextElement = "dataValidations";
             if (xr.ReadUntil(1, NodeOrders.WorksheetTopElementOrder, nextElement))
@@ -1440,7 +1440,6 @@ namespace OfficeOpenXml
             }
         }
         const int BLOCKSIZE = 8192;
-
 
         private void LoadColumns(XmlReader xr)//(string xml)
         {
@@ -1628,6 +1627,11 @@ namespace OfficeOpenXml
         {
             _conditionalFormatting2 = new ExcelConditionalFormattingCollection2(xr, this);
         }
+        private void LoadDataValidations(XmlReader xr)
+        {
+            _conditionalFormatting2 = new ExcelConditionalFormattingCollection2(xr, this);
+            _dataValidations = new ExcelDataValidationCollection(xr, this);
+        }
 
         private void LoadDataValidations(XmlReader xr)
         {
@@ -1660,6 +1664,7 @@ namespace OfficeOpenXml
                 }
             }
         }
+
 
         /// <summary>
         /// Load cells
@@ -2918,31 +2923,33 @@ namespace OfficeOpenXml
                 CreateNode("d:colBreaks");
 
                 if (DataValidations != null && DataValidations.Count != 0)
-                {
-                    WorksheetXml.DocumentElement.SetAttribute("xmlns:xr", ExcelPackage.schemaXr);
-                    WorksheetXml.DocumentElement.SetAttribute("xmlns:mc", ExcelPackage.schemaMarkupCompatibility);
-                    WorksheetXml.DocumentElement.SetAttributeNode("Ignorable", ExcelPackage.schemaMarkupCompatibility);
-                    WorksheetXml.DocumentElement.SetAttribute("Ignorable", "xr");
-
-                    if (DataValidations.HasValidationType(InternalValidationType.ExtLst))
-                    {
-                        if (GetNode("d:extLst") == null)
                         {
                             CreateNode("d:extLst");
                         }
                     }
+                writer.WriteNodes(sw, xml, ref startOfNode, ref endOfNode);
+                    WorksheetXml.DocumentElement.SetAttribute("xmlns:xr", ExcelPackage.schemaXr);
+                    WorksheetXml.DocumentElement.SetAttribute("xmlns:mc", ExcelPackage.schemaMarkupCompatibility);
+                    WorksheetXml.DocumentElement.SetAttributeNode("Ignorable", ExcelPackage.schemaMarkupCompatibility);
+                    WorksheetXml.DocumentElement.SetAttribute("Ignorable", "xr");
+                    if (DataValidations.HasValidationType(InternalValidationType.DataValidation))
+                    {
+                        var node = (XmlElement)CreateNode("d:dataValidations");
+                        if (DataValidations.HasValidationType(InternalValidationType.ExtLst) &&
+                            GetNode("d:extLst") == null)
+                        {
+                            CreateNode("d:extLst");
+                    else if (GetNode("d:extLst") == null)
+                    {
+                        CreateNode("d:extLst");
+                    }
                 }
-
                 var prefix = GetNameSpacePrefix();
                 var xml = _worksheetXml.OuterXml;
                 int startOfNode = 0, endOfNode = 0;
-
                 ExcelXmlWriter writer = new ExcelXmlWriter(this, _package);
                 writer.WriteNodes(sw, xml, ref startOfNode, ref endOfNode);
             }
-            sw.Flush();
-        }
-
         internal string GetNameSpacePrefix()
         {
             if (_worksheetXml.DocumentElement == null) return "";
@@ -2962,7 +2969,6 @@ namespace OfficeOpenXml
             }
             return "";
         }
-
         /// <summary>
         /// Dimension address for the worksheet. 
         /// Top left cell to Bottom right.
@@ -3131,17 +3137,9 @@ namespace OfficeOpenXml
 
 
         internal ExcelConditionalFormattingCollection2 ConditionalAttempt
-        {
-            get
-            {
-                CheckSheetTypeAndNotDisposed();
                 if (_conditionalFormatting2 == null)
-                {
                     _conditionalFormatting2 = new ExcelConditionalFormattingCollection2(this);
-                }
                 return _conditionalFormatting2;
-            }
-        }
 
         ExcelIgnoredErrorCollection _ignoredErrors = null;
         /// <summary>

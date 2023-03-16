@@ -45,27 +45,61 @@ namespace EPPlusTest.DataValidation.Formulas
             var validationOrig = sheet.DataValidations.AddDecimalValidation("A1");
 
             validationOrig.Formula.Value = 13.5d;
-            validationOrig.Operator = ExcelDataValidationOperator.LessThanOrEqual;
+            validationOrig.Operator = ExcelDataValidationOperator.lessThanOrEqual;
 
             var validation = ReadTValidation<ExcelDataValidationDecimal>(package);
 
             Assert.AreEqual(13.5d, validation.Formula.Value);
-        }
 
-        [TestMethod]
+            Assert.AreEqual(13.5d, validation.Formula.Value);
         public void ExcelFormulaIsRead()
-        {
             var package = new ExcelPackage(new MemoryStream());
             var sheet = package.Workbook.Worksheets.Add("DecimalTest");
 
             var validationOrig = sheet.DataValidations.AddDecimalValidation("A1");
 
             validationOrig.Formula.ExcelFormula = "D1";
-            validationOrig.Operator = ExcelDataValidationOperator.LessThanOrEqual;
+            validationOrig.Operator = ExcelDataValidationOperator.lessThanOrEqual;
 
             var validation = ReadTValidation<ExcelDataValidationDecimal>(package);
 
             Assert.AreEqual("D1", validation.Formula.ExcelFormula);
+        }
+
+        [TestMethod]
+        public void FormulaSpecialSignsAreWrittenAndRead()
+        {
+            var package = new ExcelPackage(new MemoryStream());
+            var sheet = package.Workbook.Worksheets.Add("DecimalTest");
+
+            var lessThan = sheet.DataValidations.AddDecimalValidation("A1");
+            lessThan.Operator = ExcelDataValidationOperator.equal;
+
+            sheet.Cells["B1"].Value = 1;
+
+            lessThan.Formula.ExcelFormula = "=B1<5";
+            lessThan.ShowErrorMessage = true;
+
+
+            var greaterThan = sheet.DataValidations.AddDecimalValidation("A2");
+
+            sheet.Cells["B2"].Value = 6;
+
+            greaterThan.Formula.ExcelFormula = "=B1>5";
+            greaterThan.ShowErrorMessage = true;
+
+            greaterThan.Operator = ExcelDataValidationOperator.equal;
+
+            MemoryStream stream = new MemoryStream();
+            package.SaveAs(stream);
+
+            var loadedpkg = new ExcelPackage(stream);
+            var loadedSheet = loadedpkg.Workbook.Worksheets[0];
+
+            var validations = loadedSheet.DataValidations;
+
+            Assert.AreEqual(((ExcelDataValidationDecimal)validations[0]).Formula.ExcelFormula, "=B1<5");
+            Assert.AreEqual(((ExcelDataValidationDecimal)validations[1]).Formula.ExcelFormula, "=B1>5");
         }
     }
 }
