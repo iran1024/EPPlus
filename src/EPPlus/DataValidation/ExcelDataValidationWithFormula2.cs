@@ -60,7 +60,6 @@ namespace OfficeOpenXml.DataValidation
             {
                 Formula2 = ReadFormula(xr, "formula2");
             }
-            }
         }
 
         /// <summary>
@@ -86,7 +85,6 @@ namespace OfficeOpenXml.DataValidation
                 {
                     throw new InvalidOperationException("Validation of " + Address.Address + " failed: Formula2 must be set if operator is 'between' or 'notBetween'");
                 }
-            }
             }
         }
     }

@@ -108,7 +108,7 @@ namespace OfficeOpenXml.DataValidation
                 throw new InvalidOperationException("Formula MUST be assigned to when Operator is Equal");
             }
             else if (ValidationType.Type != eDataValidationType.List
-                && ValidationType.Type != eDataValidationType.Custom
+                && ValidationType.Type != eDataValidationType.Custom)
             {
                 if (formula.HasValue == false && string.IsNullOrEmpty(Formula.ExcelFormula) && !(AllowBlank ?? false))
                 {

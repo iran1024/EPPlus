@@ -52,7 +52,11 @@ namespace EPPlusTest.DataValidation.Formulas
             Assert.AreEqual(13.5d, validation.Formula.Value);
 
             Assert.AreEqual(13.5d, validation.Formula.Value);
+        }
+
+        [TestMethod]
         public void ExcelFormulaIsRead()
+        { 
             var package = new ExcelPackage(new MemoryStream());
             var sheet = package.Workbook.Worksheets.Add("DecimalTest");
 

@@ -700,6 +700,7 @@ namespace EPPlusTest
             (ws.Drawings["shape120"] as ExcelShape).HeadEnd.Height = eEndSize.Small;
             (ws.Drawings["shape120"] as ExcelShape).HeadEnd.Width = eEndSize.Small;
         }
+
         [TestMethod]
         //[Ignore]
         public void DrawingWorksheetCopy()

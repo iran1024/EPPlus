@@ -74,9 +74,13 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 UpdateMergedCells(sw, prefix);
             }
 
-            if (_ws.GetNode("d:dataValidations") != null)
+            FindNodePositionAndClearIt(sw, xml, "conditionalFormatting", ref startOfNode, ref endOfNode);
+            sw.Write(UpdateConditionalFormattings(prefix));
+
+            FindNodePositionAndClearIt(sw, xml, "dataValidations", ref startOfNode, ref endOfNode);
+
+            if (_ws.DataValidations.Count > 0)
             {
-                FindNodePositionAndClearIt(sw, xml, "dataValidations", ref startOfNode, ref endOfNode);
                 sw.Write(UpdateDataValidation(prefix));
             }
 
@@ -909,6 +913,123 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 $"xmlns:x14=\"{ExcelPackage.schemaMainX14}\" uri=\"{{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}}\" " + $"xmlns:xm=\"{ExcelPackage.schemaMainXm}\"")
             );
             cache.Append("</ext>");
+
+            return cache.ToString();
+        }
+
+        private string UpdateConditionalFormattingAttributes(
+            ConditionalFormatting.Rules2.ExcelConditionalFormattingRule conditionalFormat)
+        {
+            StringBuilder cache = new StringBuilder();
+
+            if (conditionalFormat.DxfId != -1)
+            {
+                cache.Append($"dxfId=\"{conditionalFormat.DxfId}\" ");
+            }
+
+            cache.Append($"priority=\"{conditionalFormat.Priority}\" ");
+
+            if (conditionalFormat.StopIfTrue)
+            {
+                cache.Append($"stopIfTrue=\"1\" ");
+            }
+
+            if (conditionalFormat.AboveAverage == false)
+            {
+                cache.Append($"aboveAverage=\"0\" ");
+            }
+
+            if ((bool)conditionalFormat.Percent)
+            {
+                cache.Append($"percent=\"1\" ");
+            }
+
+            if ((bool)conditionalFormat.Bottom)
+            {
+                cache.Append($"bottom=\"1\" ");
+            }
+
+            cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
+
+            //if (conditionalFormat.Operator != eExcelConditionalFormattingOperatorType.LessThan)
+            //{
+            //    cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
+            //}
+
+            if (string.IsNullOrEmpty(conditionalFormat.Text) == false)
+            {
+                cache.Append($"text=\"{conditionalFormat.Text}\" ");
+            }
+
+            if (conditionalFormat.TimePeriod != eExcelConditionalFormattingTimePeriodType.Today)
+            {
+                cache.Append($"timePeriod=\"{conditionalFormat.TimePeriod.ToEnumString()}\" ");
+            }
+
+            if (conditionalFormat._rank != 0)
+            {
+                cache.Append($"rank=\"{conditionalFormat.Rank}\" ");
+            }
+
+            if (conditionalFormat.StdDev != 0)
+            {
+                cache.Append($"stdDev=\"{conditionalFormat.StdDev}\" ");
+            }
+
+            if ((bool)conditionalFormat.EqualAverage)
+            {
+                cache.Append("equalAverage=\"1\" ");
+            }
+
+            return cache.ToString();
+        }
+
+        private string UpdateConditionalFormattings(string prefix)
+        {
+            var cache = new StringBuilder();
+
+            foreach (var conditionalFormat in _ws.ConditionalAttempt)
+            {
+                cache.Append($"<conditionalFormatting sqref=\"{conditionalFormat.Address}\">");
+                cache.Append($"<cfRule type=\"{conditionalFormat.GetAttributeType()}\" ");
+
+                cache.Append(UpdateConditionalFormattingAttributes(conditionalFormat));
+                cache.Append($">");
+
+
+                if (string.IsNullOrEmpty(conditionalFormat.Formula) == false)
+                {
+                    cache.Append("<formula>" + ConvertUtil.ExcelEscapeAndEncodeString(conditionalFormat.Formula) + "</formula>");
+                    if (string.IsNullOrEmpty(conditionalFormat.Formula2) == false)
+                    {
+                        cache.Append("<formula>" + ConvertUtil.ExcelEscapeAndEncodeString(conditionalFormat.Formula2) + "</formula>");
+                    }
+                }
+
+                if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.TwoColorScale ||
+                   conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeColorScale)
+                {
+
+                }
+
+                if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.DataBar)
+                {
+
+                }
+
+                if (new[]{
+                    eExcelConditionalFormattingRuleType.ThreeIconSet,
+                    eExcelConditionalFormattingRuleType.FourIconSet,
+                    eExcelConditionalFormattingRuleType.FiveIconSet }.Contains(conditionalFormat.Type))
+                {
+
+                }
+
+                //TODO: Add support for potential extLst reference in normal formatting
+
+                cache.Append($"</cfRule>");
+                cache.Append($"</conditionalFormatting>");
+            }
 
             return cache.ToString();
         }

@@ -38,6 +38,7 @@ namespace EPPlusTest.DataValidation.Formulas
     {
         [TestMethod]
         public void FormulaIsReadInConstructor()
+        {
             var package = new ExcelPackage(new MemoryStream());
             var sheet = package.Workbook.Worksheets.Add("CustomTest");
             var validationOrig = sheet.DataValidations.AddCustomValidation("A1");
@@ -46,6 +47,7 @@ namespace EPPlusTest.DataValidation.Formulas
             var validation = ReadTValidation<ExcelDataValidationCustom>(package);
 
             Assert.AreEqual("A1", validation.Formula.ExcelFormula);
+        }
         [TestMethod]
         public void FormulaSpecialSignsAreWrittenAndRead()
         {

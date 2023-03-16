@@ -24,18 +24,21 @@ namespace OfficeOpenXml.ConditionalFormatting
 
             while (xr.ReadUntil(1, "conditionalFormatting", "sheetData", "dataValidations", "mergeCells", "hyperlinks", "rowBreaks", "colBreaks", "extLst", "pageMargins"))
             {
-                string address = xr.GetAttribute("sqref");
-
-                if (xr.NodeType == XmlNodeType.Element)
+                if(xr.LocalName == "conditionalFormatting")
                 {
+                    string address = xr.GetAttribute("sqref");
+
+                    if (xr.NodeType == XmlNodeType.Element)
+                    {
+                        xr.Read();
+                        var cf = Rules2.ExcelConditionalFormattingRuleFactory.Create(new ExcelAddress(address), _ws, xr);
+
+                        _rules.Add(cf);
+                    }
+
                     xr.Read();
-                    var cf = Rules2.ExcelConditionalFormattingRuleFactory.Create(new ExcelAddress(address), _ws, xr);
-
-                    _rules.Add(cf);
+                    xr.Read();
                 }
-
-                xr.Read();
-                xr.Read();
             }
         }
 

@@ -97,6 +97,7 @@ namespace EPPlusTest.DataValidation
 
             var validation = sheet.DataValidations.AddIntegerValidation("A1");
             validation.Operator = ExcelDataValidationOperator.greaterThanOrEqual;
+            validation.AllowBlank = true;
 
             MemoryStream xmlStream = new MemoryStream();
             P.SaveAs(xmlStream);
@@ -161,7 +162,7 @@ namespace EPPlusTest.DataValidation
         {
             var validation = _sheet.DataValidations.AddIntegerValidation("A1");
             validation.Formula.Value = 1;
-            validation.Operator = ExcelDataValidationOperator.Between;
+            validation.Operator = ExcelDataValidationOperator.between;
             validation.Validate();
         }
 
