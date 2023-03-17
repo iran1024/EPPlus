@@ -472,7 +472,30 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i, 6].Value = i;
                     wks.Cells[i, 8].Value = i % 2;
                     wks.Cells[i, 10].Value = numbers[i];
+
                     wks.Cells[i, 12].Value = date + $"{i+10}";
+                    wks.Cells[i + 7, 12].Value = date + $"{i + 10 + 7}";
+
+                    wks.Cells[i, 13].Value = date + $"{i + 10}";
+                    wks.Cells[i + 7, 13].Value = date + $"{i + 10 + 7}";
+
+                    wks.Cells[i, 14].Value = date + $"{i + 10}";
+                    wks.Cells[i + 7, 14].Value = date + $"{i + 10 + 7}";
+
+                    wks.Cells[i, 15].Value = date + $"{i + 10}";
+                    wks.Cells[i + 7, 15].Value = date + $"{i + 10 + 7}";
+
+                    wks.Cells[i, 16].Value = date + $"{i + 10}";
+                    wks.Cells[i + 7, 16].Value = date + $"{i + 10 + 7}";
+
+                    wks.Cells[i, 16].Value = date + $"{i + 10}";
+                    wks.Cells[i + 7, 16].Value = date + $"{i + 10 + 7}";
+
+                    wks.Cells[i, 17].Value = date + $"{i + 10}";
+                    wks.Cells[i + 7, 17].Value = date + $"{i + 10 + 7}";
+
+                    wks.Cells[i, 18].Value = date + $"{i + 10}";
+                    wks.Cells[i + 7, 18].Value = date + $"{i + 10 + 7}";
                 }
 
                 var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
@@ -505,7 +528,7 @@ namespace EPPlusTest.ConditionalFormatting
                 dateFormatting.Style.Fill.BackgroundColor.Color = Color.Red;
                 dateFormatting.Style.Font.Color.Color = Color.Yellow;
 
-                var yesterdayFormatting = wks.ConditionalAttempt.AddYesterday(new ExcelAddress(1, 12, 10, 12));
+                var yesterdayFormatting = wks.ConditionalAttempt.AddYesterday(new ExcelAddress(1, 13, 10, 13));
 
                 //TODO: Fix Priority. It doesn't seem to apply correctly.
 
@@ -513,12 +536,31 @@ namespace EPPlusTest.ConditionalFormatting
                 yesterdayFormatting.Style.Font.Color.Color = Color.Red;
                 yesterdayFormatting.Priority = 1;
 
-                var todayFormatting = wks.ConditionalAttempt.AddToday(new ExcelAddress(1, 12, 10, 12));
+                var todayFormatting = wks.ConditionalAttempt.AddToday(new ExcelAddress(1, 14, 10, 14));
 
                 todayFormatting.Style.Fill.BackgroundColor.Color = Color.Yellow;
                 todayFormatting.Style.Font.Color.Color = Color.Green;
                 yesterdayFormatting.Priority = 2;
 
+                var tomorrow = wks.ConditionalAttempt.AddTomorrow(new ExcelAddress(1, 15, 10, 15));
+
+                tomorrow.Style.Fill.BackgroundColor.Color = Color.Black;
+                tomorrow.Style.Font.Color.Color = Color.Violet;
+
+                var lastWeek = wks.ConditionalAttempt.AddLastWeek(new ExcelAddress(1, 16, 20, 16));
+
+                lastWeek.Style.Fill.BackgroundColor.Color = Color.Black;
+                lastWeek.Style.Font.Color.Color = Color.Violet;
+
+                var thisWeek = wks.ConditionalAttempt.AddThisWeek(new ExcelAddress(1, 17, 20, 17));
+
+                thisWeek.Style.Fill.BackgroundColor.Color = Color.Black;
+                thisWeek.Style.Font.Color.Color = Color.Violet;
+
+                var nextWeek = wks.ConditionalAttempt.AddNextWeek(new ExcelAddress(1, 18, 20, 18));
+
+                nextWeek.Style.Fill.BackgroundColor.Color = Color.Black;
+                nextWeek.Style.Font.Color.Color = Color.Violet;
 
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
@@ -535,6 +577,11 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[4].TimePeriod, eExcelConditionalFormattingTimePeriodType.Last7Days);
                 Assert.AreEqual(formattings.ToList()[5].TimePeriod, eExcelConditionalFormattingTimePeriodType.Yesterday);
                 Assert.AreEqual(formattings.ToList()[6].TimePeriod, eExcelConditionalFormattingTimePeriodType.Today);
+                Assert.AreEqual(formattings.ToList()[7].TimePeriod, eExcelConditionalFormattingTimePeriodType.Tomorrow);
+                Assert.AreEqual(formattings.ToList()[8].TimePeriod, eExcelConditionalFormattingTimePeriodType.LastWeek);
+                Assert.AreEqual(formattings.ToList()[9].TimePeriod, eExcelConditionalFormattingTimePeriodType.ThisWeek);
+                Assert.AreEqual(formattings.ToList()[10].TimePeriod, eExcelConditionalFormattingTimePeriodType.NextWeek);
+
             }
         }
 

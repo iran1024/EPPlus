@@ -139,10 +139,38 @@ namespace OfficeOpenXml.ConditionalFormatting
               address);
         }
 
+        public IExcelConditionalFormattingTimePeriodGroup AddTomorrow(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.Tomorrow,
+              address);
+        }
+
         public IExcelConditionalFormattingTimePeriodGroup AddLast7Days(ExcelAddress address)
         {
             return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
               eExcelConditionalFormattingRuleType.Last7Days,
+              address);
+        }
+
+        public IExcelConditionalFormattingTimePeriodGroup AddLastWeek(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.LastWeek,
+              address);
+        }
+
+        public IExcelConditionalFormattingTimePeriodGroup AddThisWeek(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.ThisWeek,
+              address);
+        }
+
+        public IExcelConditionalFormattingTimePeriodGroup AddNextWeek(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.NextWeek,
               address);
         }
     }

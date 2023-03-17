@@ -61,8 +61,32 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                         priority,
                         worksheet);
 
+                case eExcelConditionalFormattingRuleType.Tomorrow:
+                    return new ExcelConditionalFormattingTomorrow(
+                        address,
+                        priority,
+                        worksheet);
+
                 case eExcelConditionalFormattingRuleType.Last7Days:
                     return new ExcelConditionalFormattingLast7Days(
+                        address,
+                        priority,
+                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.LastWeek:
+                    return new ExcelConditionalFormattingLastWeek(
+                        address,
+                        priority,
+                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.ThisWeek:
+                    return new ExcelConditionalFormattingThisWeek(
+                        address,
+                        priority,
+                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.NextWeek:
+                    return new ExcelConditionalFormattingNextWeek(
                         address,
                         priority,
                         worksheet);
@@ -117,8 +141,20 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 case eExcelConditionalFormattingRuleType.Today:
                     return new ExcelConditionalFormattingToday(address, ws, xr);
 
+                case eExcelConditionalFormattingRuleType.Tomorrow:
+                    return new ExcelConditionalFormattingTomorrow(address, ws, xr);
+
                 case eExcelConditionalFormattingRuleType.Last7Days:
                     return new ExcelConditionalFormattingLast7Days(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.LastWeek:
+                    return new ExcelConditionalFormattingLastWeek(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.ThisWeek:
+                    return new ExcelConditionalFormattingThisWeek(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.NextWeek:
+                    return new ExcelConditionalFormattingNextWeek(address, ws, xr);
 
             }
 
