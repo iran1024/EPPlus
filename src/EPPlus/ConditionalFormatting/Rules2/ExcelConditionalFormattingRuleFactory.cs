@@ -48,6 +48,19 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                        address,
                        priority,
                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.Yesterday:
+                    return new ExcelConditionalFormattingYesterday(
+                        address,
+                        priority,
+                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.Today:
+                    return new ExcelConditionalFormattingToday(
+                        address,
+                        priority,
+                        worksheet);
+
                 case eExcelConditionalFormattingRuleType.Last7Days:
                     return new ExcelConditionalFormattingLast7Days(
                         address,
@@ -97,6 +110,12 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
                 case eExcelConditionalFormattingRuleType.ContainsText:
                     return new ExcelConditionalFormattingContainsText(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.Yesterday:
+                    return new ExcelConditionalFormattingYesterday(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.Today:
+                    return new ExcelConditionalFormattingToday(address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.Last7Days:
                     return new ExcelConditionalFormattingLast7Days(address, ws, xr);

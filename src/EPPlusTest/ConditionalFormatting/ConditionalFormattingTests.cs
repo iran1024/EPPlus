@@ -505,6 +505,22 @@ namespace EPPlusTest.ConditionalFormatting
                 dateFormatting.Style.Fill.BackgroundColor.Color = Color.Red;
                 dateFormatting.Style.Font.Color.Color = Color.Yellow;
 
+                var yesterdayFormatting = wks.ConditionalAttempt.AddYesterday(new ExcelAddress(1, 12, 10, 12));
+
+                //TODO: Fix Priority. It doesn't seem to apply correctly.
+
+                yesterdayFormatting.Style.Fill.BackgroundColor.Color = Color.Gray;
+                yesterdayFormatting.Style.Font.Color.Color = Color.Red;
+                yesterdayFormatting.Priority = 1;
+
+                var todayFormatting = wks.ConditionalAttempt.AddToday(new ExcelAddress(1, 12, 10, 12));
+
+                todayFormatting.Style.Fill.BackgroundColor.Color = Color.Yellow;
+                todayFormatting.Style.Font.Color.Color = Color.Green;
+                yesterdayFormatting.Priority = 2;
+
+
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
@@ -517,7 +533,8 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[2].Formula, "1");
                 Assert.AreEqual(formattings.ToList()[3].Text, "o");
                 Assert.AreEqual(formattings.ToList()[4].TimePeriod, eExcelConditionalFormattingTimePeriodType.Last7Days);
-
+                Assert.AreEqual(formattings.ToList()[5].TimePeriod, eExcelConditionalFormattingTimePeriodType.Yesterday);
+                Assert.AreEqual(formattings.ToList()[6].TimePeriod, eExcelConditionalFormattingTimePeriodType.Today);
             }
         }
 

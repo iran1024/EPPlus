@@ -297,7 +297,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         /// <summary>
         /// TimePeriod
         /// </summary>
-        internal protected eExcelConditionalFormattingTimePeriodType TimePeriod { get; set; } = eExcelConditionalFormattingTimePeriodType.Today;
+        internal protected eExcelConditionalFormattingTimePeriodType? TimePeriod { get; set; } = null;
 
         /// <summary>
         /// Operator

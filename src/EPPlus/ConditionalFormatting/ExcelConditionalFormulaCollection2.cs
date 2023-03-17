@@ -125,6 +125,20 @@ namespace OfficeOpenXml.ConditionalFormatting
               address);
         }
 
+        public IExcelConditionalFormattingTimePeriodGroup AddYesterday(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.Yesterday,
+              address);
+        }
+
+        public IExcelConditionalFormattingTimePeriodGroup AddToday(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.Today,
+              address);
+        }
+
         public IExcelConditionalFormattingTimePeriodGroup AddLast7Days(ExcelAddress address)
         {
             return (IExcelConditionalFormattingTimePeriodGroup)AddRule(

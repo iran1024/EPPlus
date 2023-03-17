@@ -961,7 +961,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 cache.Append($"text=\"{conditionalFormat.Text}\" ");
             }
 
-            if (conditionalFormat.TimePeriod != eExcelConditionalFormattingTimePeriodType.Today)
+            if (conditionalFormat.TimePeriod != null)
             {
                 cache.Append($"timePeriod=\"{conditionalFormat.TimePeriod.ToEnumString()}\" ");
             }
