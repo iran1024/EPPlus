@@ -124,5 +124,12 @@ namespace OfficeOpenXml.ConditionalFormatting
               eExcelConditionalFormattingRuleType.ContainsText,
               address);
         }
+
+        public IExcelConditionalFormattingTimePeriodGroup AddLast7Days(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.Last7Days,
+              address);
+        }
     }
 }

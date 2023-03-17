@@ -999,10 +999,10 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                 if (string.IsNullOrEmpty(conditionalFormat.Formula) == false)
                 {
-                    cache.Append("<formula>" + ConvertUtil.ExcelEscapeAndEncodeString(conditionalFormat.Formula) + "</formula>");
+                    cache.Append("<formula>" + conditionalFormat.Formula + "</formula>");
                     if (string.IsNullOrEmpty(conditionalFormat.Formula2) == false)
                     {
-                        cache.Append("<formula>" + ConvertUtil.ExcelEscapeAndEncodeString(conditionalFormat.Formula2) + "</formula>");
+                        cache.Append("<formula>" +conditionalFormat.Formula2 + "</formula>");
                     }
                 }
 

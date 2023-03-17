@@ -126,6 +126,13 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 Text = xr.GetAttribute("text");
             }
 
+            string timePeriodString = xr.GetAttribute("timePeriod");
+
+            if(!string.IsNullOrEmpty(timePeriodString))
+            {
+                TimePeriod = timePeriodString.CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingTimePeriodType>();
+            }
+
             xr.Read();
 
             if (xr.LocalName == "formula")

@@ -49,23 +49,6 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             eExcelConditionalFormattingRuleType type, ExcelWorksheet ws, XmlReader xr)
             : base(address, type, ws, xr)
         {
-            string timePeriodString = xr.GetAttribute("timePeriod").ToString().CapitalizeFirstLetter();
-
-            TimePeriod = timePeriodString.ConvertToEnum<eExcelConditionalFormattingTimePeriodType>();
-
-            //var typeTest = eExcelConditionalFormattingTimePeriodType.Today;
-
-            //TimePeriod = typeTest.ParseEnum<eExcelConditionalFormattingTimePeriodType>(timePeriodString);
-
-            ////Enum.ParseEnum()
-            ////eExcelConditionalFormattingTimePeriodType.Parse()
-
-            //var eType =
-            //   (eExcelConditionalFormattingTimePeriodType)
-            //    Enum.Parse(typeof(eExcelConditionalFormattingTimePeriodType),
-            //    timePeriodString);
-
-            //TimePeriod = eType;
         }
 
 

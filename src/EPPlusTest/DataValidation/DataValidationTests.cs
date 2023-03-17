@@ -31,6 +31,7 @@ using OfficeOpenXml;
 using OfficeOpenXml.DataValidation;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 
 namespace EPPlusTest.DataValidation
@@ -87,6 +88,21 @@ namespace EPPlusTest.DataValidation
             Assert.AreEqual(dataValidations[5].ValidationType.Type, eDataValidationType.DateTime);
             Assert.AreEqual(dataValidations[6].ValidationType.Type, eDataValidationType.Time);
             Assert.AreEqual(dataValidations[7].ValidationType.Type, eDataValidationType.Custom);
+        }
+
+        [TestMethod]
+        public void DataValidationShouldHandleLessThanOrEqualTo()
+        {
+            var P = new ExcelPackage(new MemoryStream());
+            var sheet = P.Workbook.Worksheets.Add("NewSheet");
+
+            var validation = sheet.DataValidations.AddIntegerValidation("A1");
+            validation.Operator = ExcelDataValidationOperator.equal;
+            validation.Formula.ExcelFormula = "\"IF(2<=1,1,5)\"";
+
+            P.SaveAs("C:\\epplusTest\\Workbooks\\dataTest.xlsx");
+
+            throw new InvalidExpressionException("Delete this test is for local and showing issue fine here but not in conditionalFormatting only");
         }
 
         [TestMethod]

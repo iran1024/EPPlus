@@ -48,7 +48,11 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                        address,
                        priority,
                        worksheet);
-
+                case eExcelConditionalFormattingRuleType.Last7Days:
+                    return new ExcelConditionalFormattingLast7Days(
+                        address,
+                        priority,
+                        worksheet);
             }
 
             throw new InvalidOperationException(
@@ -59,7 +63,6 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
         public static ExcelConditionalFormattingRule Create(ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
         {
-
             string cfType = xr.GetAttribute("type");
             string op = xr.GetAttribute("operator");
 
@@ -68,9 +71,15 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 cfType = op;
             }
 
+            if(cfType == "timePeriod")
+            {
+                cfType = xr.GetAttribute("timePeriod");
+            }
+
+            string text = xr.GetAttribute("timePeriod");
+
             var eType = cfType.CapitalizeFirstLetter()
                         .ConvertToEnum<eExcelConditionalFormattingRuleType>();
-
 
             switch (eType)
             {
@@ -88,6 +97,9 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
                 case eExcelConditionalFormattingRuleType.ContainsText:
                     return new ExcelConditionalFormattingContainsText(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.Last7Days:
+                    return new ExcelConditionalFormattingLast7Days(address, ws, xr);
 
             }
 

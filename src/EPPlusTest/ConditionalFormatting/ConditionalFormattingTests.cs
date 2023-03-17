@@ -30,6 +30,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
 using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -463,12 +464,15 @@ namespace EPPlusTest.ConditionalFormatting
             {
                 var wks = pck.Workbook.Worksheets.Add("FormattingTest");
 
+                string date = "2023-03-";
+
                 for (int i = 1; i < 11; i++)
                 {
                     wks.Cells[i, 5].Value = i;
                     wks.Cells[i, 6].Value = i;
                     wks.Cells[i, 8].Value = i % 2;
-                    wks.Cells[i, 10].Value = numbers[i]; 
+                    wks.Cells[i, 10].Value = numbers[i];
+                    wks.Cells[i, 12].Value = date + $"{i+10}";
                 }
 
                 var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
@@ -496,7 +500,10 @@ namespace EPPlusTest.ConditionalFormatting
                 containsFormatting.Style.Fill.BackgroundColor.Color = Color.Blue;
                 containsFormatting.Style.Font.Color.Color = Color.Yellow;
 
-               // var dateFormatting = wks.ConditionalFormatting.addye
+                var dateFormatting = wks.ConditionalAttempt.AddLast7Days(new ExcelAddress(1, 12, 10, 12));
+
+                dateFormatting.Style.Fill.BackgroundColor.Color = Color.Red;
+                dateFormatting.Style.Font.Color.Color = Color.Yellow;
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
@@ -509,6 +516,25 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[1].Formula, "7");
                 Assert.AreEqual(formattings.ToList()[2].Formula, "1");
                 Assert.AreEqual(formattings.ToList()[3].Text, "o");
+                Assert.AreEqual(formattings.ToList()[4].TimePeriod, eExcelConditionalFormattingTimePeriodType.Last7Days);
+
+            }
+        }
+
+        [TestMethod]
+        public void CFShouldNotThrowIfStyleNotSet()
+        {
+            //Currently throws bc dxfID. Either give default style or make a better throw.
+            using (var pck = new ExcelPackage())
+            {
+                var wks = pck.Workbook.Worksheets.Add("FormattingTest");
+
+                var dateFormatting = wks.ConditionalAttempt.AddLast7Days(new ExcelAddress(1, 12, 10, 12));
+
+                MemoryStream stream = new MemoryStream();
+                pck.SaveAs(stream);
+                var newPck = new ExcelPackage(stream);
+                var formattings = newPck.Workbook.Worksheets[0].ConditionalAttempt;
             }
         }
 
