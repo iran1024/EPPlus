@@ -173,5 +173,26 @@ namespace OfficeOpenXml.ConditionalFormatting
               eExcelConditionalFormattingRuleType.NextWeek,
               address);
         }
+
+        public IExcelConditionalFormattingTimePeriodGroup AddLastMonth(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.LastMonth,
+              address);
+        }
+
+        public IExcelConditionalFormattingTimePeriodGroup AddThisMonth(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.ThisMonth,
+              address);
+        }
+
+        public IExcelConditionalFormattingTimePeriodGroup AddNextMonth(ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTimePeriodGroup)AddRule(
+              eExcelConditionalFormattingRuleType.NextMonth,
+              address);
+        }
     }
 }

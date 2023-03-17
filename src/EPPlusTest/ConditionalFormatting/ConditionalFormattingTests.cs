@@ -466,6 +466,10 @@ namespace EPPlusTest.ConditionalFormatting
 
                 string date = "2023-03-";
 
+                string lastMonth = "2023-02-";
+                string thisMonth = "2023-03-";
+                string nextMonth = "2023-04-";
+
                 for (int i = 1; i < 11; i++)
                 {
                     wks.Cells[i, 5].Value = i;
@@ -496,6 +500,19 @@ namespace EPPlusTest.ConditionalFormatting
 
                     wks.Cells[i, 18].Value = date + $"{i + 10}";
                     wks.Cells[i + 7, 18].Value = date + $"{i + 10 + 7}";
+
+                    wks.Cells[i,19].Value = lastMonth + $"{i + 10}";
+                    wks.Cells[i + 7, 19].Value = thisMonth + $"{i + 10}";
+                    wks.Cells[i + 14, 19].Value = nextMonth + $"{i + 10}";
+
+                    wks.Cells[i, 20].Value = lastMonth + $"{i + 10}";
+                    wks.Cells[i + 7, 20].Value = thisMonth + $"{i + 10}";
+                    wks.Cells[i + 14, 20].Value = nextMonth + $"{i + 10}";
+
+                    wks.Cells[i, 21].Value = lastMonth + $"{i + 10}";
+                    wks.Cells[i + 7, 21].Value = thisMonth + $"{i + 10}";
+                    wks.Cells[i + 14, 21].Value = nextMonth + $"{i + 10}";
+
                 }
 
                 var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
@@ -562,6 +579,21 @@ namespace EPPlusTest.ConditionalFormatting
                 nextWeek.Style.Fill.BackgroundColor.Color = Color.Black;
                 nextWeek.Style.Font.Color.Color = Color.Violet;
 
+                var lastMonthCF = wks.ConditionalAttempt.AddLastMonth(new ExcelAddress(1, 19, 27, 19));
+
+                lastMonthCF.Style.Fill.BackgroundColor.Color = Color.Black;
+                lastMonthCF.Style.Font.Color.Color = Color.Violet;
+
+                var thisMonthCF = wks.ConditionalAttempt.AddThisMonth(new ExcelAddress(1, 20, 27, 20));
+
+                thisMonthCF.Style.Fill.BackgroundColor.Color = Color.Black;
+                thisMonthCF.Style.Font.Color.Color = Color.Violet;
+
+                var nextMonthCF = wks.ConditionalAttempt.AddNextMonth(new ExcelAddress(1, 21, 27, 21));
+
+                nextMonthCF.Style.Fill.BackgroundColor.Color = Color.Black;
+                nextMonthCF.Style.Font.Color.Color = Color.Violet;
+
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
@@ -581,7 +613,9 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[8].TimePeriod, eExcelConditionalFormattingTimePeriodType.LastWeek);
                 Assert.AreEqual(formattings.ToList()[9].TimePeriod, eExcelConditionalFormattingTimePeriodType.ThisWeek);
                 Assert.AreEqual(formattings.ToList()[10].TimePeriod, eExcelConditionalFormattingTimePeriodType.NextWeek);
-
+                Assert.AreEqual(formattings.ToList()[11].TimePeriod, eExcelConditionalFormattingTimePeriodType.LastMonth);
+                Assert.AreEqual(formattings.ToList()[12].TimePeriod, eExcelConditionalFormattingTimePeriodType.ThisMonth);
+                Assert.AreEqual(formattings.ToList()[13].TimePeriod, eExcelConditionalFormattingTimePeriodType.NextMonth);
             }
         }
 

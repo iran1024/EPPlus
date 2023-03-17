@@ -90,6 +90,24 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                         address,
                         priority,
                         worksheet);
+
+                case eExcelConditionalFormattingRuleType.LastMonth:
+                    return new ExcelConditionalFormattingLastMonth(
+                        address,
+                        priority,
+                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.ThisMonth:
+                    return new ExcelConditionalFormattingThisMonth(
+                        address,
+                        priority,
+                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.NextMonth:
+                    return new ExcelConditionalFormattingNextMonth(
+                        address,
+                        priority,
+                        worksheet);
             }
 
             throw new InvalidOperationException(
@@ -156,6 +174,14 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 case eExcelConditionalFormattingRuleType.NextWeek:
                     return new ExcelConditionalFormattingNextWeek(address, ws, xr);
 
+                case eExcelConditionalFormattingRuleType.LastMonth:
+                    return new ExcelConditionalFormattingLastMonth(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.ThisMonth:
+                    return new ExcelConditionalFormattingThisMonth(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.NextMonth:
+                    return new ExcelConditionalFormattingNextMonth(address, ws, xr);
             }
 
             throw new InvalidOperationException(
