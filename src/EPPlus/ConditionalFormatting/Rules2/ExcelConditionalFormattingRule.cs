@@ -11,7 +11,7 @@ using System.Xml;
 namespace OfficeOpenXml.ConditionalFormatting.Rules2
 {
 
-    internal class ExcelConditionalFormattingRule : IExcelConditionalFormattingRule
+    public class ExcelConditionalFormattingRule : IExcelConditionalFormattingRule
     {
         //Deprecated
         public XmlNode Node { get; }

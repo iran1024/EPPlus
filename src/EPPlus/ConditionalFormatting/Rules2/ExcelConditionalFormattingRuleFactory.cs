@@ -68,14 +68,9 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 cfType = op;
             }
 
-            //Capitalize first letter
-            cfType = cfType[0].ToString().ToUpper() + cfType.Substring(1);
+            var eType = cfType.CapitalizeFirstLetter()
+                        .ConvertToEnum<eExcelConditionalFormattingRuleType>();
 
-
-            eExcelConditionalFormattingRuleType eType =
-                (eExcelConditionalFormattingRuleType)
-                    Enum.Parse(typeof(eExcelConditionalFormattingRuleType),
-                        cfType);
 
             switch (eType)
             {

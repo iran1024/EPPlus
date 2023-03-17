@@ -496,6 +496,8 @@ namespace EPPlusTest.ConditionalFormatting
                 containsFormatting.Style.Fill.BackgroundColor.Color = Color.Blue;
                 containsFormatting.Style.Font.Color.Color = Color.Yellow;
 
+               // var dateFormatting = wks.ConditionalFormatting.addye
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");

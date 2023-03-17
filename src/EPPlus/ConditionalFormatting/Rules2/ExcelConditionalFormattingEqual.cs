@@ -29,7 +29,8 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         /// <param name="address"></param>
         /// <param name="ws"></param>
         /// <param name="xr"></param>
-        internal ExcelConditionalFormattingEqual(ExcelAddress address, ExcelWorksheet ws, XmlReader xr) : base(address, eExcelConditionalFormattingRuleType.Equal, ws, xr)
+        internal ExcelConditionalFormattingEqual(ExcelAddress address, ExcelWorksheet ws, XmlReader xr) 
+            : base(address, eExcelConditionalFormattingRuleType.Equal, ws, xr)
         {
             Operator = eExcelConditionalFormattingOperatorType.Equal;
         }
