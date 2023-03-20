@@ -108,6 +108,18 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                         address,
                         priority,
                         worksheet);
+
+                case eExcelConditionalFormattingRuleType.DuplicateValues:
+                    return new ExcelConditionalFormattingDuplicateValues(
+                        address,
+                        priority,
+                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.Top:
+                    return new ExcelConditionalFormattingTop(
+                        address,
+                        priority,
+                        worksheet);
             }
 
             throw new InvalidOperationException(
@@ -129,6 +141,34 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             if(cfType == "timePeriod")
             {
                 cfType = xr.GetAttribute("timePeriod");
+            }
+
+            if(cfType == "top10")
+            {
+                string test = xr.GetAttribute("percent");
+                string bottom = xr.GetAttribute("bottom");
+
+                bool isPercent = !string.IsNullOrEmpty(test);
+                bool isBottom = !string.IsNullOrEmpty(bottom);
+
+                if(isPercent) 
+                {
+                    cfType = "TopPercent";
+
+                    if(isBottom) 
+                    {
+                        cfType = "BottomPercent";
+                    }
+                }
+                else if(isBottom)
+                {
+                    cfType = "Bottom";
+                }
+                else
+                {
+                    cfType = "Top";
+                }
+
             }
 
             string text = xr.GetAttribute("timePeriod");
@@ -182,6 +222,12 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
                 case eExcelConditionalFormattingRuleType.NextMonth:
                     return new ExcelConditionalFormattingNextMonth(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.DuplicateValues:
+                    return new ExcelConditionalFormattingDuplicateValues(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.Top:
+                    return new ExcelConditionalFormattingDuplicateValues(address, ws, xr);
             }
 
             throw new InvalidOperationException(

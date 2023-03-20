@@ -513,6 +513,11 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i + 7, 21].Value = thisMonth + $"{i + 10}";
                     wks.Cells[i + 14, 21].Value = nextMonth + $"{i + 10}";
 
+                    int counter = 0;
+                    wks.Cells[i, 23].Value = i % 2 == 1 ? i : counter++ % 2 ;
+
+                    wks.Cells[i, 25].Value = i;
+                    wks.Cells[i + 10, 25].Value = i + 10;
                 }
 
                 var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
@@ -594,6 +599,15 @@ namespace EPPlusTest.ConditionalFormatting
                 nextMonthCF.Style.Fill.BackgroundColor.Color = Color.Black;
                 nextMonthCF.Style.Font.Color.Color = Color.Violet;
 
+                var duplicateValues = wks.ConditionalAttempt.AddDuplicateValues(new ExcelAddress(1, 23, 10, 23));
+
+                duplicateValues.Style.Fill.BackgroundColor.Color = Color.Blue;
+                duplicateValues.Style.Font.Color.Color = Color.Yellow;
+
+                var top10 = wks.ConditionalAttempt.AddTop(new ExcelAddress(1, 25, 20, 25));
+
+                top10.Style.Fill.BackgroundColor.Color = Color.Black;
+                top10.Style.Font.Color.Color = Color.Violet;
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 

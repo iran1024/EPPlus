@@ -91,21 +91,6 @@ namespace EPPlusTest.DataValidation
         }
 
         [TestMethod]
-        public void DataValidationShouldHandleLessThanOrEqualTo()
-        {
-            var P = new ExcelPackage(new MemoryStream());
-            var sheet = P.Workbook.Worksheets.Add("NewSheet");
-
-            var validation = sheet.DataValidations.AddIntegerValidation("A1");
-            validation.Operator = ExcelDataValidationOperator.equal;
-            validation.Formula.ExcelFormula = "\"IF(2<=1,1,5)\"";
-
-            P.SaveAs("C:\\epplusTest\\Workbooks\\dataTest.xlsx");
-
-            throw new InvalidExpressionException("Delete this test is for local and showing issue fine here but not in conditionalFormatting only");
-        }
-
-        [TestMethod]
         public void DataValidations_ShouldWriteReadOperator()
         {
             var P = new ExcelPackage(new MemoryStream());

@@ -194,5 +194,70 @@ namespace OfficeOpenXml.ConditionalFormatting
               eExcelConditionalFormattingRuleType.NextMonth,
               address);
         }
+
+        /// <summary>
+        /// Add DuplicateValues Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingDuplicateValues AddDuplicateValues(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingDuplicateValues)AddRule(
+              eExcelConditionalFormattingRuleType.DuplicateValues,
+              address);
+        }
+
+        /// <summary>
+        /// Add Bottom Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingTopBottomGroup AddBottom(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTopBottomGroup)AddRule(
+              eExcelConditionalFormattingRuleType.Bottom,
+              address);
+        }
+
+        /// <summary>
+        /// Add BottomPercent Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingTopBottomGroup AddBottomPercent(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTopBottomGroup)AddRule(
+              eExcelConditionalFormattingRuleType.BottomPercent,
+              address);
+        }
+
+        /// <summary>
+        /// Add Top Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingTopBottomGroup AddTop(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTopBottomGroup)AddRule(
+              eExcelConditionalFormattingRuleType.Top,
+              address);
+        }
+
+        /// <summary>
+        /// Add TopPercent Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingTopBottomGroup AddTopPercent(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTopBottomGroup)AddRule(
+              eExcelConditionalFormattingRuleType.TopPercent,
+              address);
+        }
     }
 }

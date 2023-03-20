@@ -133,6 +133,8 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 TimePeriod = timePeriodString.CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingTimePeriodType>();
             }
 
+            ReadClassSpecificXmlNodes(xr);
+
             xr.Read();
 
             if (xr.LocalName == "formula")
@@ -154,6 +156,11 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 _ws.Workbook.Styles.Dxfs[DxfId].AllowChange = true;  //This Id is referenced by CF, so we can use it when we save.
                 _style = ((ExcelDxfStyleBase)_ws.Workbook.Styles.Dxfs[DxfId]).ToDxfConditionalFormattingStyle();    //Clone, so it can be altered without affecting other dxf styles
             }
+        }
+
+        internal virtual void ReadClassSpecificXmlNodes(XmlReader xr)
+        {
+
         }
 
         /// <summary>
@@ -290,7 +297,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 }
 
                 _percentValue = percentValue;
-                _percent = true;
+                _percent = value;
             }
         }
 
@@ -315,7 +322,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         public string Formula 
         { 
             get { return _formula; } 
-            set { _formula = ConvertUtil.ExcelEscapeAndEncodeString(value); } 
+            set { _formula = value; } 
         }
 
 
