@@ -6,7 +6,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
     public class ExcelConditionalFormattingDuplicateValues : ExcelConditionalFormattingRule,
     IExcelConditionalFormattingDuplicateValues
     {
-        public ExcelConditionalFormattingDuplicateValues(
+        internal ExcelConditionalFormattingDuplicateValues(
          ExcelAddress address,
          int priority,
          ExcelWorksheet worksheet)
@@ -15,7 +15,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
         }
 
-        public ExcelConditionalFormattingDuplicateValues(
+        internal ExcelConditionalFormattingDuplicateValues(
           ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
           : base(address, eExcelConditionalFormattingRuleType.DuplicateValues, ws, xr)
         {

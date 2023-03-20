@@ -518,6 +518,15 @@ namespace EPPlusTest.ConditionalFormatting
 
                     wks.Cells[i, 25].Value = i;
                     wks.Cells[i + 10, 25].Value = i + 10;
+
+                    wks.Cells[i, 26].Value = i;
+                    wks.Cells[i + 10, 26].Value = i + 10;
+
+                    wks.Cells[i, 27].Value = i;
+                    wks.Cells[i + 10, 27].Value = i + 10;
+
+                    wks.Cells[i, 28].Value = i;
+                    wks.Cells[i + 10, 28].Value = i + 10;
                 }
 
                 var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
@@ -604,10 +613,30 @@ namespace EPPlusTest.ConditionalFormatting
                 duplicateValues.Style.Fill.BackgroundColor.Color = Color.Blue;
                 duplicateValues.Style.Font.Color.Color = Color.Yellow;
 
-                var top10 = wks.ConditionalAttempt.AddTop(new ExcelAddress(1, 25, 20, 25));
 
-                top10.Style.Fill.BackgroundColor.Color = Color.Black;
-                top10.Style.Font.Color.Color = Color.Violet;
+                var top11 = wks.ConditionalAttempt.AddTop(new ExcelAddress(1, 25, 20, 25));
+
+                top11.Rank = 11;
+                top11.Style.Fill.BackgroundColor.Color = Color.Black;
+                top11.Style.Font.Color.Color = Color.Violet;
+
+                var bot12 = wks.ConditionalAttempt.AddBottom(new ExcelAddress(1, 26, 20, 26));
+
+                bot12.Rank = 12;
+                bot12.Style.Fill.BackgroundColor.Color = Color.Black;
+                bot12.Style.Font.Color.Color = Color.Violet;
+
+                var top13Percent = wks.ConditionalAttempt.AddTopPercent(new ExcelAddress(1, 27, 20, 27));
+
+                top13Percent.Rank = 13;
+                top13Percent.Style.Fill.BackgroundColor.Color = Color.Black;
+                top13Percent.Style.Font.Color.Color = Color.Violet;
+
+                var bot14Percent = wks.ConditionalAttempt.AddBottomPercent(new ExcelAddress(1, 28, 20, 28));
+
+                bot14Percent.Rank = 14;
+                bot14Percent.Style.Fill.BackgroundColor.Color = Color.Black;
+                bot14Percent.Style.Font.Color.Color = Color.Violet;
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
@@ -620,6 +649,7 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[1].Formula, "7");
                 Assert.AreEqual(formattings.ToList()[2].Formula, "1");
                 Assert.AreEqual(formattings.ToList()[3].Text, "o");
+
                 Assert.AreEqual(formattings.ToList()[4].TimePeriod, eExcelConditionalFormattingTimePeriodType.Last7Days);
                 Assert.AreEqual(formattings.ToList()[5].TimePeriod, eExcelConditionalFormattingTimePeriodType.Yesterday);
                 Assert.AreEqual(formattings.ToList()[6].TimePeriod, eExcelConditionalFormattingTimePeriodType.Today);
@@ -630,6 +660,25 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[11].TimePeriod, eExcelConditionalFormattingTimePeriodType.LastMonth);
                 Assert.AreEqual(formattings.ToList()[12].TimePeriod, eExcelConditionalFormattingTimePeriodType.ThisMonth);
                 Assert.AreEqual(formattings.ToList()[13].TimePeriod, eExcelConditionalFormattingTimePeriodType.NextMonth);
+
+                Assert.AreEqual(formattings.ToList()[14].Type, eExcelConditionalFormattingRuleType.DuplicateValues);
+
+                Assert.AreEqual(formattings.ToList()[15].Rank, 11);
+                Assert.AreEqual(formattings.ToList()[15].Bottom, false);
+                Assert.AreEqual(formattings.ToList()[15].Percent, false);
+
+                Assert.AreEqual(formattings.ToList()[16].Rank, 12);
+                Assert.AreEqual(formattings.ToList()[16].Bottom, true);
+                Assert.AreEqual(formattings.ToList()[16].Percent, false);
+
+                Assert.AreEqual(formattings.ToList()[17].Bottom, false);
+                Assert.AreEqual(formattings.ToList()[17].Percent, true);
+                Assert.AreEqual(formattings.ToList()[17].Rank, 13);
+
+                Assert.AreEqual(formattings.ToList()[18].Bottom, true);
+                Assert.AreEqual(formattings.ToList()[18].Percent, true);
+                Assert.AreEqual(formattings.ToList()[18].Rank, 14);
+
             }
         }
 

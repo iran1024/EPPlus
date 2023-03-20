@@ -19,8 +19,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             {
                 case eExcelConditionalFormattingRuleType.GreaterThan:
 
-                    return
-                        new ExcelConditionalFormattingGreaterThan(
+                    return new ExcelConditionalFormattingGreaterThan(
                           address,
                           priority,
                           worksheet);
@@ -116,8 +115,12 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                         worksheet);
 
                 case eExcelConditionalFormattingRuleType.Top:
-                    return new ExcelConditionalFormattingTop(
+                case eExcelConditionalFormattingRuleType.Bottom:
+                case eExcelConditionalFormattingRuleType.TopPercent:
+                case eExcelConditionalFormattingRuleType.BottomPercent:
+                    return new ExcelConditionalFormattingTopBottomGroup(
                         address,
+                        type,
                         priority,
                         worksheet);
             }
@@ -227,7 +230,10 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                     return new ExcelConditionalFormattingDuplicateValues(address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.Top:
-                    return new ExcelConditionalFormattingDuplicateValues(address, ws, xr);
+                case eExcelConditionalFormattingRuleType.Bottom:
+                case eExcelConditionalFormattingRuleType.TopPercent:
+                case eExcelConditionalFormattingRuleType.BottomPercent:
+                    return new ExcelConditionalFormattingTopBottomGroup(address, eType, ws, xr);
             }
 
             throw new InvalidOperationException(

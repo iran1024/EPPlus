@@ -245,8 +245,6 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             }
         }
 
-        bool? _bottom;
-
         /// <summary>
         /// Bottom attribute
         /// </summary>
@@ -254,21 +252,9 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         {
             get
             {
-                // Bottom if TRUE
-                return (_bottom == true);
-            }
-            set
-            {
-                string bottomValue = string.Empty;
-
-                // Only the types that needs the @Bottom
-                if ((Type == eExcelConditionalFormattingRuleType.Bottom)
-                  || (Type == eExcelConditionalFormattingRuleType.BottomPercent))
-                {
-                    bottomValue = "1";
-                }
-
-                _bottom = value;
+                return (Type == eExcelConditionalFormattingRuleType.Bottom)
+                  || (Type == eExcelConditionalFormattingRuleType.BottomPercent) 
+                  ? true : false;
             }
         }
 
@@ -282,22 +268,10 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         {
             get
             {
-                // Bottom if TRUE
-                return (_percent == true);
-            }
-            set
-            {
-                string percentValue = string.Empty;
-
-                // Only the types that needs the @Bottom
-                if ((Type == eExcelConditionalFormattingRuleType.BottomPercent)
+                return ((Type == eExcelConditionalFormattingRuleType.BottomPercent)
                   || (Type == eExcelConditionalFormattingRuleType.TopPercent))
-                {
-                    percentValue = "1";
-                }
+                  ? true : false;
 
-                _percentValue = percentValue;
-                _percent = value;
             }
         }
 
