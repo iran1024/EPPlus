@@ -259,5 +259,57 @@ namespace OfficeOpenXml.ConditionalFormatting
               eExcelConditionalFormattingRuleType.TopPercent,
               address);
         }
+
+        /// <summary>
+        /// Add AboveAverage Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingAverageGroup AddAboveAverage(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingAverageGroup)AddRule(
+              eExcelConditionalFormattingRuleType.AboveAverage,
+              address);  
+        }
+
+        /// <summary>
+        /// Add AboveOrEqualAverage Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingAverageGroup AddAboveOrEqualAverage(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingAverageGroup)AddRule(
+              eExcelConditionalFormattingRuleType.AboveOrEqualAverage,
+              address);
+        }
+
+        /// <summary>
+        /// Add BelowAverage Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingAverageGroup AddBelowAverage(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingAverageGroup)AddRule(
+              eExcelConditionalFormattingRuleType.BelowAverage,
+              address);
+        }
+
+        /// <summary>
+        /// Add BelowOrEqualAverage Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingAverageGroup AddBelowOrEqualAverage(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingAverageGroup)AddRule(
+              eExcelConditionalFormattingRuleType.BelowOrEqualAverage,
+              address);
+        }
     }
 }

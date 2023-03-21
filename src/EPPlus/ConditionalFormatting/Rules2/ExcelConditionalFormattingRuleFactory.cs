@@ -123,6 +123,16 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                         type,
                         priority,
                         worksheet);
+
+                case eExcelConditionalFormattingRuleType.AboveAverage:
+                case eExcelConditionalFormattingRuleType.AboveOrEqualAverage:
+                case eExcelConditionalFormattingRuleType.BelowOrEqualAverage:
+                case eExcelConditionalFormattingRuleType.BelowAverage:
+                    return new ExcelConditionalFormattingAverageGroup(
+                        address,
+                        type,
+                        priority,
+                        worksheet);
             }
 
             throw new InvalidOperationException(
@@ -234,6 +244,12 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 case eExcelConditionalFormattingRuleType.TopPercent:
                 case eExcelConditionalFormattingRuleType.BottomPercent:
                     return new ExcelConditionalFormattingTopBottomGroup(address, eType, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.AboveAverage:
+                case eExcelConditionalFormattingRuleType.AboveOrEqualAverage:
+                case eExcelConditionalFormattingRuleType.BelowOrEqualAverage:
+                case eExcelConditionalFormattingRuleType.BelowAverage:
+                    return new ExcelConditionalFormattingAverageGroup(address, eType, ws, xr);
             }
 
             throw new InvalidOperationException(

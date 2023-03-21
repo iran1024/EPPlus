@@ -16,16 +16,6 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         //Deprecated
         public XmlNode Node { get; }
 
-        //Dictionary<int, string> rules = new Dictionary<int, string>
-        //{
-        //    { 0,"conditionalFormatting" },
-        //    { 1,"sqref" },
-        //    { 3,"cfRule" },
-        //    { 4,"priority" },
-        //    {5, }
-
-        //};
-
         public eExcelConditionalFormattingRuleType Type { get; set; }
         public ExcelAddress Address { get; set; }
         public int Priority { get; set; } = 1;
@@ -192,33 +182,20 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
         }
         #endregion Constructors
 
-        bool? _aboveAverage = null;
-        string _aboveAverageValue;
-
         /// <summary>
         /// Above average
+        /// In Excel: Default:True, use=optional
         /// </summary>
         internal protected bool? AboveAverage
         {
             get
             {
-                // Above Average if TRUE or if attribute does not exists
-                return (_aboveAverage == true) || (_aboveAverage == null);
-            }
-            set
-            {
-                // Only the types that needs the @AboveAverage
-                if ((Type == eExcelConditionalFormattingRuleType.BelowAverage)
+                return (Type == eExcelConditionalFormattingRuleType.BelowAverage)
                   || (Type == eExcelConditionalFormattingRuleType.BelowOrEqualAverage)
-                  || (Type == eExcelConditionalFormattingRuleType.BelowStdDev))
-                {
-                    _aboveAverageValue = "0";
-                }
-                _aboveAverage = value;
+                  || (Type == eExcelConditionalFormattingRuleType.BelowStdDev)
+                  ? false : true;
             }
         }
-
-        bool? _equalAverage;
 
         /// <summary>
         /// EqualAverage
@@ -228,20 +205,9 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             get
             {
                 // Equal Avarege only if TRUE
-                return (_equalAverage == true);
-            }
-            set
-            {
-                string equalAverageValue = string.Empty;
-
-                // Only the types that needs the @EqualAverage
-                if ((Type == eExcelConditionalFormattingRuleType.AboveOrEqualAverage)
-                  || (Type == eExcelConditionalFormattingRuleType.BelowOrEqualAverage))
-                {
-                    equalAverageValue = "1";
-                }
-
-                _equalAverage = value;
+                return (Type == eExcelConditionalFormattingRuleType.AboveOrEqualAverage)
+                  || (Type == eExcelConditionalFormattingRuleType.BelowOrEqualAverage)
+                  ? true : false;
             }
         }
 
@@ -258,9 +224,6 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
             }
         }
 
-        bool? _percent;
-        string _percentValue;
-
         /// <summary>
         /// Percent attribute
         /// </summary>
@@ -271,7 +234,6 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 return ((Type == eExcelConditionalFormattingRuleType.BottomPercent)
                   || (Type == eExcelConditionalFormattingRuleType.TopPercent))
                   ? true : false;
-
             }
         }
 

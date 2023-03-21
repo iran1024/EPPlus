@@ -529,6 +529,13 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i + 10, 28].Value = i + 10;
                 }
 
+                for(int i = 0; i < 4; i++)
+                {
+                    wks.Cells[1, 30 + i].Value = 3;
+                    wks.Cells[2, 30 + i].Value = 2;
+                    wks.Cells[3, 30 + i].Value = 4;
+                }
+
                 var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
                 betweenFormatting.Formula = "3";
                 betweenFormatting.Formula2 = "8";
@@ -638,6 +645,26 @@ namespace EPPlusTest.ConditionalFormatting
                 bot14Percent.Style.Fill.BackgroundColor.Color = Color.Black;
                 bot14Percent.Style.Font.Color.Color = Color.Violet;
 
+                var aboveAverage = wks.ConditionalAttempt.AddAboveAverage(new ExcelAddress(1, 30, 20, 30));
+
+                aboveAverage.Style.Fill.BackgroundColor.Color = Color.Black;
+                aboveAverage.Style.Font.Color.Color = Color.Violet;
+
+                var aboveOrEqualAverage = wks.ConditionalAttempt.AddAboveOrEqualAverage(new ExcelAddress(1, 31, 20, 31));
+
+                aboveOrEqualAverage.Style.Fill.BackgroundColor.Color = Color.Black;
+                aboveOrEqualAverage.Style.Font.Color.Color = Color.Violet;
+
+                var belowAverage = wks.ConditionalAttempt.AddBelowAverage(new ExcelAddress(1, 32, 20, 32));
+
+                belowAverage.Style.Fill.BackgroundColor.Color = Color.Black;
+                belowAverage.Style.Font.Color.Color = Color.Violet;
+
+                var belowEqualAverage = wks.ConditionalAttempt.AddBelowOrEqualAverage(new ExcelAddress(1, 33, 20, 33));
+
+                belowEqualAverage.Style.Fill.BackgroundColor.Color = Color.Black;
+                belowEqualAverage.Style.Font.Color.Color = Color.Violet;
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
@@ -678,6 +705,8 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[18].Bottom, true);
                 Assert.AreEqual(formattings.ToList()[18].Percent, true);
                 Assert.AreEqual(formattings.ToList()[18].Rank, 14);
+
+
 
             }
         }
