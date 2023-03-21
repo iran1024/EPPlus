@@ -133,6 +133,14 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                         type,
                         priority,
                         worksheet);
+
+                case eExcelConditionalFormattingRuleType.AboveStdDev:
+                case eExcelConditionalFormattingRuleType.BelowStdDev:
+                    return new ExcelConditionalFormattingStdDevGroup(
+                        address,
+                        type,
+                        priority,
+                        worksheet);
             }
 
             throw new InvalidOperationException(
@@ -192,12 +200,18 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                     cfType = "Below";
                 }
 
-                if (!string.IsNullOrEmpty(xr.GetAttribute("equalAverage")))
+                string stringEnding = "Average";
+
+                if (!string.IsNullOrEmpty(xr.GetAttribute("stdDev")))
+                {
+                    stringEnding = "StdDev";
+                }
+                else if (!string.IsNullOrEmpty(xr.GetAttribute("equalAverage")))
                 {
                     cfType = cfType + "OrEqual";
                 }
 
-                cfType = cfType + "Average";
+                cfType = cfType + stringEnding;
             }
 
             string text = xr.GetAttribute("timePeriod");
@@ -266,6 +280,10 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 case eExcelConditionalFormattingRuleType.BelowOrEqualAverage:
                 case eExcelConditionalFormattingRuleType.BelowAverage:
                     return new ExcelConditionalFormattingAverageGroup(address, eType, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.AboveStdDev:
+                case eExcelConditionalFormattingRuleType.BelowStdDev:
+                    return new ExcelConditionalFormattingStdDevGroup(address, eType, ws, xr);
             }
 
             throw new InvalidOperationException(

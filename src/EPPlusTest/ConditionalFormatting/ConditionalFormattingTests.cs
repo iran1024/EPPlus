@@ -527,6 +527,7 @@ namespace EPPlusTest.ConditionalFormatting
 
                     wks.Cells[i, 28].Value = i;
                     wks.Cells[i + 10, 28].Value = i + 10;
+
                 }
 
                 for(int i = 0; i < 4; i++)
@@ -534,6 +535,17 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[1, 30 + i].Value = 3;
                     wks.Cells[2, 30 + i].Value = 2;
                     wks.Cells[3, 30 + i].Value = 4;
+                }
+
+                for(int i = 0;i < 2; i++)
+                {
+                    wks.Cells[1, 35 + i].Value = -19;
+                    wks.Cells[2, 35 + i].Value = -10;
+                    wks.Cells[3, 35 + i].Value = -1;
+                    wks.Cells[4, 35 + i].Value = 0;
+                    wks.Cells[5, 35 + i].Value = 1;
+                    wks.Cells[6, 35 + i].Value = 9;
+                    wks.Cells[7, 35 + i].Value = 17;
                 }
 
                 var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
@@ -665,6 +677,21 @@ namespace EPPlusTest.ConditionalFormatting
                 belowEqualAverage.Style.Fill.BackgroundColor.Color = Color.Black;
                 belowEqualAverage.Style.Font.Color.Color = Color.Violet;
 
+                var aboveStdDev = wks.ConditionalAttempt.AddAboveStdDev(new ExcelAddress(1, 35, 10, 35));
+
+                aboveStdDev.Style.Fill.BackgroundColor.Color = Color.Black;
+                aboveStdDev.Style.Font.Color.Color = Color.Violet;
+
+                aboveStdDev.StdDev = 2;
+
+                var belowStdDev = wks.ConditionalAttempt.AddBelowStdDev(new ExcelAddress(1, 36, 10, 36));
+
+                belowStdDev.Style.Fill.BackgroundColor.Color = Color.Black;
+                belowStdDev.Style.Font.Color.Color = Color.Violet;
+
+                belowStdDev.StdDev = 3;
+
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
@@ -717,6 +744,12 @@ namespace EPPlusTest.ConditionalFormatting
 
                 Assert.AreEqual(formattings.ToList()[22].AboveAverage, false);
                 Assert.AreEqual(formattings.ToList()[22].EqualAverage, true);
+
+                Assert.AreEqual(formattings.ToList()[23].Type, eExcelConditionalFormattingRuleType.AboveStdDev);
+                Assert.AreEqual(formattings.ToList()[23].StdDev, 2);
+
+                Assert.AreEqual(formattings.ToList()[24].Type, eExcelConditionalFormattingRuleType.BelowStdDev);
+                Assert.AreEqual(formattings.ToList()[24].StdDev, 3);
             }
         }
 

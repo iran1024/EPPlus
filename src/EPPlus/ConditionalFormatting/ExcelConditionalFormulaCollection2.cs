@@ -311,5 +311,31 @@ namespace OfficeOpenXml.ConditionalFormatting
               eExcelConditionalFormattingRuleType.BelowOrEqualAverage,
               address);
         }
+
+        /// <summary>
+        /// Add AboveStdDev Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingStdDevGroup AddAboveStdDev(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingStdDevGroup)AddRule(
+              eExcelConditionalFormattingRuleType.AboveStdDev,
+              address);
+        }
+
+        /// <summary>
+        /// Add BelowStdDev Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingStdDevGroup AddBelowStdDev(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingStdDevGroup)AddRule(
+              eExcelConditionalFormattingRuleType.BelowStdDev,
+              address);
+        }
     }
 }
