@@ -706,8 +706,17 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[18].Percent, true);
                 Assert.AreEqual(formattings.ToList()[18].Rank, 14);
 
+                Assert.AreEqual(formattings.ToList()[19].AboveAverage, true);
+                Assert.AreEqual(formattings.ToList()[19].EqualAverage, false);
 
+                Assert.AreEqual(formattings.ToList()[20].AboveAverage, true);
+                Assert.AreEqual(formattings.ToList()[20].EqualAverage, true);
 
+                Assert.AreEqual(formattings.ToList()[21].AboveAverage, false);
+                Assert.AreEqual(formattings.ToList()[21].EqualAverage, false);
+
+                Assert.AreEqual(formattings.ToList()[22].AboveAverage, false);
+                Assert.AreEqual(formattings.ToList()[22].EqualAverage, true);
             }
         }
 

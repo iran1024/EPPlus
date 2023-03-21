@@ -158,11 +158,8 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
 
             if(cfType == "top10")
             {
-                string test = xr.GetAttribute("percent");
-                string bottom = xr.GetAttribute("bottom");
-
-                bool isPercent = !string.IsNullOrEmpty(test);
-                bool isBottom = !string.IsNullOrEmpty(bottom);
+                bool isPercent = !string.IsNullOrEmpty(xr.GetAttribute("percent"));
+                bool isBottom = !string.IsNullOrEmpty(xr.GetAttribute("bottom"));
 
                 if(isPercent) 
                 {
@@ -181,7 +178,26 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules2
                 {
                     cfType = "Top";
                 }
+            }
 
+            if(cfType == "aboveAverage")
+            {
+                //aboveAverage is true by default/when empty
+                if (string.IsNullOrEmpty(xr.GetAttribute("aboveAverage")))
+                {
+                    cfType = "Above";
+                }
+                else
+                {
+                    cfType = "Below";
+                }
+
+                if (!string.IsNullOrEmpty(xr.GetAttribute("equalAverage")))
+                {
+                    cfType = cfType + "OrEqual";
+                }
+
+                cfType = cfType + "Average";
             }
 
             string text = xr.GetAttribute("timePeriod");
