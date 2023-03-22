@@ -2,7 +2,7 @@
 using System.Xml;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 
-namespace OfficeOpenXml.ConditionalFormatting.Rules2
+namespace OfficeOpenXml.ConditionalFormatting
 {
     public class ExcelConditionalFormattingTopBottomGroup : ExcelConditionalFormattingRule,
     IExcelConditionalFormattingTopBottomGroup

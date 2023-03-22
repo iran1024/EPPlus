@@ -220,7 +220,7 @@ namespace OfficeOpenXml.Style.Dxf
             //    }
             //}
 
-            foreach (var cf in ws.ConditionalAttempt)
+            foreach (var cf in ws.ConditionalFormatting)
             {
                 if (cf.Style.HasValue)
                 {

@@ -17,92 +17,43 @@ using System.Text;
 using System.Drawing;
 using System.Xml;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using OfficeOpenXml.Utils;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {
   /// <summary>
   /// ExcelConditionalFormattingTimePeriodGroup
   /// </summary>
-  public class ExcelConditionalFormattingTimePeriodGroup
-    : ExcelConditionalFormattingRule,
+  public class ExcelConditionalFormattingTimePeriodGroup: ExcelConditionalFormattingRule,
     IExcelConditionalFormattingTimePeriodGroup
   {
     /****************************************************************************************/
 
-    #region Constructors
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="type"></param>
-    /// <param name="priority"></param>
-    /// <param name="address"></param>
-    /// <param name="worksheet"></param>
-    /// <param name="itemElementNode"></param>
-    /// <param name="namespaceManager"></param>
-    internal ExcelConditionalFormattingTimePeriodGroup(
-      eExcelConditionalFormattingRuleType type,
-      ExcelAddress address,
-      int priority,
-      ExcelWorksheet worksheet,
-      XmlNode itemElementNode,
-      XmlNamespaceManager namespaceManager)
-      : base(
-        type,
-        address,
-        priority,
-        worksheet,
-        itemElementNode,
-        (namespaceManager == null) ? worksheet.NameSpaceManager : namespaceManager)
-    {
-    }
+        #region Constructors
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="priority"></param>
+        /// <param name="address"></param>
+        /// <param name="worksheet"></param>
+        internal ExcelConditionalFormattingTimePeriodGroup(ExcelAddress address,
+            eExcelConditionalFormattingRuleType type,
+            int priority,
+            ExcelWorksheet worksheet)
+            : base(type, address, priority, worksheet)
+        {
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-      /// <param name="type"></param>
-      /// <param name="priority"></param>
-    /// <param name="address"></param>
-    /// <param name="worksheet"></param>
-    /// <param name="itemElementNode"></param>
-    internal ExcelConditionalFormattingTimePeriodGroup(
-      eExcelConditionalFormattingRuleType type,
-      ExcelAddress address,
-      int priority,
-      ExcelWorksheet worksheet,
-      XmlNode itemElementNode)
-      : this(
-        type,
-        address,
-        priority,
-        worksheet,
-        itemElementNode,
-        null)
-    {
-    }
+        internal ExcelConditionalFormattingTimePeriodGroup(ExcelAddress address, 
+            eExcelConditionalFormattingRuleType type, ExcelWorksheet ws, XmlReader xr)
+            : base(address, type, ws, xr)
+        {
+        }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="type"></param>
-    /// <param name="address"></param>
-    /// <param name="priority"></param>
-    /// <param name="worksheet"></param>
-    internal ExcelConditionalFormattingTimePeriodGroup(
-      eExcelConditionalFormattingRuleType type,
-      ExcelAddress address,
-      int priority,
-      ExcelWorksheet worksheet)
-      : this(
-        type,
-        address,
-        priority,
-        worksheet,
-        null,
-        null)
-    {
-    }
+
     #endregion Constructors
 
-    /****************************************************************************************/
+        /****************************************************************************************/
   }
 }

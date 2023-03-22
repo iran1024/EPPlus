@@ -433,7 +433,7 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i, 1].Value = i;
                 }
 
-                var cf = wks.ConditionalAttempt.AddGreaterThan(new ExcelAddress(cfAddress));
+                var cf = wks.ConditionalFormatting.AddGreaterThan(new ExcelAddress(cfAddress));
                 cf.Formula = "5.5";
                 cf.Style.Fill.BackgroundColor.SetColor(Color.Red);
                 cf.Style.Font.Color.SetColor(Color.White);
@@ -548,37 +548,37 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[7, 35 + i].Value = 17;
                 }
 
-                var betweenFormatting = wks.ConditionalAttempt.AddBetween(new ExcelAddress(1, 5, 10, 5));
+                var betweenFormatting = wks.ConditionalFormatting.AddBetween(new ExcelAddress(1, 5, 10, 5));
                 betweenFormatting.Formula = "3";
                 betweenFormatting.Formula2 = "8";
 
                 betweenFormatting.Style.Fill.BackgroundColor.Color = Color.Red;
                 betweenFormatting.Style.Font.Color.Color = Color.Orange;
 
-                var lessFormatting = wks.ConditionalAttempt.AddLessThan(new ExcelAddress(1, 6, 10, 6));
+                var lessFormatting = wks.ConditionalFormatting.AddLessThan(new ExcelAddress(1, 6, 10, 6));
                 lessFormatting.Formula = "7";
 
                 lessFormatting.Style.Fill.BackgroundColor.Color = Color.Black;
                 lessFormatting.Style.Font.Color.Color = Color.Violet;
 
-                var equalFormatting = wks.ConditionalAttempt.AddEqual(new ExcelAddress(1, 8, 10, 8));
+                var equalFormatting = wks.ConditionalFormatting.AddEqual(new ExcelAddress(1, 8, 10, 8));
                 equalFormatting.Formula = "1";
 
                 equalFormatting.Style.Fill.BackgroundColor.Color = Color.Black;
                 equalFormatting.Style.Font.Color.Color = Color.Violet;
 
-                var containsFormatting = wks.ConditionalAttempt.AddTextContains(new ExcelAddress(1, 10, 10, 10));
+                var containsFormatting = wks.ConditionalFormatting.AddTextContains(new ExcelAddress(1, 10, 10, 10));
                 containsFormatting.ContainText = "o";
 
                 containsFormatting.Style.Fill.BackgroundColor.Color = Color.Blue;
                 containsFormatting.Style.Font.Color.Color = Color.Yellow;
 
-                var dateFormatting = wks.ConditionalAttempt.AddLast7Days(new ExcelAddress(1, 12, 10, 12));
+                var dateFormatting = wks.ConditionalFormatting.AddLast7Days(new ExcelAddress(1, 12, 10, 12));
 
                 dateFormatting.Style.Fill.BackgroundColor.Color = Color.Red;
                 dateFormatting.Style.Font.Color.Color = Color.Yellow;
 
-                var yesterdayFormatting = wks.ConditionalAttempt.AddYesterday(new ExcelAddress(1, 13, 10, 13));
+                var yesterdayFormatting = wks.ConditionalFormatting.AddYesterday(new ExcelAddress(1, 13, 10, 13));
 
                 //TODO: Fix Priority. It doesn't seem to apply correctly.
 
@@ -586,117 +586,118 @@ namespace EPPlusTest.ConditionalFormatting
                 yesterdayFormatting.Style.Font.Color.Color = Color.Red;
                 yesterdayFormatting.Priority = 1;
 
-                var todayFormatting = wks.ConditionalAttempt.AddToday(new ExcelAddress(1, 14, 10, 14));
+                var todayFormatting = wks.ConditionalFormatting.AddToday(new ExcelAddress(1, 14, 10, 14));
 
                 todayFormatting.Style.Fill.BackgroundColor.Color = Color.Yellow;
                 todayFormatting.Style.Font.Color.Color = Color.Green;
                 yesterdayFormatting.Priority = 2;
 
-                var tomorrow = wks.ConditionalAttempt.AddTomorrow(new ExcelAddress(1, 15, 10, 15));
+                var tomorrow = wks.ConditionalFormatting.AddTomorrow(new ExcelAddress(1, 15, 10, 15));
 
                 tomorrow.Style.Fill.BackgroundColor.Color = Color.Black;
                 tomorrow.Style.Font.Color.Color = Color.Violet;
 
-                var lastWeek = wks.ConditionalAttempt.AddLastWeek(new ExcelAddress(1, 16, 20, 16));
+                var lastWeek = wks.ConditionalFormatting.AddLastWeek(new ExcelAddress(1, 16, 20, 16));
 
                 lastWeek.Style.Fill.BackgroundColor.Color = Color.Black;
                 lastWeek.Style.Font.Color.Color = Color.Violet;
 
-                var thisWeek = wks.ConditionalAttempt.AddThisWeek(new ExcelAddress(1, 17, 20, 17));
+                var thisWeek = wks.ConditionalFormatting.AddThisWeek(new ExcelAddress(1, 17, 20, 17));
 
                 thisWeek.Style.Fill.BackgroundColor.Color = Color.Black;
                 thisWeek.Style.Font.Color.Color = Color.Violet;
 
-                var nextWeek = wks.ConditionalAttempt.AddNextWeek(new ExcelAddress(1, 18, 20, 18));
+                var nextWeek = wks.ConditionalFormatting.AddNextWeek(new ExcelAddress(1, 18, 20, 18));
 
                 nextWeek.Style.Fill.BackgroundColor.Color = Color.Black;
                 nextWeek.Style.Font.Color.Color = Color.Violet;
 
-                var lastMonthCF = wks.ConditionalAttempt.AddLastMonth(new ExcelAddress(1, 19, 27, 19));
+                var lastMonthCF = wks.ConditionalFormatting.AddLastMonth(new ExcelAddress(1, 19, 27, 19));
 
                 lastMonthCF.Style.Fill.BackgroundColor.Color = Color.Black;
                 lastMonthCF.Style.Font.Color.Color = Color.Violet;
 
-                var thisMonthCF = wks.ConditionalAttempt.AddThisMonth(new ExcelAddress(1, 20, 27, 20));
+                var thisMonthCF = wks.ConditionalFormatting.AddThisMonth(new ExcelAddress(1, 20, 27, 20));
 
                 thisMonthCF.Style.Fill.BackgroundColor.Color = Color.Black;
                 thisMonthCF.Style.Font.Color.Color = Color.Violet;
 
-                var nextMonthCF = wks.ConditionalAttempt.AddNextMonth(new ExcelAddress(1, 21, 27, 21));
+                var nextMonthCF = wks.ConditionalFormatting.AddNextMonth(new ExcelAddress(1, 21, 27, 21));
 
                 nextMonthCF.Style.Fill.BackgroundColor.Color = Color.Black;
                 nextMonthCF.Style.Font.Color.Color = Color.Violet;
 
-                var duplicateValues = wks.ConditionalAttempt.AddDuplicateValues(new ExcelAddress(1, 23, 10, 23));
+                var duplicateValues = wks.ConditionalFormatting.AddDuplicateValues(new ExcelAddress(1, 23, 10, 23));
 
                 duplicateValues.Style.Fill.BackgroundColor.Color = Color.Blue;
                 duplicateValues.Style.Font.Color.Color = Color.Yellow;
 
 
-                var top11 = wks.ConditionalAttempt.AddTop(new ExcelAddress(1, 25, 20, 25));
+                var top11 = wks.ConditionalFormatting.AddTop(new ExcelAddress(1, 25, 20, 25));
 
                 top11.Rank = 11;
                 top11.Style.Fill.BackgroundColor.Color = Color.Black;
                 top11.Style.Font.Color.Color = Color.Violet;
 
-                var bot12 = wks.ConditionalAttempt.AddBottom(new ExcelAddress(1, 26, 20, 26));
+                var bot12 = wks.ConditionalFormatting.AddBottom(new ExcelAddress(1, 26, 20, 26));
 
                 bot12.Rank = 12;
                 bot12.Style.Fill.BackgroundColor.Color = Color.Black;
                 bot12.Style.Font.Color.Color = Color.Violet;
 
-                var top13Percent = wks.ConditionalAttempt.AddTopPercent(new ExcelAddress(1, 27, 20, 27));
+                var top13Percent = wks.ConditionalFormatting.AddTopPercent(new ExcelAddress(1, 27, 20, 27));
 
                 top13Percent.Rank = 13;
                 top13Percent.Style.Fill.BackgroundColor.Color = Color.Black;
                 top13Percent.Style.Font.Color.Color = Color.Violet;
 
-                var bot14Percent = wks.ConditionalAttempt.AddBottomPercent(new ExcelAddress(1, 28, 20, 28));
+                var bot14Percent = wks.ConditionalFormatting.AddBottomPercent(new ExcelAddress(1, 28, 20, 28));
 
                 bot14Percent.Rank = 14;
                 bot14Percent.Style.Fill.BackgroundColor.Color = Color.Black;
                 bot14Percent.Style.Font.Color.Color = Color.Violet;
 
-                var aboveAverage = wks.ConditionalAttempt.AddAboveAverage(new ExcelAddress(1, 30, 20, 30));
+                var aboveAverage = wks.ConditionalFormatting.AddAboveAverage(new ExcelAddress(1, 30, 20, 30));
 
                 aboveAverage.Style.Fill.BackgroundColor.Color = Color.Black;
                 aboveAverage.Style.Font.Color.Color = Color.Violet;
 
-                var aboveOrEqualAverage = wks.ConditionalAttempt.AddAboveOrEqualAverage(new ExcelAddress(1, 31, 20, 31));
+                var aboveOrEqualAverage = wks.ConditionalFormatting.AddAboveOrEqualAverage(new ExcelAddress(1, 31, 20, 31));
 
                 aboveOrEqualAverage.Style.Fill.BackgroundColor.Color = Color.Black;
                 aboveOrEqualAverage.Style.Font.Color.Color = Color.Violet;
 
-                var belowAverage = wks.ConditionalAttempt.AddBelowAverage(new ExcelAddress(1, 32, 20, 32));
+                var belowAverage = wks.ConditionalFormatting.AddBelowAverage(new ExcelAddress(1, 32, 20, 32));
 
                 belowAverage.Style.Fill.BackgroundColor.Color = Color.Black;
                 belowAverage.Style.Font.Color.Color = Color.Violet;
 
-                var belowEqualAverage = wks.ConditionalAttempt.AddBelowOrEqualAverage(new ExcelAddress(1, 33, 20, 33));
+                var belowEqualAverage = wks.ConditionalFormatting.AddBelowOrEqualAverage(new ExcelAddress(1, 33, 20, 33));
 
                 belowEqualAverage.Style.Fill.BackgroundColor.Color = Color.Black;
                 belowEqualAverage.Style.Font.Color.Color = Color.Violet;
 
-                var aboveStdDev = wks.ConditionalAttempt.AddAboveStdDev(new ExcelAddress(1, 35, 10, 35));
+                var aboveStdDev = wks.ConditionalFormatting.AddAboveStdDev(new ExcelAddress(1, 35, 10, 35));
 
                 aboveStdDev.Style.Fill.BackgroundColor.Color = Color.Black;
                 aboveStdDev.Style.Font.Color.Color = Color.Violet;
 
                 aboveStdDev.StdDev = 2;
 
-                var belowStdDev = wks.ConditionalAttempt.AddBelowStdDev(new ExcelAddress(1, 36, 10, 36));
+                var belowStdDev = wks.ConditionalFormatting.AddBelowStdDev(new ExcelAddress(1, 36, 10, 36));
 
                 belowStdDev.Style.Fill.BackgroundColor.Color = Color.Black;
                 belowStdDev.Style.Font.Color.Color = Color.Violet;
 
                 belowStdDev.StdDev = 3;
 
+                var databar = wks.ConditionalFormatting.AddDatabar(new ExcelAddress(1, 38, 10, 38), Color.Crimson);
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
-                var formattings = newPck.Workbook.Worksheets[0].ConditionalAttempt;
+                var formattings = newPck.Workbook.Worksheets[0].ConditionalFormatting;
 
                 Assert.AreEqual(formattings.ToList()[0].Formula, "3");
                 Assert.AreEqual(formattings.ToList()[0].Formula2, "8");
@@ -761,12 +762,12 @@ namespace EPPlusTest.ConditionalFormatting
             {
                 var wks = pck.Workbook.Worksheets.Add("FormattingTest");
 
-                var dateFormatting = wks.ConditionalAttempt.AddLast7Days(new ExcelAddress(1, 12, 10, 12));
+                var dateFormatting = wks.ConditionalFormatting.AddLast7Days(new ExcelAddress(1, 12, 10, 12));
 
                 MemoryStream stream = new MemoryStream();
                 pck.SaveAs(stream);
                 var newPck = new ExcelPackage(stream);
-                var formattings = newPck.Workbook.Worksheets[0].ConditionalAttempt;
+                var formattings = newPck.Workbook.Worksheets[0].ConditionalFormatting;
             }
         }
 
@@ -782,7 +783,7 @@ namespace EPPlusTest.ConditionalFormatting
                     ws.Cells[i, 1].Value = i;
                 }
 
-                var greaterThanFormatting = ws.ConditionalAttempt.AddGreaterThan(new ExcelAddress(1, 1, 10, 1));
+                var greaterThanFormatting = ws.ConditionalFormatting.AddGreaterThan(new ExcelAddress(1, 1, 10, 1));
                 greaterThanFormatting.Formula = "3";
 
                 greaterThanFormatting.Style.Fill.BackgroundColor.Color = Color.Black;
@@ -792,7 +793,7 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var readPck = new ExcelPackage(pck.Stream);
 
-                foreach (var format in readPck.Workbook.Worksheets[0].ConditionalAttempt)
+                foreach (var format in readPck.Workbook.Worksheets[0].ConditionalFormatting)
                 {
                     Assert.AreEqual(format.Formula, "3");
                     Assert.AreEqual(Color.Black.ToArgb(),  format.Style.Fill.BackgroundColor.Color.Value.ToArgb());

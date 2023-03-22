@@ -19,6 +19,8 @@ namespace OfficeOpenXml.ExcelXMLWriter
     internal class ExtLstHelper
     {
         List<string> listOfExts = new List<string>();
+        internal int extCount { get { return listOfExts.Count; } }
+
         Dictionary<string, int> uriToIndex = new Dictionary<string, int>();
 
         public ExtLstHelper(string xml)

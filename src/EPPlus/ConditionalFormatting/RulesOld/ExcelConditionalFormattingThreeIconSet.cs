@@ -17,6 +17,7 @@ using System.Text;
 using System.Drawing;
 using System.Xml;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using OfficeOpenXml.ExcelXMLWriter;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {

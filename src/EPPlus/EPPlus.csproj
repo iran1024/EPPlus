@@ -384,8 +384,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ConditionalFormatting\RulesOld\**" />
     <Compile Remove="Core\Worksheet\Fonts\Tables\**" />
+    <EmbeddedResource Remove="ConditionalFormatting\RulesOld\**" />
     <EmbeddedResource Remove="Core\Worksheet\Fonts\Tables\**" />
+    <None Remove="ConditionalFormatting\RulesOld\**" />
     <None Remove="Core\Worksheet\Fonts\Tables\**" />
   </ItemGroup>
 

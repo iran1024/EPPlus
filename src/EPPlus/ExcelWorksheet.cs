@@ -1627,7 +1627,7 @@ namespace OfficeOpenXml
 
         private void LoadConditionalFormatting(XmlReader xr)
         {
-            _conditionalFormatting2 = new ExcelConditionalFormattingCollection2(xr, this);
+            _conditionalFormatting = new ExcelConditionalFormattingCollection(xr, this);
         }
 
         private void LoadDataValidations(XmlReader xr)
@@ -3109,37 +3109,37 @@ namespace OfficeOpenXml
                 return _pivotTables != null;
             }
         }
+        //private ExcelConditionalFormattingCollection _conditionalFormatting = null;
+        ///// <summary>
+        ///// ConditionalFormatting defined in the worksheet. Use the Add methods to create ConditionalFormatting and add them to the worksheet. Then
+        ///// set the properties on the instance returned.
+        ///// </summary>
+        ///// <seealso cref="ExcelConditionalFormattingCollection"/>
+        //public ExcelConditionalFormattingCollection ConditionalFormatting
+        //{
+        //    get
+        //    {
+        //        CheckSheetTypeAndNotDisposed();
+        //        if (_conditionalFormatting == null)
+        //        {
+        //            _conditionalFormatting = new ExcelConditionalFormattingCollection(this);
+        //        }
+        //        return _conditionalFormatting;
+        //    }
+        //}
+
         private ExcelConditionalFormattingCollection _conditionalFormatting = null;
-        /// <summary>
-        /// ConditionalFormatting defined in the worksheet. Use the Add methods to create ConditionalFormatting and add them to the worksheet. Then
-        /// set the properties on the instance returned.
-        /// </summary>
-        /// <seealso cref="ExcelConditionalFormattingCollection"/>
-        public ExcelConditionalFormattingCollection ConditionalFormatting
-        {
+
+
+        internal ExcelConditionalFormattingCollection ConditionalFormatting
+        { 
             get
             {
-                CheckSheetTypeAndNotDisposed();
                 if (_conditionalFormatting == null)
                 {
                     _conditionalFormatting = new ExcelConditionalFormattingCollection(this);
                 }
                 return _conditionalFormatting;
-            }
-        }
-
-        private ExcelConditionalFormattingCollection2 _conditionalFormatting2 = null;
-
-
-        internal ExcelConditionalFormattingCollection2 ConditionalAttempt
-        { 
-            get
-            {
-                if (_conditionalFormatting2 == null)
-                {
-                    _conditionalFormatting2 = new ExcelConditionalFormattingCollection2(this);
-                }
-                return _conditionalFormatting2;
             }
         }
 

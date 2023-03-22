@@ -14,14 +14,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
-using OfficeOpenXml.ConditionalFormatting;
+using OfficeOpenXml.ExcelXMLWriter;
 
 namespace OfficeOpenXml.ConditionalFormatting.Contracts
 {
-  /// <summary>
-  /// IExcelConditionalFormattingFiveIconSet
-  /// </summary>eExcelconditionalFormatting4IconsSetType
+    /// <summary>
+    /// IExcelConditionalFormattingFiveIconSet
+    /// </summary>eExcelconditionalFormatting4IconsSetType
     public interface IExcelConditionalFormattingFiveIconSet : IExcelConditionalFormattingFourIconSet<eExcelconditionalFormatting5IconsSetType>
   {
     #region Public Properties

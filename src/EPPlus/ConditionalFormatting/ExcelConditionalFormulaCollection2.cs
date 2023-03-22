@@ -1,24 +1,26 @@
 ﻿using OfficeOpenXml.ConditionalFormatting.Contracts;
+
 using OfficeOpenXml.Utils;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Xml;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {
-    internal class ExcelConditionalFormattingCollection2 : IEnumerable<Rules2.ExcelConditionalFormattingRule>
+    internal class ExcelConditionalFormattingCollection : IEnumerable<ExcelConditionalFormattingRule>
     {
-        List<Rules2.ExcelConditionalFormattingRule> _rules = new List<Rules2.ExcelConditionalFormattingRule>();
+        List<ExcelConditionalFormattingRule> _rules = new List<ExcelConditionalFormattingRule>();
         ExcelWorksheet _ws;
         int LastPriority = 1;
 
-        internal ExcelConditionalFormattingCollection2(ExcelWorksheet ws)
+        internal ExcelConditionalFormattingCollection(ExcelWorksheet ws)
         {
             _ws = ws;
-            _rules = new List<Rules2.ExcelConditionalFormattingRule>();
+            _rules = new List<ExcelConditionalFormattingRule>();
         }
 
-        internal ExcelConditionalFormattingCollection2(XmlReader xr, ExcelWorksheet ws)
+        internal ExcelConditionalFormattingCollection(XmlReader xr, ExcelWorksheet ws)
         {
             _ws = ws;
 
@@ -31,7 +33,8 @@ namespace OfficeOpenXml.ConditionalFormatting
                     if (xr.NodeType == XmlNodeType.Element)
                     {
                         xr.Read();
-                        var cf = Rules2.ExcelConditionalFormattingRuleFactory.Create(new ExcelAddress(address), _ws, xr);
+
+                        var cf = ExcelConditionalFormattingRuleFactory.Create(new ExcelAddress(address), _ws, xr);
 
                         _rules.Add(cf);
                     }
@@ -44,7 +47,7 @@ namespace OfficeOpenXml.ConditionalFormatting
 
 
 
-        IEnumerator<Rules2.ExcelConditionalFormattingRule> IEnumerable<Rules2.ExcelConditionalFormattingRule>.GetEnumerator()
+        IEnumerator<ExcelConditionalFormattingRule> IEnumerable<ExcelConditionalFormattingRule>.GetEnumerator()
         {
             return _rules.GetEnumerator();
         }
@@ -52,6 +55,25 @@ namespace OfficeOpenXml.ConditionalFormatting
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _rules.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Index operator, returns by 0-based index
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public ExcelConditionalFormattingRule this[int index]
+        {
+            get { return _rules[index]; }
+            set { _rules[index] = value; }
+        }
+
+        /// <summary>
+        /// Number of validations
+        /// </summary>
+        public int Count
+        {
+            get { return _rules.Count; }
         }
 
         /// <summary>
@@ -69,7 +91,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             // address = ValidateAddress(address);
 
             // Create the Rule according to the correct type, address and priority
-            Rules2.ExcelConditionalFormattingRule cfRule = Rules2.ExcelConditionalFormattingRuleFactory.Create(
+            ExcelConditionalFormattingRule cfRule = ExcelConditionalFormattingRuleFactory.Create(
               type,
               address,
               LastPriority++,
@@ -336,6 +358,277 @@ namespace OfficeOpenXml.ConditionalFormatting
             return (IExcelConditionalFormattingStdDevGroup)AddRule(
               eExcelConditionalFormattingRuleType.BelowStdDev,
               address);
+        }
+
+        //Beyond this line are temporary placeholders of unimplemented methods.
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+        /// <summary>
+        /// Add BeginsWith Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingBeginsWith AddBeginsWith(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingBeginsWith)AddRule(
+              eExcelConditionalFormattingRuleType.BeginsWith,
+              address);
+        }
+
+        /// <summary>
+        /// Add ContainsBlanks Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingContainsBlanks AddContainsBlanks(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingContainsBlanks)AddRule(
+              eExcelConditionalFormattingRuleType.ContainsBlanks,
+              address);
+        }
+
+        /// <summary>
+        /// Add ContainsErrors Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingContainsErrors AddContainsErrors(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingContainsErrors)AddRule(
+              eExcelConditionalFormattingRuleType.ContainsErrors,
+              address);
+        }
+
+        /// <summary>
+        /// Add ContainsText Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingContainsText AddContainsText(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingContainsText)AddRule(
+              eExcelConditionalFormattingRuleType.ContainsText,
+              address);
+        }
+
+        /// <summary>
+        /// Add EndsWith Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingEndsWith AddEndsWith(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingEndsWith)AddRule(
+              eExcelConditionalFormattingRuleType.EndsWith,
+              address);
+        }
+
+        /// <summary>
+        /// Add Expression Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingExpression AddExpression(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingExpression)AddRule(
+              eExcelConditionalFormattingRuleType.Expression,
+              address);
+        }
+
+        /// <summary>
+        /// Add GreaterThanOrEqual Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingGreaterThanOrEqual AddGreaterThanOrEqual(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingGreaterThanOrEqual)AddRule(
+              eExcelConditionalFormattingRuleType.GreaterThanOrEqual,
+              address);
+        }
+
+        /// <summary>
+        /// Add LessThanOrEqual Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingLessThanOrEqual AddLessThanOrEqual(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingLessThanOrEqual)AddRule(
+              eExcelConditionalFormattingRuleType.LessThanOrEqual,
+              address);
+        }
+
+        /// <summary>
+        /// Add NotBetween Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingNotBetween AddNotBetween(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingNotBetween)AddRule(
+              eExcelConditionalFormattingRuleType.NotBetween,
+              address);
+        }
+
+        /// <summary>
+        /// Add NotContainsBlanks Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingNotContainsBlanks AddNotContainsBlanks(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingNotContainsBlanks)AddRule(
+              eExcelConditionalFormattingRuleType.NotContainsBlanks,
+              address);
+        }
+
+        /// <summary>
+        /// Add NotContainsErrors Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingNotContainsErrors AddNotContainsErrors(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingNotContainsErrors)AddRule(
+              eExcelConditionalFormattingRuleType.NotContainsErrors,
+              address);
+        }
+
+        /// <summary>
+        /// Add NotContainsText Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingNotContainsText AddNotContainsText(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingNotContainsText)AddRule(
+              eExcelConditionalFormattingRuleType.NotContainsText,
+              address);
+        }
+
+        /// <summary>
+        /// Add NotEqual Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingNotEqual AddNotEqual(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingNotEqual)AddRule(
+              eExcelConditionalFormattingRuleType.NotEqual,
+              address);
+        }
+
+        /// <summary>
+        /// Add Unique Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingUniqueValues AddUniqueValues(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingUniqueValues)AddRule(
+              eExcelConditionalFormattingRuleType.UniqueValues,
+              address);
+        }
+
+        /// <summary>
+        /// Add ThreeColorScale Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingThreeColorScale AddThreeColorScale(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingThreeColorScale)AddRule(
+              eExcelConditionalFormattingRuleType.ThreeColorScale,
+              address);
+        }
+
+        /// <summary>
+        /// Add TwoColorScale Rule
+        /// </summary>
+        /// <param name="address"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingTwoColorScale AddTwoColorScale(
+          ExcelAddress address)
+        {
+            return (IExcelConditionalFormattingTwoColorScale)AddRule(
+              eExcelConditionalFormattingRuleType.TwoColorScale,
+              address);
+        }
+
+        /// <summary>
+        /// Add ThreeIconSet Rule
+        /// </summary>
+        /// <param name="Address">The address</param>
+        /// <param name="IconSet">Type of iconset</param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingThreeIconSet<eExcelconditionalFormatting3IconsSetType> AddThreeIconSet(ExcelAddress Address, eExcelconditionalFormatting3IconsSetType IconSet)
+        {
+            var icon = (IExcelConditionalFormattingThreeIconSet<eExcelconditionalFormatting3IconsSetType>)AddRule(
+                eExcelConditionalFormattingRuleType.ThreeIconSet,
+                Address);
+            icon.IconSet = IconSet;
+            return icon;
+        }
+        /// <summary>
+        /// Adds a FourIconSet rule
+        /// </summary>
+        /// <param name="Address"></param>
+        /// <param name="IconSet"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingFourIconSet<eExcelconditionalFormatting4IconsSetType> AddFourIconSet(ExcelAddress Address, eExcelconditionalFormatting4IconsSetType IconSet)
+        {
+            var icon = (IExcelConditionalFormattingFourIconSet<eExcelconditionalFormatting4IconsSetType>)AddRule(
+                eExcelConditionalFormattingRuleType.FourIconSet,
+                Address);
+            icon.IconSet = IconSet;
+            return icon;
+        }
+        /// <summary>
+        /// Adds a FiveIconSet rule
+        /// </summary>
+        /// <param name="Address"></param>
+        /// <param name="IconSet"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingFiveIconSet AddFiveIconSet(ExcelAddress Address, eExcelconditionalFormatting5IconsSetType IconSet)
+        {
+            var icon = (IExcelConditionalFormattingFiveIconSet)AddRule(
+                eExcelConditionalFormattingRuleType.FiveIconSet,
+                Address);
+            icon.IconSet = IconSet;
+            return icon;
+        }
+        /// <summary>
+        /// Adds a databar rule
+        /// </summary>
+        /// <param name="Address"></param>
+        /// <param name="color"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingDataBarGroup AddDatabar(ExcelAddress Address, Color color)
+        {
+            var dataBar = (IExcelConditionalFormattingDataBarGroup)AddRule(
+                eExcelConditionalFormattingRuleType.DataBar,
+                Address);
+            dataBar.Color = color;
+            return dataBar;
         }
     }
 }

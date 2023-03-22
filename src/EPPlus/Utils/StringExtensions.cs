@@ -9,6 +9,8 @@ namespace OfficeOpenXml.Utils
 
         internal static string CapitalizeFirstLetter(this string s) { s = s[0].ToString().ToUpper() + s.Substring(1); return s; }
 
+        internal static string UnCapitalizeFirstLetter(this string s) { s = s[0].ToString().ToLower() + s.Substring(1); return s; }
+
         internal static string GetSubstringStoppingAtSymbol(this string s, int index, string stopSymbol = "\"")
         {
             if (!string.IsNullOrEmpty(s))

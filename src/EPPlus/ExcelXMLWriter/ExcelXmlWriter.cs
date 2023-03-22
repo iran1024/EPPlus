@@ -12,6 +12,7 @@
  *************************************************************************************************/
 using OfficeOpenXml.Compatibility;
 using OfficeOpenXml.ConditionalFormatting;
+using OfficeOpenXml.ConditionalFormatting.Rules;
 using OfficeOpenXml.Constants;
 using OfficeOpenXml.Core.CellStore;
 using OfficeOpenXml.DataValidation;
@@ -96,11 +97,23 @@ namespace OfficeOpenXml.ExcelXMLWriter
             if (_ws.GetNode("d:extLst") != null && _ws.DataValidations.Count() != 0)
             {
                 ExtLstHelper extLst = new ExtLstHelper(xml);
+
                 FindNodePositionAndClearIt(sw, xml, "extLst", ref startOfNode, ref endOfNode);
 
-                extLst.InsertExt(ExtLstUris.DataValidationsUri, UpdateExtLstDataValidations(prefix), "");
+                if (_ws.DataValidations.Count() != 0)
+                {
+                    extLst.InsertExt(ExtLstUris.DataValidationsUri, UpdateExtLstDataValidations(prefix), "");
+                }
 
-                sw.Write(extLst.GetWholeExtLst());
+                if(_ws.ConditionalFormatting.Count() != 0) 
+                {
+                    
+                }
+
+                if(extLst.extCount != 0)
+                {
+                    sw.Write(extLst.GetWholeExtLst());
+                }
             }
 
             sw.Write(xml.Substring(endOfNode, xml.Length - endOfNode));
@@ -918,7 +931,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
         }
 
         private string UpdateConditionalFormattingAttributes(
-            ConditionalFormatting.Rules2.ExcelConditionalFormattingRule conditionalFormat)
+            ExcelConditionalFormattingRule conditionalFormat)
         {
             StringBuilder cache = new StringBuilder();
 
@@ -984,11 +997,68 @@ namespace OfficeOpenXml.ExcelXMLWriter
             return cache.ToString();
         }
 
+        private string UpdateExtLstConditionalFormatting()
+        {
+            var cache = new StringBuilder();
+            string prefix = "x14:";
+            cache.Append($"<ext xlmns:{prefix} uri=\"{ExtLstUris.ExtChildUri}\">");
+
+            cache.Append($"<{prefix}:conditionalFormattings>");
+
+            foreach(var format in _ws.ConditionalFormatting)
+            {
+                if(format.isExtLst)
+                {
+                    cache.Append($"<{prefix}:conditionalFormatting xmlns:xm=\"{ExcelPackage.schemaMainX14}\" uri=\"{ExtLstUris.ConditionalFormattingUri}\">");
+
+                    string uid;
+
+                    if (format.Type == eExcelConditionalFormattingRuleType.DataBar)
+                    {
+                        var dataBar = (ExcelConditionalFormattingDataBar)format;
+                        uid = dataBar.Uid.ToString();
+
+                        //if (format.Type == eExcelConditionalFormattingRuleType.DataBar)
+                        //{
+                        //    uid = dataBar.Uid.ToString();
+                        //}
+                        //else
+                        //{
+                        //    //TODO: Cast to and extract iconSet types here
+                        //}
+
+                        cache.Append($"<{prefix}:cfRule type=\"{format.Type.ToString().UnCapitalizeFirstLetter()}\" uri=\"{uid}\">");
+
+
+                        cache.Append($"<{prefix}:dataBar minLength=\"{dataBar.LowValue.Value}\" ");
+                        cache.Append($"maxLength=\"{dataBar.HighValue.Value}>\"");
+
+                        cache.Append($"<{prefix}:cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                        cache.Append($"<{prefix}:cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                        cache.Append($"<{prefix}:negativeFillColor rbg=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(),16)}\"/>");
+                        cache.Append($"<{prefix}:axisColor rbg=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16)}\"/>");
+
+                        cache.Append($"</{prefix}:databar>");
+                    }
+
+                    cache.Append($"</{prefix}:cfRule>");
+                    cache.Append($"<xm:sqref>{format.Address}</xm:sqref>");
+                    cache.Append($"</{prefix}:conditionalFormatting");
+                }
+            }
+
+            cache.Append($"/{prefix}:conditionalFormattings");
+
+            cache.Append("</ext>");
+
+            return cache.ToString();
+        }
+
         private string UpdateConditionalFormattings(string prefix)
         {
             var cache = new StringBuilder();
 
-            foreach (var conditionalFormat in _ws.ConditionalAttempt)
+            foreach (var conditionalFormat in _ws.ConditionalFormatting)
             {
                 cache.Append($"<conditionalFormatting sqref=\"{conditionalFormat.Address}\">");
                 cache.Append($"<cfRule type=\"{conditionalFormat.GetAttributeType()}\" ");
@@ -1012,9 +1082,28 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                 }
 
-                if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.DataBar)
+                if (conditionalFormat.isExtLst)
                 {
+                    if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.DataBar)
+                    {
+                        var dataBar = (ExcelConditionalFormattingDataBar)conditionalFormat;
+                        cache.Append($"<dataBar>");
 
+                        cache.Append($"<cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                        cache.Append($"<cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                        cache.Append($"<color rgb=\"{dataBar.Color.ToColorString()}\"/>");
+
+                        cache.Append($"</dataBar>");
+
+                        cache.Append($"<extLst>");
+
+                        prefix = "x14";
+                        cache.Append($"<ext xmlns:{prefix}=\"{ExcelPackage.schemaMainX14}\" uri=\"{ExtLstUris.ExtChildUri}\">");
+                        cache.Append($"<{prefix}:id>{dataBar.Uid}</{prefix}:id");
+                        cache.Append($"</ext>");
+
+                        cache.Append($"</extLst>");
+                    }
                 }
 
                 if (new[]{

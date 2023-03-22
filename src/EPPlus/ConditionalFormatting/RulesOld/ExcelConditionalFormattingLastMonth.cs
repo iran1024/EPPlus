@@ -20,18 +20,12 @@ using OfficeOpenXml.ConditionalFormatting.Contracts;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {
-    /// <summary>
-    /// Conditional formatting with a four icon set
-    /// </summary>
-    public class ExcelConditionalFormattingFourIconSet
-    : ExcelConditionalFormattingIconSetBase<eExcelconditionalFormatting4IconsSetType>, IExcelConditionalFormattingFourIconSet<eExcelconditionalFormatting4IconsSetType>
+  /// <summary>
+  /// ExcelConditionalFormattingLastMonth
+  /// </summary>
+  public class ExcelConditionalFormattingLastMonth
+    : ExcelConditionalFormattingTimePeriodGroup
   {
-    /****************************************************************************************/
-
-    #region Private Properties
-
-    #endregion Private Properties
-
     /****************************************************************************************/
 
     #region Constructors
@@ -43,46 +37,26 @@ namespace OfficeOpenXml.ConditionalFormatting
     /// <param name="worksheet"></param>
     /// <param name="itemElementNode"></param>
     /// <param name="namespaceManager"></param>
-    internal ExcelConditionalFormattingFourIconSet(
+    internal ExcelConditionalFormattingLastMonth(
       ExcelAddress address,
       int priority,
       ExcelWorksheet worksheet,
       XmlNode itemElementNode,
       XmlNamespaceManager namespaceManager)
       : base(
-        eExcelConditionalFormattingRuleType.FourIconSet,
+        eExcelConditionalFormattingRuleType.LastMonth,
         address,
         priority,
         worksheet,
         itemElementNode,
         (namespaceManager == null) ? worksheet.NameSpaceManager : namespaceManager)
     {
-        if(itemElementNode!=null && itemElementNode.HasChildNodes)
+        if (itemElementNode==null) //Set default values and create attributes if needed
         {
-            XmlNode iconNode4 = TopNode.SelectSingleNode("d:iconSet/d:cfvo[position()=4]", NameSpaceManager);
-            Icon4 = new ExcelConditionalFormattingIconDataBarValue(
-                    eExcelConditionalFormattingRuleType.FourIconSet,
-                    address,
-                    worksheet,
-                    iconNode4,
-                    namespaceManager);
-        }
-        else
-        {
-            XmlNode iconSetNode = TopNode.SelectSingleNode("d:iconSet", NameSpaceManager);
-            var iconNode4 = iconSetNode.OwnerDocument.CreateElement(ExcelConditionalFormattingConstants.Paths.Cfvo, ExcelPackage.schemaMain);
-            iconSetNode.AppendChild(iconNode4);
-
-
-            Icon4 = new ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType.Percent,
-                    75,
-                    "",
-                    eExcelConditionalFormattingRuleType.ThreeIconSet,
-                    address,
-                    priority,
-                    worksheet,
-                    iconNode4,
-                    namespaceManager);
+            TimePeriod = eExcelConditionalFormattingTimePeriodType.LastMonth;
+            Formula = string.Format(
+              "AND(MONTH({0})=MONTH(EDATE(TODAY(),0-1)),YEAR({0})=YEAR(EDATE(TODAY(),0-1)))",
+              Address.Start.Address);
         }
     }
 
@@ -93,7 +67,7 @@ namespace OfficeOpenXml.ConditionalFormatting
     /// <param name="address"></param>
     /// <param name="worksheet"></param>
     /// <param name="itemElementNode"></param>
-    internal ExcelConditionalFormattingFourIconSet(
+    internal ExcelConditionalFormattingLastMonth(
       ExcelAddress address,
       int priority,
       ExcelWorksheet worksheet,
@@ -113,7 +87,7 @@ namespace OfficeOpenXml.ConditionalFormatting
     /// <param name="priority"></param>
     /// <param name="address"></param>
     /// <param name="worksheet"></param>
-    internal ExcelConditionalFormattingFourIconSet(
+    internal ExcelConditionalFormattingLastMonth(
       ExcelAddress address,
       int priority,
       ExcelWorksheet worksheet)
@@ -125,15 +99,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         null)
     {
     }
-        #endregion Constructors
+    #endregion Constructors
 
-        /// <summary>
-        /// Icon 4 value
-        /// </summary>
-        public ExcelConditionalFormattingIconDataBarValue Icon4
-    {
-        get;
-        internal set;
-    }
-    }
+    /****************************************************************************************/
   }
+}
