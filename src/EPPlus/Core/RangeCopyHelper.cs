@@ -100,13 +100,13 @@ namespace OfficeOpenXml.Core
                     string newAddress = "";
                     if (dv.Address.Addresses == null)
                     {
-                        newAddress = HandelAddress(dv.Address);
+                        newAddress = HandleAddress(dv.Address);
                     }
                     else
                     {
                         foreach (var a in dv.Address.Addresses)
                         {
-                            var na = HandelAddress(a);
+                            var na = HandleAddress(a);
                             if (!string.IsNullOrEmpty(na))
                             {
                                 if (string.IsNullOrEmpty(newAddress))
@@ -144,13 +144,13 @@ namespace OfficeOpenXml.Core
                 string newAddress = "";
                 if (cf.Address.Addresses==null)
                 {
-                    newAddress = HandelAddress(cf.Address);
+                    newAddress = HandleAddress(cf.Address);
                 }
                 else
                 {
                     foreach (var a in cf.Address.Addresses)
                     {
-                        var na = HandelAddress(a);
+                        var na = HandleAddress(a);
                         if(!string.IsNullOrEmpty(na))
                         {
                             if(string.IsNullOrEmpty(newAddress))
@@ -174,18 +174,18 @@ namespace OfficeOpenXml.Core
                     }
                     else
                     {
-                        //_destination._worksheet.ConditionalFormatting.AddFromXml(new ExcelAddress(newAddress), cf.PivotTable, cf.Node.OuterXml);
-                        //if (cf.Style.HasValue)
-                        //{
-                        //    var destRule = (_destination._worksheet.ConditionalFormatting[_destination._worksheet.ConditionalFormatting.Count - 1]);
-                        //    destRule.SetStyle((ExcelDxfStyleConditionalFormatting)cf.Style.Clone());
-                        //}
+                        _destination._worksheet.ConditionalFormatting.CopyRule(cf, new ExcelAddress(newAddress));
+                        if (cf.Style.HasValue)
+                        {
+                            var destRule = (_destination._worksheet.ConditionalFormatting[_destination._worksheet.ConditionalFormatting.Count - 1]);
+                            destRule.SetStyle((ExcelDxfStyleConditionalFormatting)cf.Style.Clone());
+                        }
                     }
                 }
             }
         }
 
-        private string HandelAddress(ExcelAddressBase cfAddress)
+        private string HandleAddress(ExcelAddressBase cfAddress)
         {
             if (cfAddress.Collide(_sourceRange) != eAddressCollition.No)
             {

@@ -62,11 +62,29 @@ namespace OfficeOpenXml.ConditionalFormatting
             xr.Read();
         }
 
+        ExcelConditionalFormattingDataBar(ExcelConditionalFormattingDataBar copy) : base(copy)
+        {
+            Uid = copy.Uid;
+            LowValue = copy.LowValue;
+            HighValue = copy.HighValue;
+            Color = copy.Color;
+            NegativeFillColor = copy.NegativeFillColor;
+            AxisColor = copy.AxisColor;
+        }
+
         internal static string NewId()
         {
             return "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
         }
 
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingDataBar(this);
+        }
+
+        /// <summary>
+        /// Show value
+        /// </summary>
         public bool ShowValue { get; set; }
         /// <summary>
         /// Databar Low Value

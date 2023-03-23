@@ -49,6 +49,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
             Operator = eExcelConditionalFormattingOperatorType.Between;
         }
+
+
         #endregion Constructors
 
         /****************************************************************************************/

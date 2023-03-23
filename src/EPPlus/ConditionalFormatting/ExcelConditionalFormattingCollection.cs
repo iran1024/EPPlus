@@ -46,11 +46,19 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
         }
 
-        internal void CopyRule(ExcelAddress address, ExcelConditionalFormattingRule rule)
+        internal void CopyRule(ExcelConditionalFormattingRule rule, ExcelAddress address = null)
         {
-            var ruleCopy = AddRule(rule.Type, address);
+            var ruleCopy = rule.Clone();
+            if(address != null)
+            {
+                ruleCopy.Address = address;
+            }
+            _rules.Add(ruleCopy);
+        }
 
-
+        internal void DeepCopyWithNewAddress(ExcelAddress address, ExcelConditionalFormattingRule orginalRule)
+        {
+            _rules.Add(orginalRule.Clone());
         }
 
         //internal void AddFromXml(ExcelAddress address, bool pivot, string ruleXml)

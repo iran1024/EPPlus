@@ -27,6 +27,16 @@ namespace OfficeOpenXml.ConditionalFormatting
             Text = Formula.GetSubstringStoppingAtSymbol("NOT(ISERROR(SEARCH(\"".Length);
         }
 
+        ExcelConditionalFormattingContainsText(ExcelConditionalFormattingContainsText copy) :base(copy)
+        {
+            ContainText = copy.ContainText;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingContainsText(this);
+        }
+
         public string ContainText
         {
             get
