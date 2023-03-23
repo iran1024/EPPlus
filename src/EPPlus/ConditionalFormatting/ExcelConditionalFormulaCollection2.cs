@@ -46,6 +46,21 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
         }
 
+        internal void CopyRule(ExcelAddress address, ExcelConditionalFormattingRule rule)
+        {
+            var ruleCopy = AddRule(rule.Type, address);
+
+
+        }
+
+        //internal void AddFromXml(ExcelAddress address, bool pivot, string ruleXml)
+        //{
+        //    var cfRuleNode = (XmlElement)CreateNode(ExcelConditionalFormattingConstants.Paths.ConditionalFormatting, false, true);
+        //    cfRuleNode.SetAttribute("sqref", address.AddressSpaceSeparated);
+        //    cfRuleNode.InnerXml = ruleXml;
+        //    var rule = AddNewCf(address, cfRuleNode.FirstChild);
+        //    rule.PivotTable = pivot;
+        //}
 
 
         IEnumerator<ExcelConditionalFormattingRule> IEnumerable<ExcelConditionalFormattingRule>.GetEnumerator()

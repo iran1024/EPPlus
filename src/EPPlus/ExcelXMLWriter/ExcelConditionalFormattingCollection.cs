@@ -165,14 +165,14 @@
 //        //    return null;
 //        //}
 
-//internal void AddFromXml(ExcelAddress address, bool pivot, string ruleXml)
-//{
-//    var cfRuleNode = (XmlElement)CreateNode(ExcelConditionalFormattingConstants.Paths.ConditionalFormatting, false, true);
-//    cfRuleNode.SetAttribute("sqref", address.AddressSpaceSeparated);
-//    cfRuleNode.InnerXml = ruleXml;
-//    var rule = AddNewCf(address, cfRuleNode.FirstChild);
-//    rule.PivotTable = pivot;
-//}
+//        internal void AddFromXml(ExcelAddress address, bool pivot, string ruleXml)
+//        {
+//            var cfRuleNode = (XmlElement)CreateNode(ExcelConditionalFormattingConstants.Paths.ConditionalFormatting, false, true);
+//            cfRuleNode.SetAttribute("sqref", address.AddressSpaceSeparated);
+//            cfRuleNode.InnerXml = ruleXml;
+//            var rule = AddNewCf(address, cfRuleNode.FirstChild);
+//            rule.PivotTable = pivot;
+//        }
 //        #endregion Constructors
 
 //        /****************************************************************************************/

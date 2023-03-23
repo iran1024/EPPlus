@@ -44,7 +44,7 @@ namespace OfficeOpenXml.DataValidation
     /// validation.Operator = ExcelDataValidationOperator.between;
     /// </code>
     /// </summary>
-    public class ExcelDataValidationCollection : IEnumerable<IExcelDataValidation>
+    public class ExcelDataValidationCollection : IEnumerable<ExcelDataValidation>
     {
         private List<ExcelDataValidation> _validations = new List<ExcelDataValidation>();
         private ExcelWorksheet _worksheet = null;
@@ -389,7 +389,7 @@ namespace OfficeOpenXml.DataValidation
         }
 
 
-        IEnumerator<IExcelDataValidation> IEnumerable<IExcelDataValidation>.GetEnumerator()
+        IEnumerator<ExcelDataValidation> IEnumerable<ExcelDataValidation>.GetEnumerator()
         {
             return _validations.GetEnumerator();
         }

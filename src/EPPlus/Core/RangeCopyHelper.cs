@@ -174,12 +174,12 @@ namespace OfficeOpenXml.Core
                     }
                     else
                     {
-                        _destination._worksheet.ConditionalFormatting.AddFromXml(new ExcelAddress(newAddress), cf.PivotTable, cf.Node.OuterXml);
-                        if (cf.Style.HasValue)
-                        {
-                            var destRule = (_destination._worksheet.ConditionalFormatting[_destination._worksheet.ConditionalFormatting.Count - 1]);
-                            destRule.SetStyle((ExcelDxfStyleConditionalFormatting)cf.Style.Clone());
-                        }
+                        //_destination._worksheet.ConditionalFormatting.AddFromXml(new ExcelAddress(newAddress), cf.PivotTable, cf.Node.OuterXml);
+                        //if (cf.Style.HasValue)
+                        //{
+                        //    var destRule = (_destination._worksheet.ConditionalFormatting[_destination._worksheet.ConditionalFormatting.Count - 1]);
+                        //    destRule.SetStyle((ExcelDxfStyleConditionalFormatting)cf.Style.Clone());
+                        //}
                     }
                 }
             }
