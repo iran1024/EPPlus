@@ -556,7 +556,7 @@ namespace OfficeOpenXml.Core.Worksheet
                 }
                 else
                 {
-                    ((ExcelConditionalFormattingRule)cf).Address = new ExcelAddress(address.Address);
+                    cf.Address = new ExcelAddress(address.Address);
                 }
             }
             deletedCF.ForEach(cf => ws.ConditionalFormatting.Remove(cf));

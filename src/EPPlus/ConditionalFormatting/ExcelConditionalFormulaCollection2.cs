@@ -1,6 +1,7 @@
 ﻿using OfficeOpenXml.ConditionalFormatting.Contracts;
 
 using OfficeOpenXml.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -74,6 +75,76 @@ namespace OfficeOpenXml.ConditionalFormatting
         public int Count
         {
             get { return _rules.Count; }
+        }
+
+        /// <summary>
+        /// Removes all 'cfRule' from the collection and from the XML.
+        /// <remarks>
+        /// This is the same as removing all the 'conditionalFormatting' nodes.
+        /// </remarks>
+        /// </summary>
+        public void RemoveAll()
+        {
+            // Clear the <cfRule> item list
+            _rules.Clear();
+        }
+
+        /// <summary>
+        /// Remove a Conditional Formatting Rule by its object
+        /// </summary>
+        /// <param name="item"></param>
+        public void Remove(
+          IExcelConditionalFormattingRule item)
+        {
+            Require.Argument(item).IsNotNull("item");
+
+            try
+            {
+                _rules.Remove((ExcelConditionalFormattingRule)item);
+            }
+            catch
+            {
+                throw new Exception($"Cannot remove {item} as it is not part of this collection.");
+            }
+        }
+
+        /// <summary>
+        /// Remove a Conditional Formatting Rule by its 0-based index
+        /// </summary>
+        /// <param name="index"></param>
+        public void RemoveAt(
+          int index)
+        {
+            Require.Argument(index).IsInRange(0, this.Count - 1, "index");
+
+            Remove(this[index]);
+        }
+
+        /// <summary>
+        /// Remove a Conditional Formatting Rule by its priority
+        /// </summary>
+        /// <param name="priority"></param>
+        public void RemoveByPriority(
+          int priority)
+        {
+            try
+            {
+                Remove(RulesByPriority(priority));
+            }
+            catch
+            {
+            }
+        }
+
+        /// <summary>
+        /// Get a rule by its priority
+        /// </summary>
+        /// <param name="priority"></param>
+        /// <returns></returns>
+        public IExcelConditionalFormattingRule RulesByPriority(
+          int priority)
+        {
+            return _rules.Find(x => x.Priority == priority);
         }
 
         /// <summary>
