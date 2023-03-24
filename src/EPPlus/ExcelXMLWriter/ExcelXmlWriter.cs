@@ -78,11 +78,11 @@ namespace OfficeOpenXml.ExcelXMLWriter
             sw.Write(UpdateConditionalFormattings(prefix));
 
             FindNodePositionAndClearIt(sw, xml, "dataValidations", ref startOfNode, ref endOfNode);
-
-            if (_ws.DataValidations.Count > 0)
+            if(_ws.DataValidations.Count > 0)
             {
-                sw.Write(UpdateDataValidation(prefix));
+               sw.Write(UpdateDataValidation(prefix));
             }
+            
 
             FindNodePositionAndClearIt(sw, xml, "hyperlinks", ref startOfNode, ref endOfNode);
             UpdateHyperLinks(sw, prefix);
@@ -576,7 +576,8 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
         private void WriteDataValidationAttributes(ref StringBuilder cache, int i)
         {
-            if (_ws.DataValidations[i].ValidationType != null)
+            if (_ws.DataValidations[i].ValidationType != null && 
+                _ws.DataValidations[i].ValidationType.Type != eDataValidationType.Any)
             {
                 cache.Append($"type=\"{_ws.DataValidations[i].ValidationType.TypeToXmlString()}\" ");
             }
@@ -762,7 +763,6 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
             if (extraAttribute == "")
             {
-
                 cache.Append($"<{prefix}dataValidations count=\"{_ws.DataValidations.GetNonExtLstCount()}\">");
                 type = InternalValidationType.DataValidation;
             }

@@ -4384,6 +4384,33 @@ namespace EPPlusTest
 
                 return toReturn;
             }
+        [TestMethod]
+        public void s437()
+        {
+            using (var package = OpenTemplatePackage("s437.xlsx"))
+            {
+                var worksheet = package.Workbook.Worksheets[0];
+
+
+                var metroChart = (ExcelChart)worksheet.Drawings.Where(p => p is ExcelChart).First();
+                if (metroChart != null)
+                {
+                    metroChart.YAxis.MinValue = 0d;
+                    metroChart.YAxis.MajorUnit = 0.05d;
+
+                    
+                    foreach (var ct in metroChart.PlotArea.ChartTypes)
+                    {
+                        ///The "Series" being returned in this is only the bar series
+                        ///while the other two line series are not being returned.
+                        foreach(var serie in ct.Series)
+                        {
+
+                        }
+                    }
+                }
+            }
         }
     }
+}
 
