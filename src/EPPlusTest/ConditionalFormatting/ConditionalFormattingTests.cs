@@ -528,9 +528,10 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i, 28].Value = i;
                     wks.Cells[i + 10, 28].Value = i + 10;
 
+                    wks.Cells[i, 38].Value = i;
                 }
 
-                for(int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     wks.Cells[1, 30 + i].Value = 3;
                     wks.Cells[2, 30 + i].Value = 2;
@@ -539,13 +540,15 @@ namespace EPPlusTest.ConditionalFormatting
 
                 for(int i = 0;i < 2; i++)
                 {
-                    wks.Cells[1, 35 + i].Value = -19;
+                    wks.Cells[1, 35 + i].Value = -500;
                     wks.Cells[2, 35 + i].Value = -10;
                     wks.Cells[3, 35 + i].Value = -1;
                     wks.Cells[4, 35 + i].Value = 0;
                     wks.Cells[5, 35 + i].Value = 1;
                     wks.Cells[6, 35 + i].Value = 9;
                     wks.Cells[7, 35 + i].Value = 17;
+                    wks.Cells[8, 35 + i].Value = 25;
+                    wks.Cells[9, 35 + i].Value = 200;
                 }
 
                 var betweenFormatting = wks.ConditionalFormatting.AddBetween(new ExcelAddress(1, 5, 10, 5));
@@ -682,16 +685,16 @@ namespace EPPlusTest.ConditionalFormatting
                 aboveStdDev.Style.Fill.BackgroundColor.Color = Color.Black;
                 aboveStdDev.Style.Font.Color.Color = Color.Violet;
 
-                aboveStdDev.StdDev = 2;
+                aboveStdDev.StdDev = 1;
 
                 var belowStdDev = wks.ConditionalFormatting.AddBelowStdDev(new ExcelAddress(1, 36, 10, 36));
 
                 belowStdDev.Style.Fill.BackgroundColor.Color = Color.Black;
                 belowStdDev.Style.Font.Color.Color = Color.Violet;
 
-                belowStdDev.StdDev = 3;
+                belowStdDev.StdDev = 2;
 
-                //var databar = wks.ConditionalFormatting.AddDatabar(new ExcelAddress(1, 38, 10, 38), Color.Crimson);
+                var databar = wks.ConditionalFormatting.AddDatabar(new ExcelAddress(1, 38, 10, 38), Color.Crimson);
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
@@ -747,10 +750,10 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[22].EqualAverage, true);
 
                 Assert.AreEqual(formattings.ToList()[23].Type, eExcelConditionalFormattingRuleType.AboveStdDev);
-                Assert.AreEqual(formattings.ToList()[23].StdDev, 2);
+                Assert.AreEqual(formattings.ToList()[23].StdDev, 1);
 
                 Assert.AreEqual(formattings.ToList()[24].Type, eExcelConditionalFormattingRuleType.BelowStdDev);
-                Assert.AreEqual(formattings.ToList()[24].StdDev, 3);
+                Assert.AreEqual(formattings.ToList()[24].StdDev, 2);
             }
         }
 

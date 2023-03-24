@@ -99,7 +99,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
             if (_ws.DataValidations.Count() != 0)
             {
-                extLst.InsertExt(ExtLstUris.DataValidationsUri, UpdateExtLstDataValidations(prefix), "");
+                extLst.InsertExt(ExtLstUris.DataValidationsUri, UpdateExtLstDataValidations(), "");
             }
 
             if (_ws.ConditionalFormatting.Count() != 0)
