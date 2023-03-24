@@ -64,6 +64,11 @@ namespace OfficeOpenXml.ExcelXMLWriter
         /// If <param name="uriOfNodeBefore"> is blank sets content as the first ext</param>
         internal void InsertExt(string uri, string content, string uriOfNodeBefore)
         {
+            if(string.IsNullOrEmpty(content))
+            {
+                return;
+            }
+
             int indexOfNode = -1;
             if (uriOfNodeBefore != "")
             {

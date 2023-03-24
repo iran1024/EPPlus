@@ -127,7 +127,7 @@ namespace OfficeOpenXml.ConditionalFormatting
 
             // Type = (eExcelConditionalFormattingRuleType)Enum.Parse(typeof(eExcelConditionalFormattingRuleType), xr.GetAttribute("type"));
 
-            if (xr.GetAttribute("dxfId") != "")
+            if (!string.IsNullOrEmpty(xr.GetAttribute("dxfId")))
             {
                 DxfId = int.Parse(xr.GetAttribute("dxfId"));
             }

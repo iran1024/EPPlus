@@ -2918,6 +2918,10 @@ namespace OfficeOpenXml
                 CreateNode("d:hyperlinks");
                 CreateNode("d:rowBreaks");
                 CreateNode("d:colBreaks");
+                if (GetNode("d:extLst") == null)
+                {
+                    CreateNode("d:extLst");
+                }
 
                 if (DataValidations != null && DataValidations.Count != 0)
                 {
@@ -2925,14 +2929,6 @@ namespace OfficeOpenXml
                     WorksheetXml.DocumentElement.SetAttribute("xmlns:mc", ExcelPackage.schemaMarkupCompatibility);
                     WorksheetXml.DocumentElement.SetAttributeNode("Ignorable", ExcelPackage.schemaMarkupCompatibility);
                     WorksheetXml.DocumentElement.SetAttribute("Ignorable", "xr");
-
-                    if (DataValidations.HasValidationType(InternalValidationType.ExtLst))
-                    {
-                        if (GetNode("d:extLst") == null)
-                        {
-                            CreateNode("d:extLst");
-                        }
-                    }
                 }
 
                 var prefix = GetNameSpacePrefix();

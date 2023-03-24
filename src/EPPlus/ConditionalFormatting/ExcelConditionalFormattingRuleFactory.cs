@@ -142,6 +142,12 @@ namespace OfficeOpenXml.ConditionalFormatting
                         type,
                         priority,
                         worksheet);
+
+                case eExcelConditionalFormattingRuleType.DataBar:
+                    return new ExcelConditionalFormattingDataBar(
+                        address, 
+                        priority,
+                        worksheet);
             }
 
             throw new InvalidOperationException(
@@ -285,6 +291,9 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.AboveStdDev:
                 case eExcelConditionalFormattingRuleType.BelowStdDev:
                     return new ExcelConditionalFormattingStdDevGroup(address, eType, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.DataBar:
+                    return new ExcelConditionalFormattingDataBar(address, ws, xr);
             }
 
             throw new InvalidOperationException(

@@ -93,26 +93,23 @@ namespace OfficeOpenXml.ExcelXMLWriter
             FindNodePositionAndClearIt(sw, xml, "colBreaks", ref startOfNode, ref endOfNode);
             UpdateColBreaks(sw, prefix);
 
-            if (_ws.GetNode("d:extLst") != null && _ws.DataValidations.Count() != 0)
+            ExtLstHelper extLst = new ExtLstHelper(xml);
+
+            FindNodePositionAndClearIt(sw, xml, "extLst", ref startOfNode, ref endOfNode);
+
+            if (_ws.DataValidations.Count() != 0)
             {
-                ExtLstHelper extLst = new ExtLstHelper(xml);
+                extLst.InsertExt(ExtLstUris.DataValidationsUri, UpdateExtLstDataValidations(prefix), "");
+            }
 
-                FindNodePositionAndClearIt(sw, xml, "extLst", ref startOfNode, ref endOfNode);
+            if (_ws.ConditionalFormatting.Count() != 0)
+            {
+                extLst.InsertExt(ExtLstUris.ConditionalFormattingUri, UpdateExtLstConditionalFormatting(), "");
+            }
 
-                if (_ws.DataValidations.Count() != 0)
-                {
-                    extLst.InsertExt(ExtLstUris.DataValidationsUri, UpdateExtLstDataValidations(prefix), "");
-                }
-
-                if(_ws.ConditionalFormatting.Count() != 0) 
-                {
-                    
-                }
-
-                if(extLst.extCount != 0)
-                {
-                    sw.Write(extLst.GetWholeExtLst());
-                }
+            if (extLst.extCount != 0)
+            {
+                sw.Write(extLst.GetWholeExtLst());
             }
 
             sw.Write(xml.Substring(endOfNode, xml.Length - endOfNode));
@@ -912,19 +909,21 @@ namespace OfficeOpenXml.ExcelXMLWriter
         /// </summary>
         /// <param name="prefix"></param>
         /// <returns></returns>
-        private string UpdateExtLstDataValidations(string prefix)
+        private string UpdateExtLstDataValidations()
         {
             var cache = new StringBuilder();
 
-            cache.Append($"<ext uri=\"{ExtLstUris.DataValidationsUri}\">");
+            if (_ws.DataValidations.GetExtLstCount() > 0)
+            {
+                cache.Append($"<ext uri=\"{ExtLstUris.DataValidationsUri}\">");
 
-            prefix = "x14:";
-            cache.Append
-            (
-            UpdateDataValidation(prefix,
-                $"xmlns:x14=\"{ExcelPackage.schemaMainX14}\" uri=\"{{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}}\" " + $"xmlns:xm=\"{ExcelPackage.schemaMainXm}\"")
-            );
-            cache.Append("</ext>");
+                cache.Append
+                (
+                UpdateDataValidation("x14:",
+                    $"xmlns:x14=\"{ExcelPackage.schemaMainX14}\" uri=\"{{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}}\" " + $"xmlns:xm=\"{ExcelPackage.schemaMainXm}\"")
+                );
+                cache.Append("</ext>");
+            }
 
             return cache.ToString();
         }
@@ -999,16 +998,27 @@ namespace OfficeOpenXml.ExcelXMLWriter
         private string UpdateExtLstConditionalFormatting()
         {
             var cache = new StringBuilder();
-            string prefix = "x14:";
-            cache.Append($"<ext xlmns:{prefix} uri=\"{ExtLstUris.ExtChildUri}\">");
 
-            cache.Append($"<{prefix}:conditionalFormattings>");
+            List<ExcelConditionalFormattingRule> cfExtLst = new List<ExcelConditionalFormattingRule>();
 
-            foreach(var format in _ws.ConditionalFormatting)
+            foreach (var format in _ws.ConditionalFormatting)
             {
-                if(format.isExtLst)
+                if (format.isExtLst)
                 {
-                    cache.Append($"<{prefix}:conditionalFormatting xmlns:xm=\"{ExcelPackage.schemaMainX14}\" uri=\"{ExtLstUris.ConditionalFormattingUri}\">");
+                    cfExtLst.Add(format);
+                }
+            }
+
+            if (cfExtLst.Count > 0)
+            {
+                string prefix = "x14:";
+                cache.Append($"<ext xmlns:x14=\"{ExcelPackage.schemaMainX14}\" uri=\"{ExtLstUris.ExtChildUri}\">");
+
+                cache.Append($"<{prefix}conditionalFormattings>");
+
+                foreach (var format in cfExtLst)
+                {
+                    cache.Append($"<{prefix}conditionalFormatting xmlns:xm=\"{ExcelPackage.schemaMain}\">");
 
                     string uid;
 
@@ -1026,29 +1036,28 @@ namespace OfficeOpenXml.ExcelXMLWriter
                         //    //TODO: Cast to and extract iconSet types here
                         //}
 
-                        cache.Append($"<{prefix}:cfRule type=\"{format.Type.ToString().UnCapitalizeFirstLetter()}\" uri=\"{uid}\">");
+                        cache.Append($"<{prefix}cfRule type=\"{format.Type.ToString().UnCapitalizeFirstLetter()}\" id=\"{uid}\">");
 
 
-                        cache.Append($"<{prefix}:dataBar minLength=\"{dataBar.LowValue.Value}\" ");
-                        cache.Append($"maxLength=\"{dataBar.HighValue.Value}>\"");
+                        cache.Append($"<{prefix}dataBar minLength=\"{dataBar.LowValue.Value}\" ");
+                        cache.Append($"maxLength=\"{dataBar.HighValue.Value}\">");
 
-                        cache.Append($"<{prefix}:cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
-                        cache.Append($"<{prefix}:cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
-                        cache.Append($"<{prefix}:negativeFillColor rbg=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(),16)}\"/>");
-                        cache.Append($"<{prefix}:axisColor rbg=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16)}\"/>");
+                        cache.Append($"<{prefix}cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                        cache.Append($"<{prefix}cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                        cache.Append($"<{prefix}negativeFillColor rbg=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16)}\"/>");
+                        cache.Append($"<{prefix}axisColor rbg=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16)}\"/>");
 
-                        cache.Append($"</{prefix}:databar>");
+                        cache.Append($"</{prefix}dataBar>");
                     }
 
-                    cache.Append($"</{prefix}:cfRule>");
+                    cache.Append($"</{prefix}cfRule>");
                     cache.Append($"<xm:sqref>{format.Address}</xm:sqref>");
-                    cache.Append($"</{prefix}:conditionalFormatting");
+                    cache.Append($"</{prefix}conditionalFormatting>");
                 }
+
+                cache.Append($"</{prefix}conditionalFormattings>");
+                cache.Append("</ext>");
             }
-
-            cache.Append($"/{prefix}:conditionalFormattings");
-
-            cache.Append("</ext>");
 
             return cache.ToString();
         }
@@ -1098,7 +1107,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                         prefix = "x14";
                         cache.Append($"<ext xmlns:{prefix}=\"{ExcelPackage.schemaMainX14}\" uri=\"{ExtLstUris.ExtChildUri}\">");
-                        cache.Append($"<{prefix}:id>{dataBar.Uid}</{prefix}:id");
+                        cache.Append($"<{prefix}:id>{dataBar.Uid}</{prefix}:id>");
                         cache.Append($"</ext>");
 
                         cache.Append($"</extLst>");
