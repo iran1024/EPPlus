@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Xml;
 
 namespace OfficeOpenXml.ConditionalFormatting
@@ -14,12 +15,120 @@ namespace OfficeOpenXml.ConditionalFormatting
         List<ExcelConditionalFormattingRule> _rules = new List<ExcelConditionalFormattingRule>();
         ExcelWorksheet _ws;
         int LastPriority = 1;
+        Dictionary<string, ExcelConditionalFormattingRule> _extLstDict = new Dictionary<string, ExcelConditionalFormattingRule>();
+
 
         internal ExcelConditionalFormattingCollection(ExcelWorksheet ws)
         {
             _ws = ws;
             _rules = new List<ExcelConditionalFormattingRule>();
         }
+
+        /// <summary>
+        /// Read data validation from xml via xr reader
+        /// </summary>
+        public void ReadConditionalFormattings(XmlReader xr)
+        {
+            while (xr.Read())
+            {
+                if (xr.LocalName != "conditionalFormatting")
+                {
+                    xr.Read(); //Read beyond the end element
+                    break;
+                }
+
+                if (xr.NodeType == XmlNodeType.Element)
+                {
+                    //ConditionalFormatting->cfRule
+                    xr.Read();
+
+                    string id = xr.GetAttribute("id");
+
+                    if(string.IsNullOrEmpty(id))
+                    {
+                        throw new InvalidOperationException("XML invalid. cfRule without Id found");
+                    }
+
+                    //cfRule->Type
+                    xr.Read();
+
+                    if(xr.LocalName == "dataBar")
+                    {
+                        var dataBar = (ExcelConditionalFormattingDataBar)_extLstDict[id];
+                        dataBar.LowValue.Value = double.Parse(xr.GetAttribute("minLength"));
+                        dataBar.HighValue.Value = double.Parse(xr.GetAttribute("maxLength"));
+
+                        //CfRule -> cfvo
+                        xr.Read();
+
+                        string typeString1 = RemoveAuto(xr.GetAttribute("Type"));
+
+                        dataBar.LowValue.Type = typeString1.ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
+
+                        xr.Read();
+
+                        string typeString2 = RemoveAuto(xr.GetAttribute("Type"));
+
+                        dataBar.HighValue.Type = typeString2.ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
+
+                        xr.Read();
+
+
+                        if (xr.LocalName == "fillColor")
+                        {
+                            dataBar.FillColor = GetColorFromExcelRgb(xr.GetAttribute("rgb"));
+                            xr.Read();
+                        }
+
+                        if (xr.LocalName == "borderColor")
+                        {
+                            dataBar.BorderColor = GetColorFromExcelRgb(xr.GetAttribute("rgb"));
+                            xr.Read();
+                        }
+
+                        if (xr.LocalName == "negativeFillColor")
+                        {
+                            dataBar.NegativeFillColor = GetColorFromExcelRgb(xr.GetAttribute("rgb"));
+                            xr.Read();
+                        }
+
+                        if (xr.LocalName == "negativeBorderColor")
+                        {
+                            dataBar.NegativeBorderColor = GetColorFromExcelRgb(xr.GetAttribute("rgb"));
+                            xr.Read();
+                        }
+
+                        if (xr.LocalName == "axisColor")
+                        {
+                            dataBar.AxisColor = GetColorFromExcelRgb(xr.GetAttribute("rgb"));
+                            xr.Read();
+                        }
+                    }
+
+                    //var rule = ExcelConditionalFormattingRuleFactory.Create(new ExcelAddress(xr.GetAttribute("sqref")), _ws, xr);
+                    //_rules.Add(rule);
+                    //_validationsRD.Add(validation.Address._fromRow, validation.Address._fromCol,
+                    //                   validation.Address._toRow, validation.Address._toCol, validation);
+                }
+            }
+        }
+
+        Color GetColorFromExcelRgb(string rgb)
+        {
+            var colVal = int.Parse(rgb, NumberStyles.HexNumber);
+            return Color.FromArgb(colVal);
+        }
+
+        string RemoveAuto(string typeString)
+        {
+            if(typeString.LastIndexOf("auto") == -1)
+            {
+                return typeString;
+            }
+
+            return typeString.Substring(typeString.LastIndexOf("auto"));
+        }
+
 
         internal ExcelConditionalFormattingCollection(XmlReader xr, ExcelWorksheet ws)
         {
@@ -42,6 +151,22 @@ namespace OfficeOpenXml.ConditionalFormatting
 
                     xr.Read();
                     xr.Read();
+                }
+            }
+
+            //identify ExtLst cfRules
+            foreach(var cfRule in _rules)
+            {
+                if(cfRule.isExtLst)
+                {
+                    if (cfRule.Type == eExcelConditionalFormattingRuleType.DataBar)
+                    {
+                        _extLstDict.Add(((ExcelConditionalFormattingDataBar)cfRule).Uid, cfRule);
+                    }
+                    else
+                    {
+                        //Iconset handling
+                    }
                 }
             }
         }

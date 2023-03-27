@@ -1312,6 +1312,8 @@ namespace OfficeOpenXml
             if (xr.ReadUntil(1, NodeOrders.WorksheetTopElementOrder, nextElement))
             {
                 LoadExtLst(xr, stream, ref xml, ref lastXmlElement);
+                //stream.SetWriteToBuffer();
+                //lastXmlElement = nextElement;
             }
 
             Encoding encoding = Encoding.UTF8;
@@ -1650,6 +1652,22 @@ namespace OfficeOpenXml
                         _dataValidations = new ExcelDataValidationCollection(xr, this);
                     else
                         _dataValidations.ReadDataValidations(xr);
+
+                    stream.SetWriteToBuffer();
+                    lastXmlElement = nextXmlElement;
+                }
+                else if(xr.GetAttribute("uri") == ExtLstUris.ExtChildUri)
+                {
+                    var nextXmlElement = "ext";
+                    xml = stream.ReadFromEndElement(lastXmlElement, xml, "ext", false, xr.Prefix, $" uri=\"{ExtLstUris.ExtChildUri}\"", false);
+
+                    //Ext->ConditionalFormattings
+                    xr.Read();
+
+                    if (_conditionalFormatting == null)
+                        _conditionalFormatting = new ExcelConditionalFormattingCollection(xr, this);
+                    else
+                        _conditionalFormatting.ReadConditionalFormattings(xr);
 
                     stream.SetWriteToBuffer();
                     lastXmlElement = nextXmlElement;

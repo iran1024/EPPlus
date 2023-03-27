@@ -100,7 +100,10 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public Color Color { get; set; }
 
+        public Color FillColor { get; set; }
+        public Color BorderColor { get; set; }
         public Color NegativeFillColor { get; set; }
+        public Color NegativeBorderColor { get; set; }
         public Color AxisColor { get; set; }
     }
 }

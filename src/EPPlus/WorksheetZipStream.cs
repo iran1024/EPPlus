@@ -232,10 +232,10 @@ namespace OfficeOpenXml
         /// <returns>The position of the element in the input xml</returns>
         private int FindElementPos(string xml, string element, bool returnStartPos = true, bool findLastInstance = false)
         {
-            var ix = 0;
+            var ix = findLastInstance ? xml.Length : 0;
             while (true)
             {
-                ix = findLastInstance == false ? xml.IndexOf(element, ix) : xml.LastIndexOf(element);
+                ix = findLastInstance == false ? xml.IndexOf(element, ix) : xml.LastIndexOf(element, ix);
 
                 if (ix > 0 && ix < xml.Length - 1)
                 {
@@ -265,7 +265,11 @@ namespace OfficeOpenXml
                     }
                 }
                 if (ix <= 0) return -1;
-                ix += element.Length;
+
+                if(findLastInstance== false)
+                {
+                    ix += element.Length;
+                }
             }
         }
     }
