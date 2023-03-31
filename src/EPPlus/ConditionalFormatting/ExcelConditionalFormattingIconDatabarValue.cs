@@ -16,14 +16,14 @@ namespace OfficeOpenXml.ConditionalFormatting
         private eExcelConditionalFormattingRuleType _ruleType;
         private ExcelWorksheet _worksheet;
 
-        eExcelConditionalFormattingValueObjectType _valueType;
+        //eExcelConditionalFormattingValueObjectType _valueType;
 
         public ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType valueType, eExcelConditionalFormattingRuleType ruleType,
             ExcelAddress address,
             ExcelWorksheet worksheet)
         {
             RuleType = ruleType;
-            _valueType = valueType;
+            Type = valueType;
             _worksheet = worksheet;
         }
 

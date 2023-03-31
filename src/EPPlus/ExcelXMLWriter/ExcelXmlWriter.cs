@@ -1012,7 +1012,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
             if (cfExtLst.Count > 0)
             {
                 string prefix = "x14:";
-                cache.Append($"<ext xmlns:x14=\"{ExcelPackage.schemaMainX14}\" uri=\"{ExtLstUris.ExtChildUri}\">");
+                cache.Append($"<ext xmlns:x14=\"{ExcelPackage.schemaMainX14}\" uri=\"{ExtLstUris.ConditionalFormattingUri}\">");
 
                 cache.Append($"<{prefix}conditionalFormattings>");
 
@@ -1044,8 +1044,8 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                         cache.Append($"<{prefix}cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
                         cache.Append($"<{prefix}cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
-                        cache.Append($"<{prefix}negativeFillColor rbg=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16)}\"/>");
-                        cache.Append($"<{prefix}axisColor rbg=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16)}\"/>");
+                        cache.Append($"<{prefix}negativeFillColor rgb=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16).ToUpper()}\"/>");
+                        cache.Append($"<{prefix}axisColor rgb=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16).ToUpper()}\"/>");
 
                         cache.Append($"</{prefix}dataBar>");
                     }

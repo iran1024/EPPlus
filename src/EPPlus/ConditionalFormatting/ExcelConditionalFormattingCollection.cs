@@ -25,12 +25,13 @@ namespace OfficeOpenXml.ConditionalFormatting
         }
 
         /// <summary>
-        /// Read data validation from xml via xr reader
+        /// Read conditionalFormatting info from extLst in xml via xr reader
         /// </summary>
-        public void ReadConditionalFormattings(XmlReader xr)
+        public void ReadExtConditionalFormattings(XmlReader xr)
         {
             while (xr.Read())
             {
+                //Localname should always be 'conditionalFormatting' if another node or 'conditionalFormattings' if finished
                 if (xr.LocalName != "conditionalFormatting")
                 {
                     xr.Read(); //Read beyond the end element
@@ -61,15 +62,15 @@ namespace OfficeOpenXml.ConditionalFormatting
                         //CfRule -> cfvo
                         xr.Read();
 
-                        string typeString1 = RemoveAuto(xr.GetAttribute("Type"));
+                        string typeString1 = RemoveAuto(xr.GetAttribute("type"));
 
-                        dataBar.LowValue.Type = typeString1.ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
+                        dataBar.LowValue.Type = typeString1.CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
 
                         xr.Read();
 
-                        string typeString2 = RemoveAuto(xr.GetAttribute("Type"));
+                        string typeString2 = RemoveAuto(xr.GetAttribute("type"));
 
-                        dataBar.HighValue.Type = typeString2.ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
+                        dataBar.HighValue.Type = typeString2.CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
 
                         xr.Read();
 
@@ -103,12 +104,17 @@ namespace OfficeOpenXml.ConditionalFormatting
                             dataBar.AxisColor = GetColorFromExcelRgb(xr.GetAttribute("rgb"));
                             xr.Read();
                         }
-                    }
 
-                    //var rule = ExcelConditionalFormattingRuleFactory.Create(new ExcelAddress(xr.GetAttribute("sqref")), _ws, xr);
-                    //_rules.Add(rule);
-                    //_validationsRD.Add(validation.Address._fromRow, validation.Address._fromCol,
-                    //                   validation.Address._toRow, validation.Address._toCol, validation);
+                        // /DataBar-> /cfRule -> xm:sqref -> textValue
+                        xr.Read();
+                        xr.Read();
+                        xr.Read();
+                        //If we need to handle ext adress it can be read here with xr.ReadContentAsString();
+                        // textValue -> /xm:sqref -> /conditionalFormatting
+                        xr.Read();
+                        xr.Read();
+
+                    }
                 }
             }
         }

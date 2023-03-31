@@ -21,6 +21,8 @@ namespace OfficeOpenXml.ConditionalFormatting
             HighValue = new ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType.Max, eExcelConditionalFormattingRuleType.DataBar, address, ws);
             LowValue = new ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType.Min, eExcelConditionalFormattingRuleType.DataBar, address, ws);
 
+            HighValue.Value = 100;
+
             Uid = NewId();
 
             //Excel default blue?
