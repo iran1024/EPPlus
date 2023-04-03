@@ -22,7 +22,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             ExcelAddress address,
             int priority,
             ExcelWorksheet worksheet)
-        : base(address, eExcelConditionalFormattingRuleType.LastMonth, priority, worksheet)
+        : base(eExcelConditionalFormattingRuleType.LastMonth, address, priority, worksheet)
         {
             TimePeriod = eExcelConditionalFormattingTimePeriodType.LastMonth;
             Formula = string.Format(
@@ -38,7 +38,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <param name="xr"></param>
         public ExcelConditionalFormattingLastMonth(
             ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
-            : base(address, eExcelConditionalFormattingRuleType.LastMonth, ws, xr)
+            : base(eExcelConditionalFormattingRuleType.LastMonth, address, ws, xr)
         {
         }
         #endregion

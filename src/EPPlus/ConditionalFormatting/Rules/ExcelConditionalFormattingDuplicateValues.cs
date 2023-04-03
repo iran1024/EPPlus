@@ -17,7 +17,7 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         internal ExcelConditionalFormattingDuplicateValues(
           ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
-          : base(address, eExcelConditionalFormattingRuleType.DuplicateValues, ws, xr)
+          : base(eExcelConditionalFormattingRuleType.DuplicateValues, address, ws, xr)
         {
         }
     }

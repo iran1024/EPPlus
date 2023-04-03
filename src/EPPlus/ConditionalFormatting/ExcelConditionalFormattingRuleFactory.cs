@@ -120,8 +120,8 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.TopPercent:
                 case eExcelConditionalFormattingRuleType.BottomPercent:
                     return new ExcelConditionalFormattingTopBottomGroup(
+                        type, 
                         address,
-                        type,
                         priority,
                         worksheet);
 
@@ -130,22 +130,27 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.BelowOrEqualAverage:
                 case eExcelConditionalFormattingRuleType.BelowAverage:
                     return new ExcelConditionalFormattingAverageGroup(
+                        type, 
                         address,
-                        type,
                         priority,
                         worksheet);
 
                 case eExcelConditionalFormattingRuleType.AboveStdDev:
                 case eExcelConditionalFormattingRuleType.BelowStdDev:
                     return new ExcelConditionalFormattingStdDevGroup(
+                        type, 
                         address,
-                        type,
                         priority,
                         worksheet);
 
                 case eExcelConditionalFormattingRuleType.DataBar:
                     return new ExcelConditionalFormattingDataBar(
                         address, 
+                        priority,
+                        worksheet);
+                case eExcelConditionalFormattingRuleType.TwoColorScale:
+                    return new ExcelConditionalFormattingTwoColorScale(
+                        address,
                         priority,
                         worksheet);
             }
@@ -280,20 +285,23 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.Bottom:
                 case eExcelConditionalFormattingRuleType.TopPercent:
                 case eExcelConditionalFormattingRuleType.BottomPercent:
-                    return new ExcelConditionalFormattingTopBottomGroup(address, eType, ws, xr);
+                    return new ExcelConditionalFormattingTopBottomGroup(eType, address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.AboveAverage:
                 case eExcelConditionalFormattingRuleType.AboveOrEqualAverage:
                 case eExcelConditionalFormattingRuleType.BelowOrEqualAverage:
                 case eExcelConditionalFormattingRuleType.BelowAverage:
-                    return new ExcelConditionalFormattingAverageGroup(address, eType, ws, xr);
+                    return new ExcelConditionalFormattingAverageGroup(eType, address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.AboveStdDev:
                 case eExcelConditionalFormattingRuleType.BelowStdDev:
-                    return new ExcelConditionalFormattingStdDevGroup(address, eType, ws, xr);
+                    return new ExcelConditionalFormattingStdDevGroup(eType, address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.DataBar:
                     return new ExcelConditionalFormattingDataBar(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.TwoColorScale:
+                    return new ExcelConditionalFormattingTwoColorScale(address, ws, xr);
             }
 
             throw new InvalidOperationException(

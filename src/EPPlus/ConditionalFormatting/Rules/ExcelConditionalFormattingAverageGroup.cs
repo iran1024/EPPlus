@@ -8,8 +8,8 @@ namespace OfficeOpenXml.ConditionalFormatting
     IExcelConditionalFormattingAverageGroup
     {
         internal ExcelConditionalFormattingAverageGroup(
-         ExcelAddress address,
          eExcelConditionalFormattingRuleType type,
+         ExcelAddress address,
          int priority,
          ExcelWorksheet worksheet)
          : base(type, address, priority, worksheet)
@@ -17,8 +17,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         }
 
         internal ExcelConditionalFormattingAverageGroup(
-          ExcelAddress address, eExcelConditionalFormattingRuleType type, ExcelWorksheet ws, XmlReader xr)
-          : base(address, type, ws, xr)
+          eExcelConditionalFormattingRuleType type, ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
+          : base(type, address, ws, xr)
         {
         }
     }

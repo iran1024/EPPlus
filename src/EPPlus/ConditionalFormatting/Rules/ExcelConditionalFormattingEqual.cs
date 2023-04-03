@@ -30,7 +30,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <param name="ws"></param>
         /// <param name="xr"></param>
         internal ExcelConditionalFormattingEqual(ExcelAddress address, ExcelWorksheet ws, XmlReader xr) 
-            : base(address, eExcelConditionalFormattingRuleType.Equal, ws, xr)
+            : base(eExcelConditionalFormattingRuleType.Equal, address, ws, xr)
         {
             Operator = eExcelConditionalFormattingOperatorType.Equal;
         }

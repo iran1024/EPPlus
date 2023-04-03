@@ -169,7 +169,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
             RuleType = ruleType;
         }
         /// <summary>
-        /// Initialize the <see cref="ExcelConditionalFormattingColorScaleValue"/>
+        /// Initialize the <see cref="ExcelConditionalFormattingColorScaleValueOLD"/>
         /// </summary>
         /// <param name="type"></param>
         /// <param name="value"></param>
@@ -202,7 +202,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
         }
         /// <summary>
-        /// Initialize the <see cref="ExcelConditionalFormattingColorScaleValue"/>
+        /// Initialize the <see cref="ExcelConditionalFormattingColorScaleValueOLD"/>
         /// </summary>
         /// <param name="type"></param>
         /// <param name="color"></param>

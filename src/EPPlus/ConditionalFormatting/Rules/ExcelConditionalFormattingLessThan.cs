@@ -16,7 +16,7 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         public ExcelConditionalFormattingLessThan(
           ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
-          : base(address, eExcelConditionalFormattingRuleType.LessThan, ws, xr)
+          : base(eExcelConditionalFormattingRuleType.LessThan, address, ws, xr)
         {
             Operator = eExcelConditionalFormattingOperatorType.LessThan;
         }

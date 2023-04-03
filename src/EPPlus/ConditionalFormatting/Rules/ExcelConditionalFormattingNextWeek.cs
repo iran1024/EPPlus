@@ -22,7 +22,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             ExcelAddress address,
             int priority,
             ExcelWorksheet worksheet)
-        : base(address, eExcelConditionalFormattingRuleType.NextWeek, priority, worksheet)
+        : base(eExcelConditionalFormattingRuleType.NextWeek, address, priority, worksheet)
         {
             TimePeriod = eExcelConditionalFormattingTimePeriodType.NextWeek;
             Formula = string.Format(
@@ -38,7 +38,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <param name="xr"></param>
         public ExcelConditionalFormattingNextWeek(
             ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
-            : base(address, eExcelConditionalFormattingRuleType.NextWeek, ws, xr)
+            : base(eExcelConditionalFormattingRuleType.NextWeek, address, ws, xr)
         {
         }
         #endregion

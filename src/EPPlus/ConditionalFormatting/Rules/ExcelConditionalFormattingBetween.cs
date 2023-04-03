@@ -42,8 +42,8 @@ namespace OfficeOpenXml.ConditionalFormatting
           ExcelWorksheet worksheet,
           XmlReader xr)
           : base(
-                address,
                 eExcelConditionalFormattingRuleType.Between,
+                address,
                 worksheet,
                 xr)
         {

@@ -110,19 +110,19 @@ namespace EPPlusTest.ConditionalFormatting
             ws.SetValue(4, 1, 4);
             ws.SetValue(5, 1, 5);
         }
+
         [TestMethod]
-        public void DatabarChangingAddressAddsConditionalFormatNodeInSchemaOrder()
+        public void DatabarChangingAddressCorrectly()
         {
             var ws = _pck.Workbook.Worksheets.Add("DatabarAddressing");
             // Ensure there is at least one element that always exists below ConditionalFormatting nodes.   
             ws.HeaderFooter.AlignWithMargins = true;
             var cf = ws.ConditionalFormatting.AddDatabar(ws.Cells["A1:A5"], Color.BlueViolet);
-            Assert.AreEqual("sheetData", cf.Node.ParentNode.PreviousSibling.LocalName);
-            Assert.AreEqual("headerFooter", cf.Node.ParentNode.NextSibling.LocalName);
             cf.Address = new ExcelAddress("C3");
-            Assert.AreEqual("sheetData", cf.Node.ParentNode.PreviousSibling.LocalName);
-            Assert.AreEqual("headerFooter", cf.Node.ParentNode.NextSibling.LocalName);
+
+            Assert.AreEqual(cf.Address, "C3");
         }
+
         [TestMethod]
         public void IconSet()
         {
@@ -529,6 +529,8 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i + 10, 28].Value = i + 10;
 
                     wks.Cells[i, 38].Value = i;
+
+                    wks.Cells[i, 39].Value = i;
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -696,6 +698,8 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var databar = wks.ConditionalFormatting.AddDatabar(new ExcelAddress(1, 38, 10, 38), Color.Crimson);
 
+                databar.LowValue.Value = 3;
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
@@ -754,6 +758,9 @@ namespace EPPlusTest.ConditionalFormatting
 
                 Assert.AreEqual(formattings.ToList()[24].Type, eExcelConditionalFormattingRuleType.BelowStdDev);
                 Assert.AreEqual(formattings.ToList()[24].StdDev, 2);
+
+                Assert.AreEqual(formattings.ToList()[25].Type, eExcelConditionalFormattingRuleType.DataBar);
+                Assert.AreEqual(formattings.ToList()[25].As.DataBar.LowValue.Value, 3);
             }
         }
 

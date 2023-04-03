@@ -35,7 +35,7 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         internal ExcelConditionalFormattingDataBar(
           ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
-          : base(address, eExcelConditionalFormattingRuleType.DataBar, ws, xr)
+          : base(eExcelConditionalFormattingRuleType.DataBar, address, ws, xr)
         {
             xr.Read();
             var highType = xr.GetAttribute("type").CapitalizeFirstLetter()

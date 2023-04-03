@@ -20,7 +20,7 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         public ExcelConditionalFormattingContainsText(
           ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
-          : base(address, eExcelConditionalFormattingRuleType.ContainsText, ws, xr)
+          : base(eExcelConditionalFormattingRuleType.ContainsText, address, ws, xr)
         {
             Operator = eExcelConditionalFormattingOperatorType.ContainsText;
 

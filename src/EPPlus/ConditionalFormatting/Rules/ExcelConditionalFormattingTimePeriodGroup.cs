@@ -37,17 +37,21 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <param name="priority"></param>
         /// <param name="address"></param>
         /// <param name="worksheet"></param>
-        internal ExcelConditionalFormattingTimePeriodGroup(ExcelAddress address,
+        internal ExcelConditionalFormattingTimePeriodGroup(
             eExcelConditionalFormattingRuleType type,
+            ExcelAddress address,
             int priority,
             ExcelWorksheet worksheet)
             : base(type, address, priority, worksheet)
         {
         }
 
-        internal ExcelConditionalFormattingTimePeriodGroup(ExcelAddress address, 
-            eExcelConditionalFormattingRuleType type, ExcelWorksheet ws, XmlReader xr)
-            : base(address, type, ws, xr)
+        internal ExcelConditionalFormattingTimePeriodGroup(
+            eExcelConditionalFormattingRuleType type,
+            ExcelAddress address,
+            ExcelWorksheet ws,
+            XmlReader xr)
+            : base(type, address, ws, xr)
         {
         }
 
