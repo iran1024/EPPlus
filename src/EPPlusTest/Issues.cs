@@ -4411,6 +4411,15 @@ namespace EPPlusTest
                 }
             }
         }
+        [TestMethod]
+        public void Issue831()
+        {
+            using (ExcelPackage package = OpenTemplatePackage("I831.xlsx"))
+            {
+                package.Workbook.Worksheets.Delete(0);
+                SaveAndCleanup(package);
+            }
+        }
     }
 }
 

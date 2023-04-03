@@ -315,7 +315,9 @@ namespace OfficeOpenXml.DataValidation
                 }
             }
 
-            Address = new ExcelAddress(CheckAndFixRangeAddress(address));
+            Address = new ExcelAddress
+                (CheckAndFixRangeAddress(address)
+                 .Replace(" ", ","));
         }
 
         internal virtual void ReadClassSpecificXmlNodes(XmlReader xr)
