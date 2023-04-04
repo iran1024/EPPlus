@@ -16,13 +16,12 @@ namespace OfficeOpenXml.ConditionalFormatting
         private eExcelConditionalFormattingRuleType _ruleType;
         private ExcelWorksheet _worksheet;
 
-        internal bool ShouldHaveValue
+        internal bool HasValueOrFormula
         {
             get
             {
-                if (Type == eExcelConditionalFormattingValueObjectType.Num
-                    || Type == eExcelConditionalFormattingValueObjectType.Percent
-                    || Type == eExcelConditionalFormattingValueObjectType.Percentile)
+                if (Type != eExcelConditionalFormattingValueObjectType.Min
+                    && Type != eExcelConditionalFormattingValueObjectType.Max)
                 {
                     return true;
                 }

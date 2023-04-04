@@ -68,12 +68,41 @@ namespace OfficeOpenXml.ConditionalFormatting
 
                         xr.Read();
 
+                        if(dataBar.LowValue.HasValueOrFormula)
+                        {
+                            xr.Read();
+                            if (dataBar.LowValue.Type== eExcelConditionalFormattingValueObjectType.Formula)
+                            {
+                                dataBar.LowValue.Formula = xr.ReadContentAsString();
+                            }
+                            else
+                            {
+                                dataBar.LowValue.Value = double.Parse(xr.ReadContentAsString());
+                            }
+                            xr.Read();
+                            xr.Read();
+                        }
+
                         string typeString2 = RemoveAuto(xr.GetAttribute("type"));
 
                         dataBar.HighValue.Type = typeString2.CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
 
                         xr.Read();
 
+                        if (dataBar.HighValue.HasValueOrFormula)
+                        {
+                            xr.Read();
+                            if (dataBar.HighValue.Type == eExcelConditionalFormattingValueObjectType.Formula)
+                            {
+                                dataBar.HighValue.Formula = xr.ReadContentAsString();
+                            }
+                            else
+                            {
+                                dataBar.HighValue.Value = double.Parse(xr.ReadContentAsString());
+                            }
+                            xr.Read();
+                            xr.Read();
+                        }
 
                         if (xr.LocalName == "fillColor")
                         {

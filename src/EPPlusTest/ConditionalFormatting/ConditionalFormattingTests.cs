@@ -530,7 +530,7 @@ namespace EPPlusTest.ConditionalFormatting
 
                     wks.Cells[i, 38].Value = i;
 
-                    wks.Cells[i, 39].Value = i;
+                    wks.Cells[i, 40].Value = i;
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -696,11 +696,22 @@ namespace EPPlusTest.ConditionalFormatting
 
                 belowStdDev.StdDev = 2;
 
-                var databar = wks.ConditionalFormatting.AddDatabar(new ExcelAddress(1, 38, 10, 38), Color.Crimson);
+                var databar = wks.ConditionalFormatting.AddDatabar(new ExcelAddress(1, 38, 10, 38), Color.AliceBlue);
                 databar.LowValue.Type = eExcelConditionalFormattingValueObjectType.Percent;
                 databar.LowValue.Value = 0;
                 databar.HighValue.Type= eExcelConditionalFormattingValueObjectType.Percent;
-                databar.HighValue.Value = 100;
+                databar.HighValue.Value = 50;
+
+                var twoColor = wks.ConditionalFormatting.AddTwoColorScale(new ExcelAddress(1, 40, 10, 40));
+
+                twoColor.LowValue.Type = eExcelConditionalFormattingValueObjectType.Percent;
+                twoColor.HighValue.Type = eExcelConditionalFormattingValueObjectType.Percent;
+
+                twoColor.LowValue.Value = 10;
+                twoColor.HighValue.Value = 80;
+
+                twoColor.LowValue.Color = Color.Gold;
+                twoColor.HighValue.Color = Color.Silver;
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
@@ -762,7 +773,17 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[24].StdDev, 2);
 
                 Assert.AreEqual(formattings.ToList()[25].Type, eExcelConditionalFormattingRuleType.DataBar);
-                Assert.AreEqual(formattings.ToList()[25].As.DataBar.LowValue.Value, 3);
+                Assert.AreEqual(formattings.ToList()[25].As.DataBar.LowValue.Value, 0);
+                Assert.AreEqual(formattings.ToList()[25].As.DataBar.HighValue.Value, 50);
+
+                Assert.AreEqual(formattings.ToList()[26].Type, eExcelConditionalFormattingRuleType.TwoColorScale);
+                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.LowValue.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.LowValue.Value, 5);
+                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Value, 80);
+                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.LowValue.Color.ToArgb(), Color.Silver.ToArgb());
+                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Color.ToArgb(), Color.Gold.ToArgb());
+
             }
         }
 

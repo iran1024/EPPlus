@@ -1030,11 +1030,35 @@ namespace OfficeOpenXml.ExcelXMLWriter
                         cache.Append($"<{prefix}cfRule type=\"{format.Type.ToString().UnCapitalizeFirstLetter()}\" id=\"{uid}\">");
 
 
-                        cache.Append($"<{prefix}dataBar minLength=\"{dataBar.LowValue.Value}\" ");
-                        cache.Append($"maxLength=\"{dataBar.HighValue.Value}\">");
+                        cache.Append($"<{prefix}dataBar minLength=\"{0}\" ");
+                        cache.Append($"maxLength=\"{100}\">");
 
-                        cache.Append($"<{prefix}cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
-                        cache.Append($"<{prefix}cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                        cache.Append($"<{prefix}cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"");
+
+                        if (dataBar.LowValue.HasValueOrFormula)
+                        {
+                            cache.Append(">");
+                            cache.Append($"<xm:f>{dataBar.LowValue.Value}</xm:f>");
+                            cache.Append($"</x14:cfvo>");
+                        }
+                        else
+                        {
+                            cache.Append("/>");
+                        }
+
+                        cache.Append($"<{prefix}cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"");
+
+                        if (dataBar.HighValue.HasValueOrFormula)
+                        {
+                            cache.Append(">");
+                            cache.Append($"<xm:f>{dataBar.HighValue.Value}</xm:f>");
+                            cache.Append($"</x14:cfvo>");
+                        }
+                        else
+                        {
+                            cache.Append("/>");
+                        }
+
                         cache.Append($"<{prefix}negativeFillColor rgb=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16).ToUpper()}\"/>");
                         cache.Append($"<{prefix}axisColor rgb=\"{Convert.ToString(dataBar.NegativeFillColor.ToArgb(), 16).ToUpper()}\"/>");
 
@@ -1071,14 +1095,38 @@ namespace OfficeOpenXml.ExcelXMLWriter
                     cache.Append("<formula>" + ConvertUtil.ExcelEscapeAndEncodeString(conditionalFormat.Formula) + "</formula>");
                     if (string.IsNullOrEmpty(conditionalFormat.Formula2) == false)
                     {
-                        cache.Append("<formula>" +conditionalFormat.Formula2 + "</formula>");
+                        cache.Append("<formula>" + conditionalFormat.Formula2 + "</formula>");
                     }
                 }
 
                 if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.TwoColorScale ||
-                   conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeColorScale)
+                    conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeColorScale)
                 {
+                    cache.Append("<colorScale>");
 
+                    var low = conditionalFormat.As.TwoColorScale.LowValue;
+                    var high = conditionalFormat.As.TwoColorScale.HighValue;
+
+                    cache.Append($"<cfvo type=\"{low.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                    cache.Append($"<cfvo type=\"{high.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+
+                    if(conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeColorScale)
+                    {
+                        var middleValue = conditionalFormat.As.ThreeColorScale.MiddleValue;
+                        cache.Append($"<cfvo type=\"{middleValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                    }
+
+                    cache.Append($"<color rgb=\"{low.Color.ToColorString()}\"/>");
+
+                    if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeColorScale)
+                    {
+                        var middleValue = conditionalFormat.As.ThreeColorScale.MiddleValue;
+                        cache.Append($"<color rgb=\"{middleValue.Color.ToColorString()}\"/>");
+                    }
+
+                    cache.Append($"<color rgb=\"{high.Color.ToColorString()}\"/>");
+
+                    cache.Append("</colorScale>");
                 }
 
                 if (conditionalFormat.isExtLst)
@@ -1089,22 +1137,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
                         cache.Append($"<dataBar>");
 
                         cache.Append($"<cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
-
-                        if (dataBar.LowValue.ShouldHaveValue)
-                        {
-                            cache.Append($"<xm:f>{dataBar.LowValue.Value}</xm:f>");
-                            cache.Append($"</x14:cfvo>");
-
-                        }
-
                         cache.Append($"<cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
-
-
-                        if (dataBar.HighValue.ShouldHaveValue)
-                        {
-                            cache.Append($"<xm:f>{dataBar.HighValue.Value}</xm:f>");
-                            cache.Append($"</x14:cfvo>");
-                        }
 
                         cache.Append($"<color rgb=\"{dataBar.Color.ToColorString()}\"/>");
 

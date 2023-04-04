@@ -60,6 +60,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             // /ext -> /extLst
             xr.Read();
             xr.Read();
+            xr.Read();
         }
 
         ExcelConditionalFormattingDataBar(ExcelConditionalFormattingDataBar copy) : base(copy)
