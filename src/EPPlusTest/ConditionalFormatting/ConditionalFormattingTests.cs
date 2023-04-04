@@ -697,8 +697,10 @@ namespace EPPlusTest.ConditionalFormatting
                 belowStdDev.StdDev = 2;
 
                 var databar = wks.ConditionalFormatting.AddDatabar(new ExcelAddress(1, 38, 10, 38), Color.Crimson);
-
-                databar.LowValue.Value = 3;
+                databar.LowValue.Type = eExcelConditionalFormattingValueObjectType.Percent;
+                databar.LowValue.Value = 0;
+                databar.HighValue.Type= eExcelConditionalFormattingValueObjectType.Percent;
+                databar.HighValue.Value = 100;
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 

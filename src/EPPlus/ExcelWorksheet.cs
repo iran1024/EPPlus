@@ -1657,8 +1657,8 @@ namespace OfficeOpenXml
                 }
                 else if(xr.GetAttribute("uri") == ExtLstUris.ConditionalFormattingUri)
                 {
-                    var nextXmlElement = "";
-                    xml = stream.ReadFromEndElement(lastXmlElement, xml, "extLst", false, xr.Prefix, $" uri=\"{ExtLstUris.ConditionalFormattingUri}\"", false);
+                    //var nextXmlElement = "ext";
+                    //xml = stream.ReadFromEndElement(lastXmlElement, xml, "ext", false, xr.Prefix, $" uri=\"{ExtLstUris.ConditionalFormattingUri}\"", false);
 
                     //Ext->ConditionalFormattings
                     xr.Read();
@@ -1669,7 +1669,7 @@ namespace OfficeOpenXml
                         _conditionalFormatting.ReadExtConditionalFormattings(xr);
 
                     stream.SetWriteToBuffer();
-                    lastXmlElement = nextXmlElement;
+                    lastXmlElement = "extLst";
                 }
                 else
                 {

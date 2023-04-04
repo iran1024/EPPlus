@@ -16,6 +16,21 @@ namespace OfficeOpenXml.ConditionalFormatting
         private eExcelConditionalFormattingRuleType _ruleType;
         private ExcelWorksheet _worksheet;
 
+        internal bool ShouldHaveValue
+        {
+            get
+            {
+                if (Type == eExcelConditionalFormattingValueObjectType.Num
+                    || Type == eExcelConditionalFormattingValueObjectType.Percent
+                    || Type == eExcelConditionalFormattingValueObjectType.Percentile)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         //eExcelConditionalFormattingValueObjectType _valueType;
 
         public ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType valueType, eExcelConditionalFormattingRuleType ruleType,
@@ -97,6 +112,11 @@ namespace OfficeOpenXml.ConditionalFormatting
                     || Type == eExcelConditionalFormattingValueObjectType.Percentile)
                 {
                     _value = value;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Value can only be changed if Type is Num, Percent or Percentile." +
+                        $"Current Type is \"{Type}\"");
                 }
             }
         }

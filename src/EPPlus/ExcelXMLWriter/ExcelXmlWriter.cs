@@ -1088,8 +1088,24 @@ namespace OfficeOpenXml.ExcelXMLWriter
                         var dataBar = (ExcelConditionalFormattingDataBar)conditionalFormat;
                         cache.Append($"<dataBar>");
 
-                        cache.Append($"<cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
                         cache.Append($"<cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+
+                        if (dataBar.LowValue.ShouldHaveValue)
+                        {
+                            cache.Append($"<xm:f>{dataBar.LowValue.Value}</xm:f>");
+                            cache.Append($"</x14:cfvo>");
+
+                        }
+
+                        cache.Append($"<cfvo type=\"{dataBar.HighValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+
+
+                        if (dataBar.HighValue.ShouldHaveValue)
+                        {
+                            cache.Append($"<xm:f>{dataBar.HighValue.Value}</xm:f>");
+                            cache.Append($"</x14:cfvo>");
+                        }
+
                         cache.Append($"<color rgb=\"{dataBar.Color.ToColorString()}\"/>");
 
                         cache.Append($"</dataBar>");
