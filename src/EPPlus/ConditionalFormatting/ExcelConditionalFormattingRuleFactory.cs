@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml.ConditionalFormatting;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using OfficeOpenXml.Utils;
 using System;
 using System.Xml;
@@ -228,6 +229,14 @@ namespace OfficeOpenXml.ConditionalFormatting
 
             string text = xr.GetAttribute("timePeriod");
 
+            if(cfType == "colorScale")
+            {
+                return ColourScaleReadHandler.CreateScales(address, xr, ws);
+                //CreateScales()
+
+                //cfType = CreateScales(xr, ws).ToString();
+            }
+
             var eType = cfType.CapitalizeFirstLetter()
                         .ConvertToEnum<eExcelConditionalFormattingRuleType>();
 
@@ -300,8 +309,8 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.DataBar:
                     return new ExcelConditionalFormattingDataBar(address, ws, xr);
 
-                case eExcelConditionalFormattingRuleType.TwoColorScale:
-                    return new ExcelConditionalFormattingTwoColorScale(address, ws, xr);
+                //case eExcelConditionalFormattingRuleType.TwoColorScale:
+                //    return new ExcelConditionalFormattingTwoColorScale(address, ws, xr);
             }
 
             throw new InvalidOperationException(
@@ -309,5 +318,38 @@ namespace OfficeOpenXml.ConditionalFormatting
              ExcelConditionalFormattingConstants.Errors.NonSupportedRuleType,
              eType.ToString()));
         }
+
+        //static eExcelConditionalFormattingRuleType ColorScaleHandler(XmlReader xr, ExcelWorksheet ws)
+        //{
+        //    var info = (IXmlLineInfo)xr;
+
+        //    int postion = info.LinePosition;
+        //    ws.nam
+            
+
+        //    var innerReader = xr.ReadSubtree();
+        //    innerReader.Read();
+        //    innerReader.Read();
+
+        //    int count = 0;
+
+        //    while(innerReader.Read())
+        //    {
+        //        if(innerReader.Name == "colorScale")
+        //        {
+        //            break;
+        //        }
+        //        count++;
+        //    }
+
+        //    innerReader.Close();
+
+        //    return count > 4 ? eExcelConditionalFormattingRuleType.ThreeColorScale : eExcelConditionalFormattingRuleType.TwoColorScale;
+
+        //    //xr.ReadStartElement();
+        //    //Read number of nodes and data from them to determine type
+        //    //Parse data directly into constructor/return node
+        //    //return cf of that type.
+        //}
     }
 }

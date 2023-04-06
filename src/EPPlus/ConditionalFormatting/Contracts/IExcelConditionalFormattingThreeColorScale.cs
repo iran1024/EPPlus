@@ -29,7 +29,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Contracts
 		/// <summary>
 		/// Three Color Scale Middle Value
 		/// </summary>
-		ExcelConditionalFormattingColorScaleValueOLD MiddleValue { get; set; }
+		ExcelConditionalFormattingColorScaleValue MiddleValue { get; set; }
 		#endregion Public Properties
 	}
 }

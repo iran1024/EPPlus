@@ -477,7 +477,7 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i, 8].Value = i % 2;
                     wks.Cells[i, 10].Value = numbers[i];
 
-                    wks.Cells[i, 12].Value = date + $"{i+10}";
+                    wks.Cells[i, 12].Value = date + $"{i + 10}";
                     wks.Cells[i + 7, 12].Value = date + $"{i + 10 + 7}";
 
                     wks.Cells[i, 13].Value = date + $"{i + 10}";

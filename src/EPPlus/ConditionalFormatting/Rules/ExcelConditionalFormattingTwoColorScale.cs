@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -32,20 +34,43 @@ namespace OfficeOpenXml.ConditionalFormatting
                 priority);
         }
 
-        internal ExcelConditionalFormattingTwoColorScale(ExcelAddress address, ExcelWorksheet ws, XmlReader xr)
-            :base(eExcelConditionalFormattingRuleType.TwoColorScale, address, ws, xr)
+        internal ExcelConditionalFormattingTwoColorScale(
+            ExcelConditionalFormattingRule rule, 
+            eExcelConditionalFormattingValueObjectType? low, 
+            eExcelConditionalFormattingValueObjectType? high,
+            XmlReader xr) : base (rule)
         {
-            xr.Read();
+            SetValues(low, high);
+            ReadColors(xr);
+        }
+
+        internal void SetValues(eExcelConditionalFormattingValueObjectType? low, eExcelConditionalFormattingValueObjectType? high, eExcelConditionalFormattingValueObjectType? middle = null)
+        {
             LowValue = new ExcelConditionalFormattingColorScaleValue(
-                xr.GetAttribute("type").ToEnum<eExcelConditionalFormattingValueObjectType>() ?? 0,
-                ExcelConditionalFormattingConstants.Colors.CfvoLowValue,
-                Priority);
+            low,
+            ExcelConditionalFormattingConstants.Colors.CfvoLowValue,
+            Priority);
+
+            HighValue = new ExcelConditionalFormattingColorScaleValue(
+            high,
+            ExcelConditionalFormattingConstants.Colors.CfvoHighValue,
+            Priority);
+        }
+
+        internal virtual void ReadColors(XmlReader xr)
+        {
+            Type = eExcelConditionalFormattingRuleType.TwoColorScale;
+            string test = xr.GetAttribute("rgb");
+            var lowCol = int.Parse(xr.GetAttribute("rgb"), NumberStyles.HexNumber);
+            LowValue.Color = Color.FromArgb(lowCol);
 
             xr.Read();
-            HighValue = new ExcelConditionalFormattingColorScaleValue(
-                xr.GetAttribute("type").ToEnum<eExcelConditionalFormattingValueObjectType>() ?? 0,
-                ExcelConditionalFormattingConstants.Colors.CfvoHighValue,
-                Priority);
+
+            var highCol = int.Parse(xr.GetAttribute("rgb"), NumberStyles.HexNumber);
+            HighValue.Color = Color.FromArgb(highCol);
+
+            xr.Read();
+            xr.Read();
         }
 
         public ExcelConditionalFormattingColorScaleValue LowValue
