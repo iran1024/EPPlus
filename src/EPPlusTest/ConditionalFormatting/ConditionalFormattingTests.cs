@@ -30,6 +30,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
 using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using OfficeOpenXml.Utils.Extensions;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -531,6 +532,7 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i, 38].Value = i;
 
                     wks.Cells[i, 40].Value = i;
+                    wks.Cells[i, 41].Value = i;
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -707,11 +709,13 @@ namespace EPPlusTest.ConditionalFormatting
                 twoColor.LowValue.Type = eExcelConditionalFormattingValueObjectType.Percent;
                 twoColor.HighValue.Type = eExcelConditionalFormattingValueObjectType.Percent;
 
-                twoColor.LowValue.Value = 10;
+                twoColor.LowValue.Value = 5;
                 twoColor.HighValue.Value = 80;
 
                 twoColor.LowValue.Color = Color.Gold;
                 twoColor.HighValue.Color = Color.Silver;
+
+                var threeColor = wks.ConditionalFormatting.AddThreeColorScale(new ExcelAddress(1, 41, 10, 41));
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
@@ -781,10 +785,32 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Type, eExcelConditionalFormattingValueObjectType.Percent);
                 Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.LowValue.Value, 5);
                 Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Value, 80);
-                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.LowValue.Color.ToArgb(), Color.Silver.ToArgb());
-                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Color.ToArgb(), Color.Gold.ToArgb());
+                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.LowValue.Color.ToColorString(), Color.Gold.ToColorString());
+                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Color.ToColorString(), Color.Silver.ToColorString());
 
+                Assert.AreEqual(formattings.ToList()[27].Type, eExcelConditionalFormattingRuleType.ThreeColorScale);
+                Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.LowValue.Type, eExcelConditionalFormattingValueObjectType.Min);
+                Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.MiddleValue.Type, eExcelConditionalFormattingValueObjectType.Percentile);
+                Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.HighValue.Type, eExcelConditionalFormattingValueObjectType.Max);
+                Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.MiddleValue.Value, 50);
             }
+        }
+
+        //TODO: We should most likely throw a clearer exception.
+        [TestMethod]
+        public void CFThrowsIfDatabarValueNotSetOnSave()
+        {
+            ExcelPackage pck = new ExcelPackage(new MemoryStream());
+
+            var sheet = pck.Workbook.Worksheets.Add("DatabarValueTest");
+
+            var databar = sheet.ConditionalFormatting.AddDatabar(new ExcelAddress("A1:A5"), Color.Green);
+
+            databar.LowValue.Type = eExcelConditionalFormattingValueObjectType.Percent;
+            databar.HighValue.Type = eExcelConditionalFormattingValueObjectType.Percent;
+
+            var stream = new MemoryStream();
+            pck.SaveAs(stream);
         }
 
         [TestMethod]

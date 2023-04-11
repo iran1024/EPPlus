@@ -18,17 +18,18 @@ namespace OfficeOpenXml.ConditionalFormatting
 
             xr.Read();
             var lowType = xr.GetAttribute("type").ToEnum<eExcelConditionalFormattingValueObjectType>();
+            string lowVal = xr.GetAttribute("val");
 
             xr.Read();
             var middleOrHigh = xr.GetAttribute("type").ToEnum<eExcelConditionalFormattingValueObjectType>();
+            string middleOrHighVal = xr.GetAttribute("val");
 
             xr.Read();
 
             if (xr.LocalName == "color")
             {
-                var twoColor = new ExcelConditionalFormattingTwoColorScale(rule, lowType, middleOrHigh, xr);
-                //twoColor.SetValues(lowType, middleOrHigh);
-                //twoColor.ReadColors(xr);
+                var twoColor = new ExcelConditionalFormattingTwoColorScale(
+                    rule, lowType, middleOrHigh, lowVal, middleOrHighVal, xr);
 
                 twoColor.Type = eExcelConditionalFormattingRuleType.TwoColorScale;
 
@@ -36,25 +37,14 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
 
             var highType = xr.GetAttribute("type").ToEnum<eExcelConditionalFormattingValueObjectType>();
+            string highVal = xr.GetAttribute("val");
 
-            var threeColor = new ExcelConditionalFormattingThreeColorScale(rule, lowType, middleOrHigh, highType, xr);
+            xr.Read();
 
-            //threeColor.SetValues(lowType, middleOrHigh, highType);
-            //threeColor.ReadColors(xr);
+            var threeColor = new ExcelConditionalFormattingThreeColorScale(
+                rule, lowType, middleOrHigh, highType, lowVal, middleOrHighVal, highVal, xr);
 
             return threeColor;
-
-            //LowValue = new ExcelConditionalFormattingColorScaleValue(
-            //    xr.GetAttribute("type").ToEnum<eExcelConditionalFormattingValueObjectType>() ?? 0,
-            //    ExcelConditionalFormattingConstants.Colors.CfvoLowValue,
-            //    Priority);
-
-            //xr.Read();
-            //HighValue = new ExcelConditionalFormattingColorScaleValue(
-            //    xr.GetAttribute("type").ToEnum<eExcelConditionalFormattingValueObjectType>() ?? 0,
-            //    ExcelConditionalFormattingConstants.Colors.CfvoHighValue,
-            //    Priority);
-
         }
     }
 }

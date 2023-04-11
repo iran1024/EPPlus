@@ -154,6 +154,12 @@ namespace OfficeOpenXml.ConditionalFormatting
                         address,
                         priority,
                         worksheet);
+                case eExcelConditionalFormattingRuleType.ThreeColorScale:
+                    return new ExcelConditionalFormattingThreeColorScale(
+                        address,
+                        priority,
+                        worksheet);
+
             }
 
             throw new InvalidOperationException(

@@ -30,7 +30,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         eExcelConditionalFormattingValueObjectType? type,
         Color color,
         int priority) 
-        : this(type, color, 0, null, priority)
+        : this(type, color, double.NaN, null, priority)
         {
         }
 
@@ -48,7 +48,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             set;
         }
 
-        Double _value;
+        Double _value = double.NaN;
 
         /// <summary>
         /// The value of the conditional formatting

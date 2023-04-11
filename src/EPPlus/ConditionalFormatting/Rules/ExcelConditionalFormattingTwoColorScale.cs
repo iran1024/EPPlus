@@ -29,7 +29,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                 priority);
 
             HighValue = new ExcelConditionalFormattingColorScaleValue(
-                eExcelConditionalFormattingValueObjectType.Min,
+                eExcelConditionalFormattingValueObjectType.Max,
                 ExcelConditionalFormattingConstants.Colors.CfvoHighValue,
                 priority);
         }
@@ -38,13 +38,21 @@ namespace OfficeOpenXml.ConditionalFormatting
             ExcelConditionalFormattingRule rule, 
             eExcelConditionalFormattingValueObjectType? low, 
             eExcelConditionalFormattingValueObjectType? high,
+            string lowVal,
+            string highVal,
             XmlReader xr) : base (rule)
         {
-            SetValues(low, high);
+            SetValues(low, high, lowVal, highVal);
             ReadColors(xr);
         }
 
-        internal void SetValues(eExcelConditionalFormattingValueObjectType? low, eExcelConditionalFormattingValueObjectType? high, eExcelConditionalFormattingValueObjectType? middle = null)
+        internal void SetValues(
+            eExcelConditionalFormattingValueObjectType? low, 
+            eExcelConditionalFormattingValueObjectType? high,
+            string lowVal = "",
+            string highVal = "",
+            string middleVal = "",
+            eExcelConditionalFormattingValueObjectType? middle = null)
         {
             LowValue = new ExcelConditionalFormattingColorScaleValue(
             low,
@@ -55,19 +63,26 @@ namespace OfficeOpenXml.ConditionalFormatting
             high,
             ExcelConditionalFormattingConstants.Colors.CfvoHighValue,
             Priority);
+
+            if(lowVal != "")
+            {
+                LowValue.Value = double.Parse(lowVal, CultureInfo.InvariantCulture);
+            }
+
+            if(highVal!= null) 
+            {
+                HighValue.Value = double.Parse(highVal, CultureInfo.InvariantCulture);
+            }
         }
 
         internal virtual void ReadColors(XmlReader xr)
         {
             Type = eExcelConditionalFormattingRuleType.TwoColorScale;
-            string test = xr.GetAttribute("rgb");
-            var lowCol = int.Parse(xr.GetAttribute("rgb"), NumberStyles.HexNumber);
-            LowValue.Color = Color.FromArgb(lowCol);
+            LowValue.Color = ExcelConditionalFormattingHelper.ConvertFromColorCode(xr.GetAttribute("rgb"));
 
             xr.Read();
 
-            var highCol = int.Parse(xr.GetAttribute("rgb"), NumberStyles.HexNumber);
-            HighValue.Color = Color.FromArgb(highCol);
+            HighValue.Color = ExcelConditionalFormattingHelper.ConvertFromColorCode(xr.GetAttribute("rgb"));
 
             xr.Read();
             xr.Read();

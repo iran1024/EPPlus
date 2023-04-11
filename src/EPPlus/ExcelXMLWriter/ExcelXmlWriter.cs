@@ -1104,17 +1104,34 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 {
                     cache.Append("<colorScale>");
 
-                    var low = conditionalFormat.As.TwoColorScale.LowValue;
-                    var high = conditionalFormat.As.TwoColorScale.HighValue;
+                    var low = ((ExcelConditionalFormattingTwoColorScale)conditionalFormat).LowValue;
+                    var high = ((ExcelConditionalFormattingTwoColorScale)conditionalFormat).HighValue;
 
-                    cache.Append($"<cfvo type=\"{low.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
-                    cache.Append($"<cfvo type=\"{high.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                    cache.Append($"<cfvo type=\"{low.Type.ToString().UnCapitalizeFirstLetter()}\" ");
+
+                    if(low.Value != double.NaN)
+                    {
+                        cache.Append($"val=\"{low.Value}\"");
+                    }
+                    cache.Append("/>");
 
                     if(conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeColorScale)
                     {
                         var middleValue = conditionalFormat.As.ThreeColorScale.MiddleValue;
-                        cache.Append($"<cfvo type=\"{middleValue.Type.ToString().UnCapitalizeFirstLetter()}\"/>");
+                        cache.Append($"<cfvo type=\"{middleValue.Type.ToString().UnCapitalizeFirstLetter()}\" ");
+                        if (middleValue.Value != double.NaN)
+                        {
+                            cache.Append($"val=\"{middleValue.Value}\"");
+                        }
+                        cache.Append("/>");
                     }
+
+                    cache.Append($"<cfvo type=\"{high.Type.ToString().UnCapitalizeFirstLetter()}\" ");
+                    if (high.Value != double.NaN)
+                    {
+                        cache.Append($"val=\"{high.Value}\"");
+                    }
+                    cache.Append("/>");
 
                     cache.Append($"<color rgb=\"{low.Color.ToColorString()}\"/>");
 
