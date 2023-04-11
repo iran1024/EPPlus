@@ -533,6 +533,8 @@ namespace EPPlusTest.ConditionalFormatting
 
                     wks.Cells[i, 40].Value = i;
                     wks.Cells[i, 41].Value = i;
+
+                    wks.Cells[i, 43].Value = i;
                 }
 
                 for (int i = 0; i < 4; i++)
