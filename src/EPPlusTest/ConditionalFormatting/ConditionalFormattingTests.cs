@@ -719,6 +719,8 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var threeColor = wks.ConditionalFormatting.AddThreeColorScale(new ExcelAddress(1, 41, 10, 41));
 
+                var threeIcons = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 43, 10, 43), eExcelconditionalFormatting3IconsSetType.Flags);
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");

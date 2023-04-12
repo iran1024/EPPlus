@@ -40,10 +40,20 @@ namespace OfficeOpenXml.ConditionalFormatting
                 .ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
             HighValue = new ExcelConditionalFormattingIconDataBarValue(highType, eExcelConditionalFormattingRuleType.DataBar, address, ws);
 
+            if(!string.IsNullOrEmpty(xr.GetAttribute("val")))
+            {
+                HighValue.Value = Double.Parse(xr.GetAttribute("val"));
+            }
+
             xr.Read();
             var lowType = xr.GetAttribute("type").CapitalizeFirstLetter()
                     .ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
             LowValue = new ExcelConditionalFormattingIconDataBarValue(lowType, eExcelConditionalFormattingRuleType.DataBar, address, ws);
+
+            if (!string.IsNullOrEmpty(xr.GetAttribute("val")))
+            {
+                LowValue.Value = Double.Parse(xr.GetAttribute("val"));
+            }
 
             xr.Read();
             var colVal = int.Parse(xr.GetAttribute("rgb"),NumberStyles.HexNumber);

@@ -290,7 +290,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Operator
         /// </summary>
-        internal protected eExcelConditionalFormattingOperatorType Operator { get; set; } = eExcelConditionalFormattingOperatorType.LessThan;
+        internal protected eExcelConditionalFormattingOperatorType? Operator { get; set; } = null;
 
         string _formula;
         string _formula2;

@@ -32,6 +32,8 @@ using System.Security;
 using System.Text;
 using System.Xml.Linq;
 using static OfficeOpenXml.ExcelWorksheet;
+using OfficeOpenXml.ConditionalFormatting.Rules;
+using System.Runtime.CompilerServices;
 
 namespace OfficeOpenXml.ExcelXMLWriter
 {
@@ -951,12 +953,10 @@ namespace OfficeOpenXml.ExcelXMLWriter
                 cache.Append($"bottom=\"1\" ");
             }
 
-            cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
-
-            //if (conditionalFormat.Operator != eExcelConditionalFormattingOperatorType.LessThan)
-            //{
-            //    cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
-            //}
+            if (conditionalFormat.Operator != null)
+            {
+                cache.Append($"operator=\"{conditionalFormat.Operator.ToEnumString()}\" ");
+            }
 
             if (string.IsNullOrEmpty(conditionalFormat.Text) == false)
             {
@@ -1077,6 +1077,21 @@ namespace OfficeOpenXml.ExcelXMLWriter
             return cache.ToString();
         }
 
+        private string WriteCfIcon(ExcelConditionalFormattingIconDataBarValue icon)
+        {
+            StringBuilder cache= new StringBuilder();
+
+            cache.Append($"<cfvo type=\"{icon.Type.ToString().UnCapitalizeFirstLetter()}\" ");
+
+            if (icon.Value != double.NaN)
+            {
+                cache.Append($"val=\"{icon.Value}\"");
+            }
+            cache.Append("/>");
+
+            return cache.ToString();
+        }
+
         private string UpdateConditionalFormattings(string prefix)
         {
             var cache = new StringBuilder();
@@ -1099,6 +1114,21 @@ namespace OfficeOpenXml.ExcelXMLWriter
                     }
                 }
 
+                if(conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeIconSet || 
+                    conditionalFormat.Type == eExcelConditionalFormattingRuleType.FourIconSet ||
+                    conditionalFormat.Type == eExcelConditionalFormattingRuleType.FiveIconSet)
+                {
+                    var iconSet = (ExcelConditionalFormattingThreeIconSet)conditionalFormat;
+                    cache.Append($"<iconSet iconSet=\"{iconSet.GetIconSetString(iconSet.IconSet)}\">");
+
+                    cache.Append(WriteCfIcon(iconSet.Icon1));
+                    cache.Append(WriteCfIcon(iconSet.Icon2));
+                    cache.Append(WriteCfIcon(iconSet.Icon3));
+
+                    cache.Append($"</iconSet>");
+
+                }
+
                 if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.TwoColorScale ||
                     conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeColorScale)
                 {
@@ -1109,7 +1139,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                     cache.Append($"<cfvo type=\"{low.Type.ToString().UnCapitalizeFirstLetter()}\" ");
 
-                    if(low.Value != double.NaN)
+                    if(!double.IsNaN(low.Value))
                     {
                         cache.Append($"val=\"{low.Value}\"");
                     }
@@ -1119,7 +1149,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
                     {
                         var middleValue = conditionalFormat.As.ThreeColorScale.MiddleValue;
                         cache.Append($"<cfvo type=\"{middleValue.Type.ToString().UnCapitalizeFirstLetter()}\" ");
-                        if (middleValue.Value != double.NaN)
+                        if (!double.IsNaN(middleValue.Value))
                         {
                             cache.Append($"val=\"{middleValue.Value}\"");
                         }
@@ -1127,7 +1157,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
                     }
 
                     cache.Append($"<cfvo type=\"{high.Type.ToString().UnCapitalizeFirstLetter()}\" ");
-                    if (high.Value != double.NaN)
+                    if (!double.IsNaN(high.Value))
                     {
                         cache.Append($"val=\"{high.Value}\"");
                     }

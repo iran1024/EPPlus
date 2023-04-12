@@ -79,7 +79,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         public bool GreaterThanOrEqualTo { get; set; }
 
 
-        private double? _value = null;
+        private double? _value = double.NaN;
 
         /// <summary>
         /// The value

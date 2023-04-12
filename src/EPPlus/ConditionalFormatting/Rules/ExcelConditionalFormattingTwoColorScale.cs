@@ -64,7 +64,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             ExcelConditionalFormattingConstants.Colors.CfvoHighValue,
             Priority);
 
-            if(lowVal != "")
+            if(lowVal != null)
             {
                 LowValue.Value = double.Parse(lowVal, CultureInfo.InvariantCulture);
             }

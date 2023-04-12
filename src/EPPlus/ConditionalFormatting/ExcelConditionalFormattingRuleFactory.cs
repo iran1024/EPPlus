@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml.ConditionalFormatting;
+using OfficeOpenXml.ConditionalFormatting.Rules;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using OfficeOpenXml.Utils;
 using System;
@@ -159,7 +160,11 @@ namespace OfficeOpenXml.ConditionalFormatting
                         address,
                         priority,
                         worksheet);
-
+                case eExcelConditionalFormattingRuleType.ThreeIconSet:
+                    return new ExcelConditionalFormattingThreeIconSet(
+                        address,
+                        priority,
+                        worksheet);
             }
 
             throw new InvalidOperationException(
