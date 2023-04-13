@@ -722,6 +722,8 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var threeIcons = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 43, 10, 43), eExcelconditionalFormatting3IconsSetType.Symbols2);
 
+                var fourIcons = wks.ConditionalFormatting.AddFourIconSet(new ExcelAddress(1, 44, 10, 44), eExcelconditionalFormatting4IconsSetType.RedToBlack);
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
@@ -808,7 +810,6 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon1.Value, 0);
                 Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon2.Value, Math.Round(100D / 3, 0));
                 Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon3.Value, Math.Round(100D * (2D / 3), 0));
-
             }
         }
 

@@ -41,17 +41,17 @@ namespace OfficeOpenXml.ConditionalFormatting
                 symbolCount = 5;
             }
 
-            Icon1 = CreateIcon(address, worksheet, 0);
-            Icon2 = CreateIcon(address, worksheet, Math.Round(100D / symbolCount, 0));
-            Icon3 = CreateIcon(address, worksheet, Math.Round(100D * (2D / symbolCount), 0));
+            Icon1 = CreateIcon(address, worksheet, 0, type);
+            Icon2 = CreateIcon(address, worksheet, Math.Round(100D / symbolCount, 0), type);
+            Icon3 = CreateIcon(address, worksheet, Math.Round(100D * (2D / symbolCount), 0), type);
         }
 
-        ExcelConditionalFormattingIconDataBarValue CreateIcon(ExcelAddress address, ExcelWorksheet worksheet, double value)
+        protected ExcelConditionalFormattingIconDataBarValue CreateIcon(ExcelAddress address, ExcelWorksheet worksheet, double value, eExcelConditionalFormattingRuleType type)
         {
             var icon = new ExcelConditionalFormattingIconDataBarValue
                 (
                 eExcelConditionalFormattingValueObjectType.Percent,
-                eExcelConditionalFormattingRuleType.ThreeIconSet,
+                type,
                 address,
                 worksheet
                 );
@@ -87,9 +87,9 @@ namespace OfficeOpenXml.ConditionalFormatting
                 symbolCount = 5;
             }
 
-            Icon1 = CreateIcon(address, worksheet, 0);
-            Icon2 = CreateIcon(address, worksheet, Math.Round(100D / symbolCount, 0));
-            Icon3 = CreateIcon(address, worksheet, Math.Round(100D * (2D / symbolCount), 0));
+            Icon1 = CreateIcon(address, worksheet, 0, type);
+            Icon2 = CreateIcon(address, worksheet, Math.Round(100D / symbolCount, 0), type);
+            Icon3 = CreateIcon(address, worksheet, Math.Round(100D * (2D / symbolCount), 0), type);
 
             xr.Read();
             Icon1.Type = xr.GetAttribute("type").CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();

@@ -27,7 +27,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
             else if(set[0] == '4')
             {
-
+                return new ExcelConditionalFormattingFourIconSet(address, ws, xr, rule);
             }
             else if(set[0] == '5')
             {

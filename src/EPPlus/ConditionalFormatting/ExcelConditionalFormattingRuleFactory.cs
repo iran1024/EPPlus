@@ -167,6 +167,11 @@ namespace OfficeOpenXml.ConditionalFormatting
                         address,
                         priority,
                         worksheet);
+                case eExcelConditionalFormattingRuleType.FourIconSet:
+                    return new ExcelConditionalFormattingFourIconSet(
+                        address,
+                        priority,
+                        worksheet);
             }
 
             throw new InvalidOperationException(
