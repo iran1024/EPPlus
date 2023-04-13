@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
+using OfficeOpenXml.Utils;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {
@@ -64,10 +65,45 @@ namespace OfficeOpenXml.ConditionalFormatting
           eExcelConditionalFormattingRuleType type,
           ExcelAddress address,
           ExcelWorksheet worksheet,
-          XmlReader xr)
-            : base(type, address, worksheet, xr)
+          XmlReader xr, 
+          ExcelConditionalFormattingRule rule)
+            : base(rule)
         {
+            var set = xr.GetAttribute("iconSet").Substring(1);
+            IconSet = set.ConvertToEnum<T>();
 
+            double symbolCount;
+
+            if (type == eExcelConditionalFormattingRuleType.ThreeIconSet)
+            {
+                symbolCount = 3;
+            }
+            else if (type == eExcelConditionalFormattingRuleType.FourIconSet)
+            {
+                symbolCount = 4;
+            }
+            else
+            {
+                symbolCount = 5;
+            }
+
+            Icon1 = CreateIcon(address, worksheet, 0);
+            Icon2 = CreateIcon(address, worksheet, Math.Round(100D / symbolCount, 0));
+            Icon3 = CreateIcon(address, worksheet, Math.Round(100D * (2D / symbolCount), 0));
+
+            xr.Read();
+            Icon1.Type = xr.GetAttribute("type").CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
+            Icon1.Value = double.Parse(xr.GetAttribute("val"));
+
+            xr.Read();
+            Icon2.Type = xr.GetAttribute("type").CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
+            Icon2.Value = double.Parse(xr.GetAttribute("val"));
+
+            xr.Read();
+            Icon3.Type = xr.GetAttribute("type").CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
+            Icon3.Value = double.Parse(xr.GetAttribute("val"));
+
+            xr.Read();
         }
 
         /// <summary>
@@ -129,6 +165,11 @@ namespace OfficeOpenXml.ConditionalFormatting
             {
                 _iconSet = value;
             }
+        }
+
+        internal string GetIconSetString()
+        {
+            return GetIconSetString(IconSet);
         }
 
         internal string GetIconSetString(T value)

@@ -1,8 +1,10 @@
 ﻿using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.ConditionalFormatting.Rules;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using OfficeOpenXml.Utils;
 using System;
+using System.Runtime.CompilerServices;
 using System.Xml;
 
 namespace OfficeOpenXml.ConditionalFormatting
@@ -243,9 +245,17 @@ namespace OfficeOpenXml.ConditionalFormatting
             if(cfType == "colorScale")
             {
                 return ColourScaleReadHandler.CreateScales(address, xr, ws);
-                //CreateScales()
+            }
 
-                //cfType = CreateScales(xr, ws).ToString();
+            if(cfType == "iconSet")
+            {
+                return IconReadHandler.ReadIcons(address, xr, ws);
+                //xr.Read();
+                //var set = xr.GetAttribute("iconSet");
+                //if (set[0] == '3')
+                //{
+                //    cfType = "ThreeIconSet";
+                //}
             }
 
             var eType = cfType.CapitalizeFirstLetter()
@@ -320,8 +330,8 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.DataBar:
                     return new ExcelConditionalFormattingDataBar(address, ws, xr);
 
-                //case eExcelConditionalFormattingRuleType.TwoColorScale:
-                //    return new ExcelConditionalFormattingTwoColorScale(address, ws, xr);
+                //case eExcelConditionalFormattingRuleType.ThreeIconSet:
+                //    return new ExcelConditionalFormattingThreeIconSet(address, ws, xr);
             }
 
             throw new InvalidOperationException(

@@ -31,6 +31,7 @@ using OfficeOpenXml;
 using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 using OfficeOpenXml.Utils.Extensions;
+using System;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -719,7 +720,7 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var threeColor = wks.ConditionalFormatting.AddThreeColorScale(new ExcelAddress(1, 41, 10, 41));
 
-                var threeIcons = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 43, 10, 43), eExcelconditionalFormatting3IconsSetType.Flags);
+                var threeIcons = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 43, 10, 43), eExcelconditionalFormatting3IconsSetType.Symbols2);
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
@@ -797,6 +798,17 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.MiddleValue.Type, eExcelConditionalFormattingValueObjectType.Percentile);
                 Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.HighValue.Type, eExcelConditionalFormattingValueObjectType.Max);
                 Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.MiddleValue.Value, 50);
+
+                Assert.AreEqual(formattings.ToList()[28].Type, eExcelConditionalFormattingRuleType.ThreeIconSet);
+                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.IconSet, eExcelconditionalFormatting3IconsSetType.Symbols2);
+                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
+
+                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon1.Value, 0);
+                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon2.Value, Math.Round(100D / 3, 0));
+                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon3.Value, Math.Round(100D * (2D / 3), 0));
+
             }
         }
 
