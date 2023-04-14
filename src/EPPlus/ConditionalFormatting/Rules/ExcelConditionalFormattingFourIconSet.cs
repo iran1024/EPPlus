@@ -9,7 +9,9 @@ using OfficeOpenXml.Utils;
 
 namespace OfficeOpenXml.ConditionalFormatting.Rules
 {
-    internal class ExcelConditionalFormattingFourIconSet : ExcelConditionalFormattingIconSetBase<eExcelconditionalFormatting4IconsSetType>
+    internal class ExcelConditionalFormattingFourIconSet : 
+        ExcelConditionalFormattingIconSetBase<eExcelconditionalFormatting4IconsSetType>, 
+        IExcelConditionalFormattingFourIconSet<eExcelconditionalFormatting4IconsSetType>
     {
         internal ExcelConditionalFormattingFourIconSet(
         ExcelAddress address,

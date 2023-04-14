@@ -1114,16 +1114,42 @@ namespace OfficeOpenXml.ExcelXMLWriter
                     }
                 }
 
-                if(conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeIconSet || 
+                if( conditionalFormat.Type == eExcelConditionalFormattingRuleType.ThreeIconSet || 
                     conditionalFormat.Type == eExcelConditionalFormattingRuleType.FourIconSet ||
                     conditionalFormat.Type == eExcelConditionalFormattingRuleType.FiveIconSet)
                 {
-                    var iconSet = (ExcelConditionalFormattingThreeIconSet)conditionalFormat;
-                    cache.Append($"<iconSet iconSet=\"{iconSet.GetIconSetString(iconSet.IconSet)}\">");
+                    var iconList = new List<ExcelConditionalFormattingIconDataBarValue>();
+                    string iconSetString = "";
 
-                    cache.Append(WriteCfIcon(iconSet.Icon1));
-                    cache.Append(WriteCfIcon(iconSet.Icon2));
-                    cache.Append(WriteCfIcon(iconSet.Icon3));
+                    switch (conditionalFormat.Type)
+                    {
+                        case eExcelConditionalFormattingRuleType.ThreeIconSet:
+                            var threeIcon = (ExcelConditionalFormattingThreeIconSet)conditionalFormat;
+                            iconList.Add(threeIcon.Icon1);
+                            iconList.Add(threeIcon.Icon2);
+                            iconList.Add(threeIcon.Icon3);
+
+                            iconSetString = threeIcon.GetIconSetString();
+                            break;
+                        case eExcelConditionalFormattingRuleType.FourIconSet:
+                            var fourIcon = (ExcelConditionalFormattingFourIconSet)conditionalFormat;
+                            iconList.Add(fourIcon.Icon1);
+                            iconList.Add(fourIcon.Icon2);
+                            iconList.Add(fourIcon.Icon3);
+                            iconList.Add(fourIcon.Icon4);
+
+                            iconSetString = fourIcon.GetIconSetString();
+                            break;
+                        case eExcelConditionalFormattingRuleType.FiveIconSet:
+                            break;
+                    }
+
+                    cache.Append($"<iconSet iconSet=\"{iconSetString}\">");
+
+                    for (int i= 0; i < iconList.Count; i++) 
+                    {
+                        cache.Append(WriteCfIcon(iconList[i]));
+                    }
 
                     cache.Append($"</iconSet>");
 

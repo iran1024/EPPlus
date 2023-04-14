@@ -9,7 +9,8 @@ using OfficeOpenXml.Utils;
 
 namespace OfficeOpenXml.ConditionalFormatting.Rules
 {
-    internal class ExcelConditionalFormattingThreeIconSet : ExcelConditionalFormattingIconSetBase<eExcelconditionalFormatting3IconsSetType>
+    internal class ExcelConditionalFormattingThreeIconSet : 
+        ExcelConditionalFormattingIconSetBase<eExcelconditionalFormatting3IconsSetType>
     {
         internal ExcelConditionalFormattingThreeIconSet(
         ExcelAddress address,
@@ -35,6 +36,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
             xr,
             rule)
         {
+            xr.Read();
         }
     }
 }

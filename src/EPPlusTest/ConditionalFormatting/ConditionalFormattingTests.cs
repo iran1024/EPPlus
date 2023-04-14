@@ -536,6 +536,7 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i, 41].Value = i;
 
                     wks.Cells[i, 43].Value = i;
+                    wks.Cells[i, 44].Value = i;
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -810,6 +811,19 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon1.Value, 0);
                 Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon2.Value, Math.Round(100D / 3, 0));
                 Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon3.Value, Math.Round(100D * (2D / 3), 0));
+
+                Assert.AreEqual(formattings.ToList()[29].Type, eExcelConditionalFormattingRuleType.FourIconSet);
+                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.IconSet, eExcelconditionalFormatting4IconsSetType.RedToBlack);
+                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon4.Type, eExcelConditionalFormattingValueObjectType.Percent);
+
+                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon1.Value, 0);
+                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon2.Value, Math.Round(100D / 4, 0));
+                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon3.Value, Math.Round(100D * (2D / 4), 0));
+                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon4.Value, 75);
+
             }
         }
 

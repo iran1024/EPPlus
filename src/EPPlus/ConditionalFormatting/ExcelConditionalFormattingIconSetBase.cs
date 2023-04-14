@@ -72,6 +72,8 @@ namespace OfficeOpenXml.ConditionalFormatting
             var set = xr.GetAttribute("iconSet").Substring(1);
             IconSet = set.ConvertToEnum<T>();
 
+            Type = type;
+
             double symbolCount;
 
             if (type == eExcelConditionalFormattingRuleType.ThreeIconSet)
