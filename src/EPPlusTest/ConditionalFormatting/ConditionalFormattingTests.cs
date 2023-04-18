@@ -538,6 +538,8 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i, 43].Value = i;
                     wks.Cells[i, 44].Value = i;
                     wks.Cells[i, 45].Value = i;
+                    wks.Cells[i, 46].Value = i;
+
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -727,6 +729,8 @@ namespace EPPlusTest.ConditionalFormatting
                 var fourIcons = wks.ConditionalFormatting.AddFourIconSet(new ExcelAddress(1, 44, 10, 44), eExcelconditionalFormatting4IconsSetType.RedToBlack);
 
                 var fiveIcons = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress(1, 45, 10, 45), eExcelconditionalFormatting5IconsSetType.Rating);
+
+                var threeIcons2 = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 46, 10, 46), eExcelconditionalFormatting3IconsSetType.Stars);
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 

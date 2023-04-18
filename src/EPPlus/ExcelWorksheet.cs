@@ -2940,7 +2940,8 @@ namespace OfficeOpenXml
                     CreateNode("d:extLst");
                 }
 
-                if (DataValidations != null && DataValidations.Count != 0)
+                if (DataValidations != null && DataValidations.Count != 0 || 
+                    ConditionalFormatting != null && ConditionalFormatting.Count != 0)
                 {
                     WorksheetXml.DocumentElement.SetAttribute("xmlns:xr", ExcelPackage.schemaXr);
                     WorksheetXml.DocumentElement.SetAttribute("xmlns:mc", ExcelPackage.schemaMarkupCompatibility);

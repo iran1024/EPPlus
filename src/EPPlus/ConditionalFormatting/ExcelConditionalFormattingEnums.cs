@@ -583,7 +583,17 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// 3 traffic lights icon set with thick black border.
         /// </summary>
-        TrafficLights2
+        TrafficLights2,
+
+        /// <summary>
+        /// 3 stars icon set.
+        /// </summary>
+        Stars,
+
+        /// <summary>
+        /// 3 triangles icon set.
+        /// </summary>
+        Triangles
     }
 
     /// <summary>
@@ -640,7 +650,12 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// 5 rating icon set.
         /// </summary>
-        Rating
+        Rating,
+
+        /// <summary>
+        /// 5 rating icon set.
+        /// </summary>
+        Boxes
     }
     /// <summary>
     /// 18.18.42 ST_IconSetType (Icon Set Type)

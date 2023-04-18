@@ -28,7 +28,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Contracts
     /// <summary>
     /// Icon1 (part of the 3, 4 ou 5 Icon Set)
     /// </summary>
-        ExcelConditionalFormattingIconDataBarValue Icon1 { get; }
+    ExcelConditionalFormattingIconDataBarValue Icon1 { get; }
 
     /// <summary>
     /// Icon2 (part of the 3, 4 ou 5 Icon Set)

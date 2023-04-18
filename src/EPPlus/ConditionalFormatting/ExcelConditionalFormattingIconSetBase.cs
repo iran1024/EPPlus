@@ -14,7 +14,30 @@ namespace OfficeOpenXml.ConditionalFormatting
     public class ExcelConditionalFormattingIconSetBase<T> : 
         ExcelConditionalFormattingRule,
         IExcelConditionalFormattingThreeIconSet<T>
+        where T : Enum
     {
+        private string _uid = null;
+
+        internal string Uid { 
+            get 
+            {
+                if(_uid == null)
+                {
+                    return NewId();
+                }
+
+                return _uid;
+            } 
+            private set
+            {
+                _uid = value;
+            }
+        }
+
+        internal static string NewId()
+        {
+            return "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
+        }
 
         internal ExcelConditionalFormattingIconSetBase(
           eExcelConditionalFormattingRuleType type,
@@ -28,7 +51,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
             double symbolCount;
 
-            if(type == eExcelConditionalFormattingRuleType.ThreeIconSet)
+            if (type == eExcelConditionalFormattingRuleType.ThreeIconSet)
             {
                 symbolCount = 3;
             }
@@ -70,9 +93,9 @@ namespace OfficeOpenXml.ConditionalFormatting
             : base(rule)
         {
             var set = xr.GetAttribute("iconSet").Substring(1);
-            IconSet = set.ConvertToEnum<T>();
 
             Type = type;
+            IconSet = set.ConvertToEnum<T>();
 
             double symbolCount;
 
@@ -165,6 +188,12 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
             set
             {
+                if(GetIconSetString(value) == "3Stars" ||
+                   GetIconSetString(value) == "3Triangles" ||
+                   GetIconSetString(value) == "5Boxes")
+                {
+                    isExtIconSet = true;
+                }
                 _iconSet = value;
             }
         }
@@ -206,6 +235,8 @@ namespace OfficeOpenXml.ConditionalFormatting
                         return "5Quarters";
                     case "Rating":
                         return "5Rating";
+                    case "Boxes":
+                        return "5Boxes";
                     default:
                         throw (new ArgumentException("Invalid type"));
                 }
@@ -230,6 +261,10 @@ namespace OfficeOpenXml.ConditionalFormatting
                         return "3TrafficLights1";
                     case "TrafficLights2":
                         return "3TrafficLights2";
+                    case "Stars":
+                        return "3Stars";
+                    case "Triangles":
+                        return "3Triangles";
                     default:
                         throw (new ArgumentException("Invalid type"));
                 }

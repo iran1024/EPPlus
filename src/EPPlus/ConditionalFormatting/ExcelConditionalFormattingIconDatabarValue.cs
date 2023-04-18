@@ -11,6 +11,10 @@ using System.Security;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {
+    /// <summary>
+    /// 18.3.1.11 cfvo (Conditional Format Value Object)
+    /// Describes the values of the interpolation points in a gradient scale.
+    /// </summary>
     public class ExcelConditionalFormattingIconDataBarValue
     {
         private eExcelConditionalFormattingRuleType _ruleType;
@@ -78,7 +82,6 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public bool GreaterThanOrEqualTo { get; set; }
 
-
         private double? _value = double.NaN;
 
         /// <summary>
@@ -86,10 +89,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         public double Value
         {
-
             get
             {
-
                 if (Type == eExcelConditionalFormattingValueObjectType.Num
                     || Type == eExcelConditionalFormattingValueObjectType.Percent
                     || Type == eExcelConditionalFormattingValueObjectType.Percentile)
