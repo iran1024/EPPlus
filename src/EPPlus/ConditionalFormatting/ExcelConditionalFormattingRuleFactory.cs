@@ -152,23 +152,33 @@ namespace OfficeOpenXml.ConditionalFormatting
                         address, 
                         priority,
                         worksheet);
+
                 case eExcelConditionalFormattingRuleType.TwoColorScale:
                     return new ExcelConditionalFormattingTwoColorScale(
                         address,
                         priority,
                         worksheet);
+
                 case eExcelConditionalFormattingRuleType.ThreeColorScale:
                     return new ExcelConditionalFormattingThreeColorScale(
                         address,
                         priority,
                         worksheet);
+
                 case eExcelConditionalFormattingRuleType.ThreeIconSet:
                     return new ExcelConditionalFormattingThreeIconSet(
                         address,
                         priority,
                         worksheet);
+
                 case eExcelConditionalFormattingRuleType.FourIconSet:
                     return new ExcelConditionalFormattingFourIconSet(
+                        address,
+                        priority,
+                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.FiveIconSet:
+                    return new ExcelConditionalFormattingFiveIconSet(
                         address,
                         priority,
                         worksheet);

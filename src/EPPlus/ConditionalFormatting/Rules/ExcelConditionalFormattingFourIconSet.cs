@@ -44,6 +44,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
             Icon4.Value = double.Parse(xr.GetAttribute("val"));
 
             xr.Read();
+            xr.Read();
         }
 
         /// <summary>

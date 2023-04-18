@@ -1131,6 +1131,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                             iconSetString = threeIcon.GetIconSetString();
                             break;
+
                         case eExcelConditionalFormattingRuleType.FourIconSet:
                             var fourIcon = (ExcelConditionalFormattingFourIconSet)conditionalFormat;
                             iconList.Add(fourIcon.Icon1);
@@ -1140,7 +1141,17 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                             iconSetString = fourIcon.GetIconSetString();
                             break;
+
                         case eExcelConditionalFormattingRuleType.FiveIconSet:
+                            var fiveIcon = (ExcelConditionalFormattingFiveIconSet)conditionalFormat;
+
+                            iconList.Add(fiveIcon.Icon1);
+                            iconList.Add(fiveIcon.Icon2);
+                            iconList.Add(fiveIcon.Icon3);
+                            iconList.Add(fiveIcon.Icon4);
+                            iconList.Add(fiveIcon.Icon5);
+
+                            iconSetString = fiveIcon.GetIconSetString();
                             break;
                     }
 

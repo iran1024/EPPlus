@@ -31,10 +31,10 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
             else if(set[0] == '5')
             {
-
+                return new ExcelConditionalFormattingFiveIconSet(address, ws, xr, rule);
             }
 
-            throw new NotImplementedException();
+            throw new NotImplementedException($"{set} is not a known type of IconSet");
         }
     }
 }

@@ -537,6 +537,7 @@ namespace EPPlusTest.ConditionalFormatting
 
                     wks.Cells[i, 43].Value = i;
                     wks.Cells[i, 44].Value = i;
+                    wks.Cells[i, 45].Value = i;
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -725,6 +726,8 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var fourIcons = wks.ConditionalFormatting.AddFourIconSet(new ExcelAddress(1, 44, 10, 44), eExcelconditionalFormatting4IconsSetType.RedToBlack);
 
+                var fiveIcons = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress(1, 45, 10, 45), eExcelconditionalFormatting5IconsSetType.Rating);
+
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
@@ -824,6 +827,19 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon3.Value, Math.Round(100D * (2D / 4), 0));
                 Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon4.Value, 75);
 
+                Assert.AreEqual(formattings.ToList()[30].Type, eExcelConditionalFormattingRuleType.FiveIconSet);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.IconSet, eExcelconditionalFormatting5IconsSetType.Rating);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon4.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon5.Type, eExcelConditionalFormattingValueObjectType.Percent);
+
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon1.Value, 0);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon2.Value, 20);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon3.Value, 40);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon4.Value, 60);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon5.Value, 80);
             }
         }
 
