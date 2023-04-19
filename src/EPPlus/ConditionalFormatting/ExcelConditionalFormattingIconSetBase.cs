@@ -131,6 +131,69 @@ namespace OfficeOpenXml.ConditionalFormatting
             xr.Read();
         }
 
+        readonly Dictionary<int, string> _iconStringDictionary = new Dictionary<int, string>
+            {
+             { 0, "3Arrows" },  
+             { 1, "3ArrowsGray" },
+             { 2, "3Flags" },
+             { 3, "3TrafficLights1" } ,
+             { 4, "3TrafficLights2" },
+             { 5, "3Triangles" },
+             { 6, "3Symbols" },
+             { 7, "3Symbols2" },
+             { 8, "3Stars" },
+             { 9, "3Triangles"},
+
+
+
+
+            };
+
+        //<KeyValuePair<Func<int, bool>, Action>>
+
+        //readonly List<KeyValuePair<Func<int, bool>, string>> CustomIconNames = new List<KeyValuePair<Func<int, bool>, string>>
+        //{
+        //    {new KeyValuePair< x < 10, "3Arrows">>},
+
+        //};
+
+        internal virtual string GetCustomIconStringValue(ExcelConditionalFormattingIconDataBarValue icon)
+        {
+            if (icon.CustomIcon != null)
+            {
+                int customIconId = (int)icon.CustomIcon;
+
+                icon.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowTriangle;
+
+                var iconSetId = customIconId >> 4;
+
+                var iconId = customIconId & 0xf;
+
+                //var iconId2 = (int)icon.CustomIcon << 4;
+
+
+                //return _iconStringDictionary.First(stringSwitch => stringSwitch.Key(value)).Value;
+                //switch (value) 
+                //{
+                //    case value < 10:
+
+                //        break;
+                //}
+            }
+
+            return string.Empty;
+        }
+
+        //internal int GetCustomIconIndex(ExcelConditionalFormattingIconDataBarValue icon)
+        //{
+        //    if (icon.customIcon != null)
+        //    {
+        //        return (int)icon.customIcon % 10;
+        //    }
+
+        //    return -1;
+        //}
+
         /// <summary>
         /// Settings for icon 1 in the iconset
         /// </summary>

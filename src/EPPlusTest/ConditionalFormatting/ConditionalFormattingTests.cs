@@ -30,6 +30,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeOpenXml;
 using OfficeOpenXml.ConditionalFormatting;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using OfficeOpenXml.ConditionalFormatting.Rules;
 using OfficeOpenXml.Utils.Extensions;
 using System;
 using System.Data;
@@ -444,6 +445,22 @@ namespace EPPlusTest.ConditionalFormatting
             }
         }
 
+        [TestMethod]
+        public void CustomTest()
+        {
+            using (var pck = new ExcelPackage())
+            {
+                var wks = pck.Workbook.Worksheets.Add("FormattingTest");
+
+                var validation = (ExcelConditionalFormattingThreeIconSet)wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress("A1"), eExcelconditionalFormatting3IconsSetType.Triangles);
+
+                validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.RedCircle;
+
+                validation.GetCustomIconStringValue(validation.Icon1);
+            }
+
+        }
+
         static string[] numbers = new string[] 
         { "zero", 
           "one", 
@@ -539,7 +556,7 @@ namespace EPPlusTest.ConditionalFormatting
                     wks.Cells[i, 44].Value = i;
                     wks.Cells[i, 45].Value = i;
                     wks.Cells[i, 46].Value = i;
-
+                    wks.Cells[i, 47].Value = i;
                 }
 
                 for (int i = 0; i < 4; i++)
@@ -730,7 +747,15 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var fiveIcons = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress(1, 45, 10, 45), eExcelconditionalFormatting5IconsSetType.Rating);
 
-                var threeIcons2 = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 46, 10, 46), eExcelconditionalFormatting3IconsSetType.Stars);
+                var threeIcons2 = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 46, 10, 46), eExcelconditionalFormatting3IconsSetType.Triangles);
+
+                var five2 = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress(1, 47, 10, 47), eExcelconditionalFormatting5IconsSetType.Boxes);
+
+               //five2.Icon1 = 
+
+                // five2.Icon1.RuleType = eExcelConditionalFormattingRuleType.TwoColorScale;
+                
+
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
@@ -844,6 +869,16 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon3.Value, 40);
                 Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon4.Value, 60);
                 Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon5.Value, 80);
+
+                Assert.AreEqual(formattings.ToList()[31].Type, eExcelConditionalFormattingRuleType.ThreeIconSet);
+                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.IconSet, eExcelconditionalFormatting3IconsSetType.Triangles);
+                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
+
+                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon1.Value, 0);
+                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon2.Value, 33);
+                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon3.Value, 67);
             }
         }
 

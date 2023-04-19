@@ -585,6 +585,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         TrafficLights2,
 
+        //ExtLst below
+
         /// <summary>
         /// 3 stars icon set.
         /// </summary>
@@ -651,6 +653,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// 5 rating icon set.
         /// </summary>
         Rating,
+
+        //ExtLst below
 
         /// <summary>
         /// 5 rating icon set.
@@ -747,4 +751,313 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         FiveRating
     }
+
+    /// <summary>
+    /// Enum of all icons for custom iconsets
+    /// </summary>
+    public enum eExcelconditionalFormattingCustomIcon
+    {
+        /// <summary>
+        /// Red down arrow.
+        /// </summary>
+        RedDownArrow = 0x00,
+
+        /// <summary>
+        /// Yellow side arrow.
+        /// </summary>
+        YellowSideArrow = 0x01,
+
+        /// <summary>
+        /// Green up arrow.
+        /// </summary>
+        GreenUpArrow = 0x02,
+
+        /// <summary>
+        /// Gray down arrow.
+        /// </summary>
+        GrayDownArrow = 0x10,
+
+        /// <summary>
+        /// Gray side arrow.
+        /// </summary>
+        GraySideArrow = 0x11,
+
+        /// <summary>
+        /// Gray up arrow.
+        /// </summary>
+        GrayUpArrow = 0x12,
+
+        /// <summary>
+        /// Red flag.
+        /// </summary>
+        RedFlag = 0x20,
+
+        /// <summary>
+        /// Yellow flag.
+        /// </summary>
+        YellowFlag = 0x21,
+
+        /// <summary>
+        /// Green flag.
+        /// </summary>
+        GreenFlag = 0x22,
+
+        /// <summary>
+        /// Red Circle.
+        /// </summary>
+        RedCircleWithBorder = 0x30,
+
+        /// <summary>
+        /// Yellow Circle.
+        /// </summary>
+        YellowCircle = 0x31,
+
+        /// <summary>
+        /// Green Circle.
+        /// </summary>
+        GreenCircle = 0x32,
+
+        /// <summary>
+        /// Red Traffic Light.
+        /// </summary>
+        RedTrafficLight = 0x40,
+
+        /// <summary>
+        /// Yellow Traffic Light.
+        /// </summary>
+        YellowTrafficLight = 0x41,
+
+        /// <summary>
+        /// Green Traffic Light.
+        /// </summary>
+        GreenTrafficLight = 0x42,
+
+        /// <summary>
+        /// Yellow Triangle.
+        /// </summary>
+        YellowTriangle = 0x50,
+
+        /// <summary>
+        /// Red Diamond
+        /// </summary>
+        RedDiamond = 0x51,
+
+        //3Symbols
+        //--------
+
+        /// <summary>
+        /// Red Cross Symbol
+        /// </summary>
+        RedCrossSymbol = 60,
+
+        /// <summary>
+        /// Yellow Exclamation Symbol
+        /// </summary>
+        YellowExclamationSymbol = 61,
+
+        /// <summary>
+        /// Green Check Symbol
+        /// </summary>
+        GreenCheckSymbol = 62,
+
+        //3Symbols2
+        //--------
+
+        /// <summary>
+        /// Red Cross
+        /// </summary>
+        RedCross = 70,
+
+        /// <summary>
+        /// Yellow Exclamation
+        /// </summary>
+        YellowExclamation = 71,
+
+        /// <summary>
+        /// Green Check
+        /// </summary>
+        GreenCheck = 72,
+
+        //3Stars
+        //--------
+
+        /// <summary>
+        /// Empty/Silver Star
+        /// </summary>
+        SilverStar = 80,
+
+        /// <summary>
+        /// Half-Filled Gold Star
+        /// </summary>
+        HalfGoldStar = 81,
+
+        /// <summary>
+        /// Gold Star
+        /// </summary>
+        GoldStar = 82,
+
+        //3Triangles
+        //--------
+
+        /// <summary>
+        /// Red Down Triangle
+        /// </summary>
+        RedDownTriangle = 90,
+
+        /// <summary>
+        /// Yellow Dash
+        /// </summary>
+        YellowDash = 91,
+
+        /// <summary>
+        /// Green Up Triangle
+        /// </summary>
+        GreenUpTriangle = 92,
+
+        //4Arrows
+        //--------
+
+        /// <summary>
+        /// Yellow down incline arrow
+        /// </summary>
+        YellowDownInclineArrow = 0xa1,
+
+        /// <summary>
+        /// Yellow up incline arrow
+        /// </summary>
+        YellowUpInclineArrow = 0x101,
+
+        //4ArrowsGray
+        //--------
+
+        /// <summary>
+        /// Gray down incline arrow
+        /// </summary>
+        GrayDownInclineArrow = 110,
+
+        /// <summary>
+        /// Gray up incline arrow
+        /// </summary>
+        GrayUpInclineArrow = 111,
+
+
+        //4RedToBlack
+        //--------
+
+        /// <summary>
+        /// Black circle
+        /// </summary>
+        BlackCircle = 120,
+
+        /// <summary>
+        /// Gray circle
+        /// </summary>
+        GrayCircle = 121,
+
+        /// <summary>
+        /// Pink circle
+        /// </summary>
+        PinkCircle = 122,
+
+        /// <summary>
+        /// Red circle
+        /// </summary>
+        RedCircle = 123,
+
+        //4Rating
+        //--------
+
+        /// <summary>
+        /// Sigmal icon with 1 blue bar
+        /// </summary>
+        SignalMeterWithOneFilledBar = 130,
+        /// <summary>
+        /// Sigmal icon with 2 blue bars
+        /// </summary>
+        SignalMeterWithTwoFilledBars = 131,
+        /// <summary>
+        /// Sigmal icon with 3 blue bars
+        /// </summary>
+        SignalMeterWithThreeFilledBars = 132,
+        /// <summary>
+        /// Sigmal icon with 4 blue bars
+        /// </summary>
+        SignalMeterWithFourFilledBars = 133,
+
+        //4TrafficLights
+        //--------
+
+        /// <summary>
+        /// Black Circle from 4TrafficLights
+        /// </summary>
+        BlackCircleWithBorder = 140,
+
+        //5Arrows is only combination of previous icons
+        //5ArrowsGray same thing
+
+        //5Rating
+        //--------
+        //Doesn't re-use any of 4Rating. An interesting choice by Microsoft
+
+        /// <summary>
+        /// Empty Signal Meter
+        /// </summary>
+        SignalMeterWithNoFilledBars = 150,
+
+        //5Quarters
+        //--------
+
+        /// <summary>
+        /// White Circle (All White Quarters)
+        /// </summary>
+        WhiteCircle = 160,
+        /// <summary>
+        /// Circle with three white quarters
+        /// </summary>
+        CircleWithThreeWhiteQuarters = 161,
+        /// <summary>
+        /// Circle with two white quarters
+        /// </summary>
+        CircleWithTwoWhiteQuarters = 162,
+        /// <summary>
+        /// Circle with one white quarter
+        /// </summary>
+        CircleWithOneWhiteQuarter = 163,
+
+        //5Boxes
+        //--------
+
+        /// <summary>
+        /// Zero filled boxes
+        /// </summary>
+        ZeroFilledBoxes = 170,
+
+        /// <summary>
+        /// One filled box
+        /// </summary>
+        OneFilledBox = 171,
+
+        /// <summary>
+        /// Two filled boxes
+        /// </summary>
+        TwoFilledBoxes = 172,
+
+        /// <summary>
+        /// Three filled boxes
+        /// </summary>
+        ThreeFilledBoxes = 173,
+
+        /// <summary>
+        /// Four filled boxes
+        /// </summary>
+        FourFilledBoxes = 174,
+
+        //NoIcons
+
+        /// <summary>
+        /// No/Invisible Icon
+        /// </summary>
+        NoIcon = 175
+    }
+
 }

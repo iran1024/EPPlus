@@ -46,6 +46,11 @@ namespace OfficeOpenXml.ConditionalFormatting
         }
 
         /// <summary>
+        /// If not custom is null. If user assigns to it holds icon value.
+        /// </summary>
+        public eExcelconditionalFormattingCustomIcon? CustomIcon { get; set; } = null;
+
+        /// <summary>
         /// Rule type
         /// </summary>
         internal eExcelConditionalFormattingRuleType RuleType
