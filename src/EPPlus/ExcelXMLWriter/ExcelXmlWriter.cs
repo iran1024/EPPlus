@@ -994,7 +994,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
             foreach (var format in _ws.ConditionalFormatting)
             {
-                if (format.isExtLst)
+                if (format.IsExtLst)
                 {
                     cfExtLst.Add(format);
                 }
@@ -1112,6 +1112,14 @@ namespace OfficeOpenXml.ExcelXMLWriter
                                 throw new InvalidOperationException($"Impossible case found {format.Type} is not an iconSet");
                         }
 
+                        foreach (var icon in iconList)
+                        {
+                            if (icon.CustomIcon != null)
+                            {
+                                isCustom = true;
+                            }
+                        }
+
                         cache.Append($"<{prefix}cfRule type=\"iconSet\" priority=\"{format.Priority}\" id=\"{uid}\">");
 
                         cache.Append($"<{prefix}iconSet iconSet=\"{iconSetString}\" ");
@@ -1171,7 +1179,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
             foreach (var conditionalFormat in _ws.ConditionalFormatting)
             {
-                if (conditionalFormat.isExtLst && conditionalFormat.Type != eExcelConditionalFormattingRuleType.DataBar)
+                if (conditionalFormat.IsExtLst && conditionalFormat.Type != eExcelConditionalFormattingRuleType.DataBar)
                 {
                     continue;
                 }
@@ -1239,7 +1247,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
                     cache.Append("</colorScale>");
                 }
 
-                if (conditionalFormat.isExtLst)
+                if (conditionalFormat.IsExtLst)
                 {
                     if (conditionalFormat.Type == eExcelConditionalFormattingRuleType.DataBar)
                     {

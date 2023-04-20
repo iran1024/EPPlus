@@ -88,7 +88,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         }
 
 
-        internal bool isIconSet 
+        internal bool IsIconSet 
         {
             get
             {
@@ -96,9 +96,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
         }
 
-        internal bool isExtIconSet = false;
-
-        internal bool isExtLst 
+        internal virtual bool IsExtLst 
         { 
             get 
             {
@@ -108,7 +106,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                     return true;
                 }
 
-                return isExtIconSet;
+                return false;
             } 
         }
 
@@ -183,7 +181,6 @@ namespace OfficeOpenXml.ConditionalFormatting
             PivotTable = original.PivotTable;
             Text = original.Text;
             StdDev = original.StdDev;
-            isExtIconSet = original.isExtIconSet;
             DxfId = original.DxfId;
 
             if (DxfId >= 0 && DxfId < _ws.Workbook.Styles.Dxfs.Count)

@@ -18,7 +18,7 @@ namespace OfficeOpenXml.ConditionalFormatting
     public class ExcelConditionalFormattingIconDataBarValue
     {
         private eExcelConditionalFormattingRuleType _ruleType;
-        private ExcelWorksheet _worksheet;
+        ExcelConditionalFormattingRule _rule;
 
         internal bool HasValueOrFormula
         {
@@ -36,13 +36,14 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         //eExcelConditionalFormattingValueObjectType _valueType;
 
-        public ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType valueType, eExcelConditionalFormattingRuleType ruleType,
-            ExcelAddress address,
-            ExcelWorksheet worksheet)
+        internal ExcelConditionalFormattingIconDataBarValue(
+            eExcelConditionalFormattingValueObjectType valueType,
+            eExcelConditionalFormattingRuleType ruleType, 
+            ExcelConditionalFormattingRule rule)
         {
             RuleType = ruleType;
             Type = valueType;
-            _worksheet = worksheet;
+            _rule ) 
         }
 
         /// <summary>

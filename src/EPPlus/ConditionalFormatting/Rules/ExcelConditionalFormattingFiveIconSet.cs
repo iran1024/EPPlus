@@ -71,5 +71,22 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
             get;
             internal set;
         }
+
+        internal override bool IsExtLst
+        {
+            get
+            {
+                if (Icon1.CustomIcon != null ||
+                    Icon2.CustomIcon != null ||
+                    Icon3.CustomIcon != null ||
+                    Icon4.CustomIcon != null ||
+                    Icon5.CustomIcon != null)
+                {
+                    return true;
+                }
+
+                return base.IsExtLst;
+            }
+        }
     }
 }

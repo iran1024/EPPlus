@@ -832,6 +832,9 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         GreenTrafficLight = 0x42,
 
+        //3Signs
+        //--------
+
         /// <summary>
         /// Yellow Triangle.
         /// </summary>
@@ -842,23 +845,23 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// </summary>
         RedDiamond = 0x51,
 
-        //3Symbols
+        //3Symbols2
         //--------
 
         /// <summary>
         /// Red Cross Symbol
         /// </summary>
-        RedCrossSymbol = 60,
+        RedCrossSymbol = 0x60,
 
         /// <summary>
         /// Yellow Exclamation Symbol
         /// </summary>
-        YellowExclamationSymbol = 61,
+        YellowExclamationSymbol = 0x61,
 
         /// <summary>
         /// Green Check Symbol
         /// </summary>
-        GreenCheckSymbol = 62,
+        GreenCheckSymbol = 0x62,
 
         //3Symbols2
         //--------
@@ -866,17 +869,17 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Red Cross
         /// </summary>
-        RedCross = 70,
+        RedCross = 0x70,
 
         /// <summary>
         /// Yellow Exclamation
         /// </summary>
-        YellowExclamation = 71,
+        YellowExclamation = 0x71,
 
         /// <summary>
         /// Green Check
         /// </summary>
-        GreenCheck = 72,
+        GreenCheck = 0x72,
 
         //3Stars
         //--------
@@ -884,17 +887,17 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Empty/Silver Star
         /// </summary>
-        SilverStar = 80,
+        SilverStar = 0x80,
 
         /// <summary>
         /// Half-Filled Gold Star
         /// </summary>
-        HalfGoldStar = 81,
+        HalfGoldStar = 0x81,
 
         /// <summary>
         /// Gold Star
         /// </summary>
-        GoldStar = 82,
+        GoldStar = 0x82,
 
         //3Triangles
         //--------
@@ -902,30 +905,36 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Red Down Triangle
         /// </summary>
-        RedDownTriangle = 90,
+        RedDownTriangle = 0x90,
 
         /// <summary>
         /// Yellow Dash
         /// </summary>
-        YellowDash = 91,
+        YellowDash = 0x91,
 
         /// <summary>
         /// Green Up Triangle
         /// </summary>
-        GreenUpTriangle = 92,
+        GreenUpTriangle = 0x92,
 
         //4Arrows
         //--------
+        // Note hexaDecimals go from 0 -> f so a0 is the equivalent of next step of "10" up.
+        // In base 10 however it is a step of 16 up.
+        // 0xa0 is 160 in decimals. 160/16 = 10.
+        // 0x100 is 256 in decimals 256/16 = 16
+        // 0x100 would skip the sets 10-15
+        // Therefore since we want to define set 10. 0xa0.
 
         /// <summary>
         /// Yellow down incline arrow
         /// </summary>
-        YellowDownInclineArrow = 0xa1,
+        YellowDownInclineArrow = 0xa0,
 
         /// <summary>
         /// Yellow up incline arrow
         /// </summary>
-        YellowUpInclineArrow = 0x101,
+        YellowUpInclineArrow = 0xa1,
 
         //4ArrowsGray
         //--------
@@ -933,12 +942,12 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Gray down incline arrow
         /// </summary>
-        GrayDownInclineArrow = 110,
+        GrayDownInclineArrow = 0xb0,
 
         /// <summary>
         /// Gray up incline arrow
         /// </summary>
-        GrayUpInclineArrow = 111,
+        GrayUpInclineArrow = 0xb1,
 
 
         //4RedToBlack
@@ -947,22 +956,22 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Black circle
         /// </summary>
-        BlackCircle = 120,
+        BlackCircle = 0xc0,
 
         /// <summary>
         /// Gray circle
         /// </summary>
-        GrayCircle = 121,
+        GrayCircle = 0xc1,
 
         /// <summary>
         /// Pink circle
         /// </summary>
-        PinkCircle = 122,
+        PinkCircle = 0xc2,
 
         /// <summary>
         /// Red circle
         /// </summary>
-        RedCircle = 123,
+        RedCircle = 0xc3,
 
         //4Rating
         //--------
@@ -970,19 +979,19 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Sigmal icon with 1 blue bar
         /// </summary>
-        SignalMeterWithOneFilledBar = 130,
+        SignalMeterWithOneFilledBar = 0xd0,
         /// <summary>
         /// Sigmal icon with 2 blue bars
         /// </summary>
-        SignalMeterWithTwoFilledBars = 131,
+        SignalMeterWithTwoFilledBars = 0xd1,
         /// <summary>
         /// Sigmal icon with 3 blue bars
         /// </summary>
-        SignalMeterWithThreeFilledBars = 132,
+        SignalMeterWithThreeFilledBars = 0xd2,
         /// <summary>
         /// Sigmal icon with 4 blue bars
         /// </summary>
-        SignalMeterWithFourFilledBars = 133,
+        SignalMeterWithFourFilledBars = 0xd3,
 
         //4TrafficLights
         //--------
@@ -990,7 +999,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Black Circle from 4TrafficLights
         /// </summary>
-        BlackCircleWithBorder = 140,
+        BlackCircleWithBorder = 0xe0,
 
         //5Arrows is only combination of previous icons
         //5ArrowsGray same thing
@@ -1002,7 +1011,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Empty Signal Meter
         /// </summary>
-        SignalMeterWithNoFilledBars = 150,
+        SignalMeterWithNoFilledBars = 0xf0,
 
         //5Quarters
         //--------
@@ -1010,19 +1019,19 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// White Circle (All White Quarters)
         /// </summary>
-        WhiteCircle = 160,
+        WhiteCircle = 0x100,
         /// <summary>
         /// Circle with three white quarters
         /// </summary>
-        CircleWithThreeWhiteQuarters = 161,
+        CircleWithThreeWhiteQuarters = 0x101,
         /// <summary>
         /// Circle with two white quarters
         /// </summary>
-        CircleWithTwoWhiteQuarters = 162,
+        CircleWithTwoWhiteQuarters = 0x102,
         /// <summary>
         /// Circle with one white quarter
         /// </summary>
-        CircleWithOneWhiteQuarter = 163,
+        CircleWithOneWhiteQuarter = 0x103,
 
         //5Boxes
         //--------
@@ -1030,34 +1039,34 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <summary>
         /// Zero filled boxes
         /// </summary>
-        ZeroFilledBoxes = 170,
+        ZeroFilledBoxes = 0x110,
 
         /// <summary>
         /// One filled box
         /// </summary>
-        OneFilledBox = 171,
+        OneFilledBox = 0x111,
 
         /// <summary>
         /// Two filled boxes
         /// </summary>
-        TwoFilledBoxes = 172,
+        TwoFilledBoxes = 0x112,
 
         /// <summary>
         /// Three filled boxes
         /// </summary>
-        ThreeFilledBoxes = 173,
+        ThreeFilledBoxes = 0x113,
 
         /// <summary>
         /// Four filled boxes
         /// </summary>
-        FourFilledBoxes = 174,
+        FourFilledBoxes = 0x114,
 
         //NoIcons
 
         /// <summary>
         /// No/Invisible Icon
         /// </summary>
-        NoIcon = 175
+        NoIcon = 0x120
     }
 
 }

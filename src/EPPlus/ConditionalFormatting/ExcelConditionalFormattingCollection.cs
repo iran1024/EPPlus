@@ -291,7 +291,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             //identify ExtLst cfRules
             foreach(var cfRule in _rules)
             {
-                if(cfRule.isExtLst)
+                if(cfRule.IsExtLst)
                 {
                     if (cfRule.Type == eExcelConditionalFormattingRuleType.DataBar)
                     {
@@ -326,7 +326,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             //identify ExtLst cfRules
             foreach (var cfRule in _rules)
             {
-                if (cfRule.isExtLst)
+                if (cfRule.IsExtLst)
                 {
                     if (cfRule.Type == eExcelConditionalFormattingRuleType.DataBar)
                     {

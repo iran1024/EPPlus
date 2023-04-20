@@ -131,22 +131,27 @@ namespace OfficeOpenXml.ConditionalFormatting
             xr.Read();
         }
 
-        readonly Dictionary<int, string> _iconStringDictionary = new Dictionary<int, string>
+        readonly Dictionary<int, string> _iconStringSetDictionary = new Dictionary<int, string>
             {
-             { 0, "3Arrows" },  
-             { 1, "3ArrowsGray" },
-             { 2, "3Flags" },
-             { 3, "3TrafficLights1" } ,
-             { 4, "3TrafficLights2" },
-             { 5, "3Triangles" },
-             { 6, "3Symbols" },
-             { 7, "3Symbols2" },
-             { 8, "3Stars" },
-             { 9, "3Triangles"},
-
-
-
-
+             { 0,  "3Arrows" },  
+             { 1,  "3ArrowsGray" },
+             { 2,  "3Flags" },
+             { 3,  "3TrafficLights1" } ,
+             { 4,  "3TrafficLights2" },
+             { 5,  "3Signs" },
+             { 6,  "3Symbols" },
+             { 7,  "3Symbols2" },
+             { 8,  "3Stars" },
+             { 9,  "3Triangles" },
+             { 10, "4Arrows" },
+             { 11, "4ArrowsGray" },
+             { 12, "4RedToBlack" },
+             { 13, "4Rating" },
+             { 14, "4TrafficLights" },
+             { 15, "5Rating" },
+             { 16, "5Quarters" },
+             { 17, "5Boxes" },
+             { 18, "NoIcons"},
             };
 
         //<KeyValuePair<Func<int, bool>, Action>>
@@ -163,36 +168,23 @@ namespace OfficeOpenXml.ConditionalFormatting
             {
                 int customIconId = (int)icon.CustomIcon;
 
-                icon.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowTriangle;
-
                 var iconSetId = customIconId >> 4;
 
-                var iconId = customIconId & 0xf;
-
-                //var iconId2 = (int)icon.CustomIcon << 4;
-
-
-                //return _iconStringDictionary.First(stringSwitch => stringSwitch.Key(value)).Value;
-                //switch (value) 
-                //{
-                //    case value < 10:
-
-                //        break;
-                //}
+                return _iconStringSetDictionary[iconSetId];
             }
 
-            return string.Empty;
+            throw new NotImplementedException($"Cannot get custom icon {icon} of {this} ");
         }
 
-        //internal int GetCustomIconIndex(ExcelConditionalFormattingIconDataBarValue icon)
-        //{
-        //    if (icon.customIcon != null)
-        //    {
-        //        return (int)icon.customIcon % 10;
-        //    }
+        internal int GetCustomIconIndex(ExcelConditionalFormattingIconDataBarValue icon)
+        {
+            if (icon.CustomIcon != null)
+            {
+                return (int)icon.CustomIcon & 0xf;
+            }
 
-        //    return -1;
-        //}
+            return -1;
+        }
 
         /// <summary>
         /// Settings for icon 1 in the iconset
@@ -238,6 +230,22 @@ namespace OfficeOpenXml.ConditionalFormatting
             set;
         }
 
+
+        internal override bool IsExtLst
+        {
+            get
+            {
+                if (GetIconSetString() == "3Stars" ||
+                    GetIconSetString() == "3Triangles" ||
+                    GetIconSetString() == "5Boxes")
+                {
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
         public T _iconSet;
 
         public T IconSet
@@ -251,12 +259,6 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
             set
             {
-                if(GetIconSetString(value) == "3Stars" ||
-                   GetIconSetString(value) == "3Triangles" ||
-                   GetIconSetString(value) == "5Boxes")
-                {
-                    isExtIconSet = true;
-                }
                 _iconSet = value;
             }
         }
