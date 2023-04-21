@@ -38,18 +38,70 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         internal ExcelConditionalFormattingIconDataBarValue(
             eExcelConditionalFormattingValueObjectType valueType,
-            eExcelConditionalFormattingRuleType ruleType, 
-            ExcelConditionalFormattingRule rule)
+            eExcelConditionalFormattingRuleType ruleType)
         {
             RuleType = ruleType;
             Type = valueType;
-            _rule ) 
         }
 
         /// <summary>
         /// If not custom is null. If user assigns to it holds icon value.
         /// </summary>
         public eExcelconditionalFormattingCustomIcon? CustomIcon { get; set; } = null;
+
+        readonly Dictionary<int, string> _iconStringSetDictionary = new Dictionary<int, string>
+            {
+             { 0,  "3Arrows" },
+             { 1,  "3ArrowsGray" },
+             { 2,  "3Flags" },
+             { 3,  "3TrafficLights1" } ,
+             { 4,  "3TrafficLights2" },
+             { 5,  "3Signs" },
+             { 6,  "3Symbols" },
+             { 7,  "3Symbols2" },
+             { 8,  "3Stars" },
+             { 9,  "3Triangles" },
+             { 10, "4Arrows" },
+             { 11, "4ArrowsGray" },
+             { 12, "4RedToBlack" },
+             { 13, "4Rating" },
+             { 14, "4TrafficLights" },
+             { 15, "5Rating" },
+             { 16, "5Quarters" },
+             { 17, "5Boxes" },
+             { 18, "NoIcons"},
+            };
+
+        internal void SetCustomIconStringAndId(string set, int id)
+        {
+            int myKey = _iconStringSetDictionary.FirstOrDefault(x => x.Value == set).Key << 4;
+            myKey += id;
+            CustomIcon = (eExcelconditionalFormattingCustomIcon)myKey;
+        }
+
+        internal virtual string GetCustomIconStringValue()
+        {
+            if (CustomIcon != null)
+            {
+                int customIconId = (int)CustomIcon;
+
+                var iconSetId = customIconId >> 4;
+
+                return _iconStringSetDictionary[iconSetId];
+            }
+
+            throw new NotImplementedException($"Cannot get custom icon {CustomIcon} of {this} ");
+        }
+
+        internal int GetCustomIconIndex()
+        {
+            if (CustomIcon != null)
+            {
+                return (int)CustomIcon & 0xf;
+            }
+
+            return -1;
+        }
 
         /// <summary>
         /// Rule type

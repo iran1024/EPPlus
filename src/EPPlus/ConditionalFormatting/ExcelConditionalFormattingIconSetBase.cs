@@ -64,19 +64,17 @@ namespace OfficeOpenXml.ConditionalFormatting
                 symbolCount = 5;
             }
 
-            Icon1 = CreateIcon(address, worksheet, 0, type);
-            Icon2 = CreateIcon(address, worksheet, Math.Round(100D / symbolCount, 0), type);
-            Icon3 = CreateIcon(address, worksheet, Math.Round(100D * (2D / symbolCount), 0), type);
+            Icon1 = CreateIcon(0, type);
+            Icon2 = CreateIcon(Math.Round(100D / symbolCount, 0), type);
+            Icon3 = CreateIcon(Math.Round(100D * (2D / symbolCount), 0), type);
         }
 
-        protected ExcelConditionalFormattingIconDataBarValue CreateIcon(ExcelAddress address, ExcelWorksheet worksheet, double value, eExcelConditionalFormattingRuleType type)
+        protected ExcelConditionalFormattingIconDataBarValue CreateIcon(double value, eExcelConditionalFormattingRuleType type)
         {
             var icon = new ExcelConditionalFormattingIconDataBarValue
                 (
                 eExcelConditionalFormattingValueObjectType.Percent,
-                type,
-                address,
-                worksheet
+                type
                 );
 
             icon.Value = value;
@@ -112,9 +110,9 @@ namespace OfficeOpenXml.ConditionalFormatting
                 symbolCount = 5;
             }
 
-            Icon1 = CreateIcon(address, worksheet, 0, type);
-            Icon2 = CreateIcon(address, worksheet, Math.Round(100D / symbolCount, 0), type);
-            Icon3 = CreateIcon(address, worksheet, Math.Round(100D * (2D / symbolCount), 0), type);
+            Icon1 = CreateIcon(0, type);
+            Icon2 = CreateIcon(Math.Round(100D / symbolCount, 0), type);
+            Icon3 = CreateIcon(Math.Round(100D * (2D / symbolCount), 0), type);
 
             xr.Read();
             Icon1.Type = xr.GetAttribute("type").CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
@@ -129,61 +127,6 @@ namespace OfficeOpenXml.ConditionalFormatting
             Icon3.Value = double.Parse(xr.GetAttribute("val"));
 
             xr.Read();
-        }
-
-        readonly Dictionary<int, string> _iconStringSetDictionary = new Dictionary<int, string>
-            {
-             { 0,  "3Arrows" },  
-             { 1,  "3ArrowsGray" },
-             { 2,  "3Flags" },
-             { 3,  "3TrafficLights1" } ,
-             { 4,  "3TrafficLights2" },
-             { 5,  "3Signs" },
-             { 6,  "3Symbols" },
-             { 7,  "3Symbols2" },
-             { 8,  "3Stars" },
-             { 9,  "3Triangles" },
-             { 10, "4Arrows" },
-             { 11, "4ArrowsGray" },
-             { 12, "4RedToBlack" },
-             { 13, "4Rating" },
-             { 14, "4TrafficLights" },
-             { 15, "5Rating" },
-             { 16, "5Quarters" },
-             { 17, "5Boxes" },
-             { 18, "NoIcons"},
-            };
-
-        //<KeyValuePair<Func<int, bool>, Action>>
-
-        //readonly List<KeyValuePair<Func<int, bool>, string>> CustomIconNames = new List<KeyValuePair<Func<int, bool>, string>>
-        //{
-        //    {new KeyValuePair< x < 10, "3Arrows">>},
-
-        //};
-
-        internal virtual string GetCustomIconStringValue(ExcelConditionalFormattingIconDataBarValue icon)
-        {
-            if (icon.CustomIcon != null)
-            {
-                int customIconId = (int)icon.CustomIcon;
-
-                var iconSetId = customIconId >> 4;
-
-                return _iconStringSetDictionary[iconSetId];
-            }
-
-            throw new NotImplementedException($"Cannot get custom icon {icon} of {this} ");
-        }
-
-        internal int GetCustomIconIndex(ExcelConditionalFormattingIconDataBarValue icon)
-        {
-            if (icon.CustomIcon != null)
-            {
-                return (int)icon.CustomIcon & 0xf;
-            }
-
-            return -1;
         }
 
         /// <summary>
@@ -246,21 +189,10 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
         }
 
-        public T _iconSet;
-
         public T IconSet
         {
-            get
-            {
-                ////var v = GetXmlNodeString(_iconSetPath);
-                ////v = v.Substring(1); //Skip first icon.
-                //return (T)Enum.Parse(typeof(T), v, true);
-                return _iconSet;
-            }
-            set
-            {
-                _iconSet = value;
-            }
+            get;
+            set;
         }
 
         internal string GetIconSetString()

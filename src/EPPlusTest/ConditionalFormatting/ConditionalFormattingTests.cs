@@ -446,6 +446,57 @@ namespace EPPlusTest.ConditionalFormatting
         }
 
         [TestMethod]
+        public void CustomIconsWriteRead()
+        {
+
+            using (var pck = new ExcelPackage())
+            {
+                var wks = pck.Workbook.Worksheets.Add("FormattingTest");
+
+                var threeIcon = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress("A1"), eExcelconditionalFormatting3IconsSetType.Triangles);
+
+                threeIcon.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.RedFlag;
+                threeIcon.Icon2.CustomIcon = eExcelconditionalFormattingCustomIcon.NoIcon;
+                threeIcon.Icon3.CustomIcon = eExcelconditionalFormattingCustomIcon.GrayDownInclineArrow;
+
+                var fourIcon = wks.ConditionalFormatting.AddFourIconSet(new ExcelAddress("A2"), eExcelconditionalFormatting4IconsSetType.Rating);
+
+                fourIcon.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.PinkCircle;
+                fourIcon.Icon2.CustomIcon = eExcelconditionalFormattingCustomIcon.BlackCircleWithBorder;
+                fourIcon.Icon3.CustomIcon = eExcelconditionalFormattingCustomIcon.RedCircleWithBorder;
+                fourIcon.Icon4.CustomIcon = eExcelconditionalFormattingCustomIcon.BlackCircle;
+
+                var fiveIcon = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress("B1"), eExcelconditionalFormatting5IconsSetType.Boxes);
+
+                fiveIcon.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.PinkCircle;
+                fiveIcon.Icon2.CustomIcon = eExcelconditionalFormattingCustomIcon.BlackCircleWithBorder;
+                fiveIcon.Icon3.CustomIcon = eExcelconditionalFormattingCustomIcon.RedCircleWithBorder;
+                fiveIcon.Icon4.CustomIcon = eExcelconditionalFormattingCustomIcon.BlackCircle;
+                fiveIcon.Icon5.CustomIcon = eExcelconditionalFormattingCustomIcon.RedCircle;
+
+                var specialCase = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress("B1"), eExcelconditionalFormatting5IconsSetType.Boxes);
+
+                specialCase.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.SignalMeterWithNoFilledBars;
+                specialCase.Icon2.CustomIcon = eExcelconditionalFormattingCustomIcon.SignalMeterWithOneFilledBar;
+                specialCase.Icon3.CustomIcon = eExcelconditionalFormattingCustomIcon.SignalMeterWithTwoFilledBars;
+                specialCase.Icon4.CustomIcon = eExcelconditionalFormattingCustomIcon.SignalMeterWithThreeFilledBars;
+                specialCase.Icon5.CustomIcon = eExcelconditionalFormattingCustomIcon.SignalMeterWithFourFilledBars;
+
+
+                MemoryStream stream = new MemoryStream();
+                pck.SaveAs(stream);
+
+                ExcelPackage package2 = new ExcelPackage(stream);
+
+                var threeIconRead = (ExcelConditionalFormattingThreeIconSet)package2.Workbook.Worksheets[0].ConditionalFormatting[0];
+
+                Assert.AreEqual(threeIconRead.Icon1.CustomIcon, eExcelconditionalFormattingCustomIcon.RedFlag);
+
+                package2.SaveAs("C:/epplusTest/Workbooks/FlagTest.xlsx");
+            }
+        }
+
+        [TestMethod]
         public void EnsureCustomIconsReturnCorrectStrings()
         {
             using (var pck = new ExcelPackage())
@@ -456,67 +507,67 @@ namespace EPPlusTest.ConditionalFormatting
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowSideArrow;
 
-                Assert.AreEqual("3Arrows",validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("3Arrows",validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon2.CustomIcon = eExcelconditionalFormattingCustomIcon.GrayUpArrow;
 
-                Assert.AreEqual("3ArrowsGray", validation.GetCustomIconStringValue(validation.Icon2));
+                Assert.AreEqual("3ArrowsGray", validation.Icon2.GetCustomIconStringValue());
 
                 validation.Icon3.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowFlag;
-                Assert.AreEqual("3Flags", validation.GetCustomIconStringValue(validation.Icon3));
+                Assert.AreEqual("3Flags", validation.Icon3.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.GreenCircle;
-                Assert.AreEqual("3TrafficLights1", validation.GetCustomIconStringValue(validation.Icon1));
+
+                Assert.AreEqual("3TrafficLights1", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon2.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowTrafficLight;
-                Assert.AreEqual("3TrafficLights2", validation.GetCustomIconStringValue(validation.Icon2));
+                Assert.AreEqual("3TrafficLights2", validation.Icon2.GetCustomIconStringValue());
 
                 validation.Icon3.CustomIcon = eExcelconditionalFormattingCustomIcon.RedDiamond;
-                Assert.AreEqual("3Signs", validation.GetCustomIconStringValue(validation.Icon3));
+                Assert.AreEqual("3Signs", validation.Icon3.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowExclamationSymbol;
-                Assert.AreEqual("3Symbols", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("3Symbols", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.GreenCheck;
-                Assert.AreEqual("3Symbols2", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("3Symbols2", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.HalfGoldStar;
-                Assert.AreEqual("3Stars", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("3Stars", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowDash;
-                Assert.AreEqual("3Triangles", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("3Triangles", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowDash;
-                Assert.AreEqual("3Triangles", validation.GetCustomIconStringValue(validation.Icon1));
-
+                Assert.AreEqual("3Triangles", validation.Icon1.GetCustomIconStringValue());
+                    
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowDash;
-                Assert.AreEqual("3Triangles", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("3Triangles", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.YellowDownInclineArrow;
-                Assert.AreEqual("4Arrows", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("4Arrows", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.PinkCircle;
-                Assert.AreEqual("4RedToBlack", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("4RedToBlack", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.SignalMeterWithThreeFilledBars;
-                Assert.AreEqual("4Rating", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("4Rating", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.BlackCircleWithBorder;
-                Assert.AreEqual("4TrafficLights", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("4TrafficLights", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.SignalMeterWithNoFilledBars;
-                Assert.AreEqual("5Rating", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("5Rating", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.CircleWithThreeWhiteQuarters;
-                Assert.AreEqual("5Quarters", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("5Quarters", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.OneFilledBox;
-                Assert.AreEqual("5Boxes", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("5Boxes", validation.Icon1.GetCustomIconStringValue());
 
                 validation.Icon1.CustomIcon = eExcelconditionalFormattingCustomIcon.NoIcon;
-                Assert.AreEqual("NoIcons", validation.GetCustomIconStringValue(validation.Icon1));
+                Assert.AreEqual("NoIcons", validation.Icon1.GetCustomIconStringValue());
             }
-
         }
 
         static string[] numbers = new string[] 

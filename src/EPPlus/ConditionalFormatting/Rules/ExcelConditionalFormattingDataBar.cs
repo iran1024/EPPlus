@@ -18,8 +18,8 @@ namespace OfficeOpenXml.ConditionalFormatting
          ExcelWorksheet ws)
         : base(eExcelConditionalFormattingRuleType.DataBar, address, priority, ws)
         {
-            HighValue = new ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType.Max, eExcelConditionalFormattingRuleType.DataBar, address, ws);
-            LowValue = new ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType.Min, eExcelConditionalFormattingRuleType.DataBar, address, ws);
+            HighValue = new ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType.Max, eExcelConditionalFormattingRuleType.DataBar);
+            LowValue = new ExcelConditionalFormattingIconDataBarValue(eExcelConditionalFormattingValueObjectType.Min, eExcelConditionalFormattingRuleType.DataBar);
 
             Uid = NewId();
 
@@ -38,7 +38,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             xr.Read();
             var highType = xr.GetAttribute("type").CapitalizeFirstLetter()
                 .ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
-            HighValue = new ExcelConditionalFormattingIconDataBarValue(highType, eExcelConditionalFormattingRuleType.DataBar, address, ws);
+            HighValue = new ExcelConditionalFormattingIconDataBarValue(highType, eExcelConditionalFormattingRuleType.DataBar);
 
             if(!string.IsNullOrEmpty(xr.GetAttribute("val")))
             {
@@ -48,7 +48,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             xr.Read();
             var lowType = xr.GetAttribute("type").CapitalizeFirstLetter()
                     .ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
-            LowValue = new ExcelConditionalFormattingIconDataBarValue(lowType, eExcelConditionalFormattingRuleType.DataBar, address, ws);
+            LowValue = new ExcelConditionalFormattingIconDataBarValue(lowType, eExcelConditionalFormattingRuleType.DataBar);
 
             if (!string.IsNullOrEmpty(xr.GetAttribute("val")))
             {

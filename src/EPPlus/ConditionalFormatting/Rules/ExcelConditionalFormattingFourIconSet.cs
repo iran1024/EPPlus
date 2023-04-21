@@ -23,7 +23,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
               priority,
               worksheet)
         {
-            Icon4 = CreateIcon(address, worksheet, 75, eExcelConditionalFormattingRuleType.FourIconSet);
+            Icon4 = CreateIcon(75, eExcelConditionalFormattingRuleType.FourIconSet);
         }
 
         internal ExcelConditionalFormattingFourIconSet(
@@ -38,7 +38,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
             xr,
             rule)
         {
-            Icon4 = CreateIcon(address, worksheet, 75, eExcelConditionalFormattingRuleType.FourIconSet);
+            Icon4 = CreateIcon(75, eExcelConditionalFormattingRuleType.FourIconSet);
             
             Icon4.Type = xr.GetAttribute("type").CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
             Icon4.Value = double.Parse(xr.GetAttribute("val"));
@@ -54,6 +54,22 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
         {
             get;
             internal set;
+        }
+
+        internal override bool IsExtLst
+        {
+            get
+            {
+                if (Icon1.CustomIcon != null ||
+                    Icon2.CustomIcon != null ||
+                    Icon3.CustomIcon != null ||
+                    Icon4.CustomIcon != null)
+                {
+                    return true;
+                }
+
+                return base.IsExtLst;
+            }
         }
     }
 }

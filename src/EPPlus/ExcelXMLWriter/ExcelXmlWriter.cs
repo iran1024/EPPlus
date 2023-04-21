@@ -1140,7 +1140,21 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                         if (isCustom)
                         {
+                            for (int i = 0; i < iconList.Count; i++)
+                            {
+                                string iconType = iconList[i].CustomIcon == null ? iconSetString : iconList[i].GetCustomIconStringValue();
+                                int iconIndex = iconList[i].CustomIcon == null ? i : iconList[i].GetCustomIconIndex();
+                                cache.Append($"<{prefix}cfIcon iconSet=\"{iconType}\" iconId=\"{iconIndex}\"/>");
+                            }
 
+                            //  int indexCounter = 0;
+                            //    for (int i = iconList.Count -1; i >= 0; i--) 
+                            //{
+                            //    string iconType = iconList[i].CustomIcon == null ? iconSetString : iconList[i].GetCustomIconStringValue();
+                            //    int iconIndex = iconList[i].CustomIcon == null ? indexCounter : iconList[i].GetCustomIconIndex();
+                            //    cache.Append($"<{prefix}cfIcon iconSet=\"{iconType}\" iconId=\"{iconIndex}\"/>");
+                            //    indexCounter++;
+                            //}
                         }
 
                         cache.Append($"</{prefix}iconSet>");

@@ -23,8 +23,8 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
               priority,
               worksheet)
         {
-            Icon4 = CreateIcon(address, worksheet, 60, eExcelConditionalFormattingRuleType.FiveIconSet);
-            Icon5 = CreateIcon(address, worksheet, 80, eExcelConditionalFormattingRuleType.FiveIconSet);
+            Icon4 = CreateIcon(60, eExcelConditionalFormattingRuleType.FiveIconSet);
+            Icon5 = CreateIcon(80, eExcelConditionalFormattingRuleType.FiveIconSet);
         }
 
         internal ExcelConditionalFormattingFiveIconSet(
@@ -39,8 +39,8 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
             xr,
             rule)
         {
-            Icon4 = CreateIcon(address, worksheet, 60, eExcelConditionalFormattingRuleType.FiveIconSet);
-            Icon5 = CreateIcon(address, worksheet, 80, eExcelConditionalFormattingRuleType.FiveIconSet);
+            Icon4 = CreateIcon(60, eExcelConditionalFormattingRuleType.FiveIconSet);
+            Icon5 = CreateIcon(80, eExcelConditionalFormattingRuleType.FiveIconSet);
 
             Icon4.Type = xr.GetAttribute("type").CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
             Icon4.Value = double.Parse(xr.GetAttribute("val"));
