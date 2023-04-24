@@ -68,7 +68,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
         }
 
-        public string Text = null;
+        internal string Text = null;
 
         private ExcelWorksheet _ws;
 

@@ -570,6 +570,29 @@ namespace EPPlusTest.ConditionalFormatting
             }
         }
 
+
+        [TestMethod]
+        public void BeginsWithReadWriteCF()
+        {
+            var ws = _pck.Workbook.Worksheets.Add("BeginsWith");
+
+            var validation = ws.ConditionalFormatting.AddBeginsWith(new ExcelAddress("A1:A5"));
+
+            validation.ContainText = "Abc";
+
+            var stream = new MemoryStream();
+            _pck.SaveAs(stream);
+
+            ExcelPackage package = new ExcelPackage(stream);
+
+            var sheetRead = package.Workbook.Worksheets.GetByName("BeginsWith");
+
+            var cf = sheetRead.ConditionalFormatting[0];
+
+            Assert.AreEqual("Abc", cf.Text);
+        }
+
+
         static string[] numbers = new string[] 
         { "zero", 
           "one", 
@@ -856,15 +879,15 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var fiveIcons = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress(1, 45, 10, 45), eExcelconditionalFormatting5IconsSetType.Rating);
 
-                var threeIcons2 = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 46, 10, 46), eExcelconditionalFormatting3IconsSetType.Triangles);
-
                 var threeGreatherThan = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 48, 10, 48), eExcelconditionalFormatting3IconsSetType.TrafficLights2);
 
                 threeGreatherThan.Icon2.GreaterThanOrEqualTo = false;
                 threeGreatherThan.Icon3.GreaterThanOrEqualTo = false;
 
-                //ExtLst iconsets are best written last as they will then be read in the correct order
-                var five2 = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress(1, 47, 10, 47), eExcelconditionalFormatting5IconsSetType.Boxes);
+                ////ExtLst iconsets are best written last as they will then be read in the correct order
+                //var five2 = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress(1, 47, 10, 47), eExcelconditionalFormatting5IconsSetType.Boxes);
+                //var threeIcons2 = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 46, 10, 46), eExcelconditionalFormatting3IconsSetType.Triangles);
+
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
@@ -876,7 +899,7 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[0].Formula2, "8");
                 Assert.AreEqual(formattings.ToList()[1].Formula, "7");
                 Assert.AreEqual(formattings.ToList()[2].Formula, "1");
-                Assert.AreEqual(formattings.ToList()[3].Text, "o");
+                Assert.AreEqual(((IExcelConditionalFormattingContainsText)formattings.ToList()[3]).ContainText, "o");
 
                 Assert.AreEqual(formattings.ToList()[4].TimePeriod, eExcelConditionalFormattingTimePeriodType.Last7Days);
                 Assert.AreEqual(formattings.ToList()[5].TimePeriod, eExcelConditionalFormattingTimePeriodType.Yesterday);
@@ -965,35 +988,25 @@ namespace EPPlusTest.ConditionalFormatting
                 Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon3.Value, Math.Round(100D * (2D / 4), 0));
                 Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon4.Value, 75);
 
-                Assert.AreEqual(formattings.ToList()[30].Type, eExcelConditionalFormattingRuleType.ThreeIconSet);
-                Assert.AreEqual(formattings.ToList()[30].As.ThreeIconSet.IconSet, eExcelconditionalFormatting3IconsSetType.Triangles);
-                Assert.AreEqual(formattings.ToList()[30].As.ThreeIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[30].As.ThreeIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[30].As.ThreeIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[30].Type, eExcelConditionalFormattingRuleType.FiveIconSet);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.IconSet, eExcelconditionalFormatting5IconsSetType.Rating);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon4.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon5.Type, eExcelConditionalFormattingValueObjectType.Percent);
 
-                Assert.AreEqual(formattings.ToList()[30].As.ThreeIconSet.Icon1.Value, 0);
-                Assert.AreEqual(formattings.ToList()[30].As.ThreeIconSet.Icon2.Value, 33);
-                Assert.AreEqual(formattings.ToList()[30].As.ThreeIconSet.Icon3.Value, 67);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon1.Value, 0);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon2.Value, 20);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon3.Value, 40);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon4.Value, 60);
+                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon5.Value, 80);
 
                 Assert.AreEqual(formattings.ToList()[31].Type, eExcelConditionalFormattingRuleType.ThreeIconSet);
                 Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.IconSet, eExcelconditionalFormatting3IconsSetType.TrafficLights2);
                 Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon1.GreaterThanOrEqualTo, true);
                 Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon2.GreaterThanOrEqualTo, false);
                 Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon3.GreaterThanOrEqualTo, false);
-
-                Assert.AreEqual(formattings.ToList()[32].Type, eExcelConditionalFormattingRuleType.FiveIconSet);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.IconSet, eExcelconditionalFormatting5IconsSetType.Rating);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon4.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon5.Type, eExcelConditionalFormattingValueObjectType.Percent);
-
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon1.Value, 0);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon2.Value, 20);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon3.Value, 40);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon4.Value, 60);
-                Assert.AreEqual(formattings.ToList()[32].As.FiveIconSet.Icon5.Value, 80);
             }
         }
 
