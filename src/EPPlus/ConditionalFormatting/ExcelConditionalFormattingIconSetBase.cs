@@ -122,9 +122,18 @@ namespace OfficeOpenXml.ConditionalFormatting
             Icon2.Type = xr.GetAttribute("type").CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
             Icon2.Value = double.Parse(xr.GetAttribute("val"));
 
+            if (!string.IsNullOrEmpty(xr.GetAttribute("gte")))
+            {
+                Icon2.GreaterThanOrEqualTo = int.Parse(xr.GetAttribute("gte")) != 0;
+            }
+
             xr.Read();
             Icon3.Type = xr.GetAttribute("type").CapitalizeFirstLetter().ConvertToEnum<eExcelConditionalFormattingValueObjectType>();
             Icon3.Value = double.Parse(xr.GetAttribute("val"));
+            if (!string.IsNullOrEmpty(xr.GetAttribute("gte")))
+            {
+                Icon3.GreaterThanOrEqualTo = int.Parse(xr.GetAttribute("gte")) != 0;
+            }
 
             xr.Read();
         }

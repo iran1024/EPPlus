@@ -136,9 +136,10 @@ namespace OfficeOpenXml.ConditionalFormatting
         }
 
         /// <summary>
-        /// Greater Than Or Equal 
+        /// Greater Than Or Equal To
+        /// Set to false to only apply an icon when greaterThan
         /// </summary>
-        public bool GreaterThanOrEqualTo { get; set; }
+        public bool GreaterThanOrEqualTo { get; set; } = true;
 
         private double? _value = double.NaN;
 

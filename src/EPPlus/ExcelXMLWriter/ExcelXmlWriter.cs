@@ -1133,7 +1133,14 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                         foreach(var icon in iconList) 
                         {
-                            cache.Append($"<{prefix}cfvo type=\"{icon.Type.ToString().UnCapitalizeFirstLetter()}\">");
+                            cache.Append($"<{prefix}cfvo type=\"{icon.Type.ToString().UnCapitalizeFirstLetter()}\"");
+                            
+                            if(icon.GreaterThanOrEqualTo == false && icon != iconList[0])
+                            {
+                                cache.Append(" gte=\"0\"");
+                            }
+
+                            cache.Append(">");
                             cache.Append($"<xm:f>{icon.Value}</xm:f>");
                             cache.Append($"</{prefix}cfvo>");
                         }
@@ -1172,7 +1179,7 @@ namespace OfficeOpenXml.ExcelXMLWriter
             return cache.ToString();
         }
 
-        private string WriteCfIcon(ExcelConditionalFormattingIconDataBarValue icon)
+        private string WriteCfIcon(ExcelConditionalFormattingIconDataBarValue icon, bool gteCheck = true)
         {
             StringBuilder cache= new StringBuilder();
 
@@ -1180,8 +1187,14 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
             if (icon.Value != double.NaN)
             {
-                cache.Append($"val=\"{icon.Value}\"");
+                cache.Append($"val=\"{icon.Value}\" ");
             }
+
+            if(icon.GreaterThanOrEqualTo == false && gteCheck == true)
+            {
+                cache.Append("gte=\"0\"");
+            }
+
             cache.Append("/>");
 
             return cache.ToString();
@@ -1332,7 +1345,15 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
                     for (int i = 0; i < iconList.Count; i++)
                     {
-                        cache.Append(WriteCfIcon(iconList[i]));
+                        if(i== 0)
+                        {
+                            cache.Append(WriteCfIcon(iconList[i], false));
+
+                        }
+                        else
+                        {
+                            cache.Append(WriteCfIcon(iconList[i]));
+                        }
                     }
 
                     cache.Append($"</iconSet>");
