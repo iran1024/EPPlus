@@ -1,6 +1,7 @@
 ﻿
 using System.Xml;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
 using OfficeOpenXml.Utils;
 
 namespace OfficeOpenXml.ConditionalFormatting
@@ -52,6 +53,20 @@ namespace OfficeOpenXml.ConditionalFormatting
                   Address.Start.Address,
                   value.Replace("\"", "\"\""));
             }
+        }
+
+        void UpdateFormula()
+        {
+            Formula = string.Format(
+              "NOT(ISERROR(SEARCH(\"{1}\",{0})))",
+              Address.Start.Address,
+              Text);
+        }
+
+        public override ExcelAddress Address
+        {
+            get { return base.Address; }
+            set { base.Address = value; UpdateFormula(); }
         }
     }
 }

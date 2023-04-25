@@ -59,6 +59,12 @@ namespace OfficeOpenXml.ConditionalFormatting
                        priority,
                        worksheet);
 
+                case eExcelConditionalFormattingRuleType.ContainsBlanks:
+                    return new ExcelConditionalFormattingContainsBlanks(
+                       address,
+                       priority,
+                       worksheet);
+
                 case eExcelConditionalFormattingRuleType.Yesterday:
                     return new ExcelConditionalFormattingYesterday(
                         address,
@@ -301,6 +307,9 @@ namespace OfficeOpenXml.ConditionalFormatting
 
                 case eExcelConditionalFormattingRuleType.BeginsWith:
                     return new ExcelConditionalFormattingBeginsWith(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.ContainsBlanks:
+                    return new ExcelConditionalFormattingContainsBlanks(address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.Yesterday:
                     return new ExcelConditionalFormattingYesterday(address, ws, xr);

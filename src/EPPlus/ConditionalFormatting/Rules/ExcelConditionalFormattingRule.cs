@@ -13,7 +13,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         public XmlNode Node { get; }
 
         public eExcelConditionalFormattingRuleType Type { get; set; }
-        public ExcelAddress Address { get; set; }
+        public virtual ExcelAddress Address { get; set; }
         public int Priority { get; set; } = 1;
         public bool StopIfTrue { get; set; }
         public bool PivotTable { get; set; }

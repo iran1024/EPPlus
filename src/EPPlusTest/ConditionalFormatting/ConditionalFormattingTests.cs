@@ -49,6 +49,7 @@ namespace EPPlusTest.ConditionalFormatting
     public class ConditionalFormattingTests : TestBase
     {
         private static ExcelPackage _pck;
+
         [ClassInitialize()]
         public static void Init(TestContext testContext)
         {
@@ -56,7 +57,7 @@ namespace EPPlusTest.ConditionalFormatting
         }
         // Use ClassCleanup to run code after all tests in a class have run
         [ClassCleanup()]
-        public static void MyClassCleanup()
+        public static void CleanUp()
         {
             SaveAndCleanup(_pck);
         }
@@ -590,7 +591,34 @@ namespace EPPlusTest.ConditionalFormatting
             var cf = sheetRead.ConditionalFormatting[0];
 
             Assert.AreEqual("Abc", cf.Text);
+
+            package.SaveAs("C:/epplusTest/Workbooks/beginsWith.xlsx");
         }
+
+        [TestMethod]
+        public void ContainsBlanksReadWriteCF()
+        {
+            _pck.Workbook.Worksheets.Add("ContainsBlanks").
+                ConditionalFormatting.AddContainsBlanks(new ExcelAddress("A1:A5"));
+
+            var pck = new ExcelPackage();
+
+            var ws = pck.Workbook.Worksheets.Add("ContainsBlanks");
+            ws.ConditionalFormatting.AddContainsBlanks(new ExcelAddress("A1:A5"));
+
+            var stream = new MemoryStream();
+            pck.SaveAs(stream);
+
+            ExcelPackage package = new ExcelPackage(stream);
+
+            var sheetRead = package.Workbook.Worksheets.GetByName("ContainsBlanks");
+
+            var cf = sheetRead.ConditionalFormatting[0];
+
+            var stream2 = new MemoryStream();
+            package.SaveAs(stream2);
+        }
+
 
 
         static string[] numbers = new string[] 
