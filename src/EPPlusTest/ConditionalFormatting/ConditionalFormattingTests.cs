@@ -571,7 +571,6 @@ namespace EPPlusTest.ConditionalFormatting
             }
         }
 
-
         [TestMethod]
         public void BeginsWithReadWriteCF()
         {
@@ -596,6 +595,37 @@ namespace EPPlusTest.ConditionalFormatting
         }
 
         [TestMethod]
+        public void EndsWithReadWriteCF()
+        {
+            var wsName = "EndsWith";
+            var origWS = _pck.Workbook.Worksheets.Add(wsName);
+            var origCF = origWS.ConditionalFormatting.AddEndsWith(new ExcelAddress("A1:A5"));
+
+            origCF.ContainText = "er";
+
+            ExcelPackage package = new ExcelPackage();
+
+            var ws = package.Workbook.Worksheets.Add(wsName);
+
+            var cf = ws.ConditionalFormatting.AddEndsWith(new ExcelAddress("A1:A5"));
+
+            cf.ContainText = "er";
+
+            var stream = new MemoryStream();
+            package.SaveAs(stream);
+
+            ExcelPackage package2 = new ExcelPackage(stream);
+
+            var cf2 = package.Workbook.Worksheets[0].ConditionalFormatting[0];
+
+            Assert.AreEqual(cf.ContainText, cf2.Text);
+            Assert.AreEqual(cf2.Type, eExcelConditionalFormattingRuleType.EndsWith);
+
+            var stream2 = new MemoryStream();
+            package2.SaveAs(stream2);
+        }
+
+        [TestMethod]
         public void ContainsBlanksReadWriteCF()
         {
             _pck.Workbook.Worksheets.Add("ContainsBlanks").
@@ -614,6 +644,35 @@ namespace EPPlusTest.ConditionalFormatting
             var sheetRead = package.Workbook.Worksheets.GetByName("ContainsBlanks");
 
             var cf = sheetRead.ConditionalFormatting[0];
+
+            Assert.AreEqual(eExcelConditionalFormattingRuleType.ContainsBlanks, cf.Type);
+
+            var stream2 = new MemoryStream();
+            package.SaveAs(stream2);
+        }
+
+        [TestMethod]
+        public void ContainsErrorsReadWriteCF()
+        {
+            var wsName = "ContainsErrors";
+            _pck.Workbook.Worksheets.Add(wsName).
+                ConditionalFormatting.AddContainsErrors(new ExcelAddress("A1:A5"));
+
+            var pck = new ExcelPackage();
+
+            var ws = pck.Workbook.Worksheets.Add(wsName);
+            ws.ConditionalFormatting.AddContainsErrors(new ExcelAddress("A1:A5"));
+
+            var stream = new MemoryStream();
+            pck.SaveAs(stream);
+
+            ExcelPackage package = new ExcelPackage(stream);
+
+            var sheetRead = package.Workbook.Worksheets.GetByName(wsName);
+
+            var cf = sheetRead.ConditionalFormatting[0];
+
+            Assert.AreEqual(eExcelConditionalFormattingRuleType.ContainsErrors, cf.Type);
 
             var stream2 = new MemoryStream();
             package.SaveAs(stream2);

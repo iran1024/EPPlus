@@ -100,7 +100,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         { 
             get 
             {
-                //Only databars or iconsets can be extLst
+                //Only databars, iconsets and anything with custom formulas can be extLst
                 if (Type == eExcelConditionalFormattingRuleType.DataBar)
                 {
                     return true;
