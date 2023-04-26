@@ -40,6 +40,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.Remoting;
+using System.Xml.Linq;
 
 namespace EPPlusTest.ConditionalFormatting
 {
@@ -576,25 +577,6 @@ namespace EPPlusTest.ConditionalFormatting
         public void BeginsWithReadWriteCF()
         {
             AddCFWorkbookSheetAndTestReadWrite("BeginsWith", eExcelConditionalFormattingRuleType.BeginsWith, "A1:A5", "", "abc");
-
-            //var ws = _pck.Workbook.Worksheets.Add("BeginsWith");
-
-            //var validation = ws.ConditionalFormatting.AddBeginsWith(new ExcelAddress("A1:A5"));
-
-            //validation.ContainText = "Abc";
-
-            //var stream = new MemoryStream();
-            //_pck.SaveAs(stream);
-
-            //ExcelPackage package = new ExcelPackage(stream);
-
-            //var sheetRead = package.Workbook.Worksheets.GetByName("BeginsWith");
-
-            //var cf = sheetRead.ConditionalFormatting[0];
-
-            //Assert.AreEqual("Abc", cf.Text);
-
-            //package.SaveAs("C:/epplusTest/Workbooks/beginsWith.xlsx");
         }
 
         [TestMethod]
@@ -613,6 +595,62 @@ namespace EPPlusTest.ConditionalFormatting
         public void GreaterThanOrEqualReadWriteCF()
         {
             AddCFWorkbookSheetAndTestReadWrite("GreaterThanOrEqual", eExcelConditionalFormattingRuleType.GreaterThanOrEqual, "A1:A5", "5");
+        }
+
+        [TestMethod]
+        public void ContainsBlanksReadWriteCF()
+        {
+            AddCFWorkbookSheetAndTestReadWrite("ContainsBlanks", eExcelConditionalFormattingRuleType.ContainsBlanks, "A1:A5");
+        }
+
+        [TestMethod]
+        public void ContainsErrorsReadWriteCF()
+        {
+            var address = "A1:A5";
+
+            ExcelWorksheet origWS, ws;
+            var package = GenerateWorkSheets("ContainsErrors", out origWS, out ws);
+
+            var cf = ws.ConditionalFormatting.AddContainsErrors(new ExcelAddress(address));
+            var origCF = origWS.ConditionalFormatting.AddContainsErrors(new ExcelAddress(address));
+
+            StyleSheets((ExcelConditionalFormattingRule)cf, (ExcelConditionalFormattingRule)origCF);
+            TestReadWrite(package, (ExcelConditionalFormattingRule)cf, eExcelConditionalFormattingRuleType.ContainsErrors);
+        }
+
+        private ExcelPackage GenerateWorkSheets(string name, out ExcelWorksheet sheet1, out ExcelWorksheet sheet2)
+        {
+            var package = new ExcelPackage();
+            sheet1 = _pck.Workbook.Worksheets.Add(name);
+            sheet2 = package.Workbook.Worksheets.Add(name);
+
+            return package;
+        }
+
+        private void StyleSheets(ExcelConditionalFormattingRule origCF, ExcelConditionalFormattingRule cf)
+        {
+            origCF.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            origCF.Style.Fill.BackgroundColor.Color = Color.Aquamarine;
+
+            cf.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+            cf.Style.Fill.BackgroundColor.Color = Color.Aquamarine;
+        }
+
+        private void TestReadWrite(ExcelPackage package, ExcelConditionalFormattingRule cf, eExcelConditionalFormattingRuleType type)
+        {
+            var stream = new MemoryStream();
+            package.SaveAs(stream);
+
+            ExcelPackage package2 = new ExcelPackage(stream);
+
+            var cf2 = package.Workbook.Worksheets[0].ConditionalFormatting[0];
+
+            Assert.AreEqual(cf.Formula, cf2.Formula);
+            Assert.AreEqual(cf.Text, cf2.Text);
+            Assert.AreEqual(cf2.Type, type);
+
+            var stream2 = new MemoryStream();
+            package2.SaveAs("C:\\epplusTest\\Workbooks\\cf.xlsx");
         }
 
         private void AddCFWorkbookSheetAndTestReadWrite(string wsName, eExcelConditionalFormattingRuleType type, string address ,string formula = "", string containText = "")
@@ -686,20 +724,6 @@ namespace EPPlusTest.ConditionalFormatting
             var stream2 = new MemoryStream();
             package2.SaveAs("C:\\epplusTest\\Workbooks\\cf.xlsx");
         }
-
-        [TestMethod]
-        public void ContainsBlanksReadWriteCF()
-        {
-            AddCFWorkbookSheetAndTestReadWrite("ContainsBlanks", eExcelConditionalFormattingRuleType.ContainsBlanks, "A1:A5");
-        }
-
-        [TestMethod]
-        public void ContainsErrorsReadWriteCF()
-        {
-            AddCFWorkbookSheetAndTestReadWrite("ContainsErrors", eExcelConditionalFormattingRuleType.ContainsErrors, "A1:A5");
-        }
-
-
 
         static string[] numbers = new string[] 
         { "zero", 
