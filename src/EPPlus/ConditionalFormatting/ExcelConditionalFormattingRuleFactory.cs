@@ -29,6 +29,12 @@ namespace OfficeOpenXml.ConditionalFormatting
                           priority,
                           worksheet);
 
+                case eExcelConditionalFormattingRuleType.GreaterThanOrEqual:
+                    return new ExcelConditionalFormattingGreaterThanOrEqual(
+                          address,
+                          priority,
+                          worksheet);
+
                 case eExcelConditionalFormattingRuleType.LessThan:
                     return new ExcelConditionalFormattingLessThan(
                        address,
@@ -76,6 +82,12 @@ namespace OfficeOpenXml.ConditionalFormatting
                        address,
                        priority,
                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.Expression:
+                    return new ExcelConditionalFormattingExpression(
+                        address, 
+                        priority, 
+                        worksheet);
 
                 case eExcelConditionalFormattingRuleType.Yesterday:
                     return new ExcelConditionalFormattingYesterday(
@@ -305,6 +317,9 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.GreaterThan:
                     return new ExcelConditionalFormattingGreaterThan(address, ws, xr);
 
+                case eExcelConditionalFormattingRuleType.GreaterThanOrEqual:
+                    return new ExcelConditionalFormattingGreaterThanOrEqual(address, ws, xr);
+
                 case eExcelConditionalFormattingRuleType.LessThan:
                     return new ExcelConditionalFormattingLessThan(address, ws, xr);
 
@@ -322,6 +337,9 @@ namespace OfficeOpenXml.ConditionalFormatting
 
                 case eExcelConditionalFormattingRuleType.EndsWith:
                     return new ExcelConditionalFormattingEndsWith(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.Expression:
+                    return new ExcelConditionalFormattingExpression(address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.ContainsBlanks:
                     return new ExcelConditionalFormattingContainsBlanks(address, ws, xr);
