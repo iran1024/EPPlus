@@ -41,8 +41,20 @@ namespace OfficeOpenXml.ConditionalFormatting
                        priority,
                        worksheet);
 
+                case eExcelConditionalFormattingRuleType.LessThanOrEqual:
+                    return new ExcelConditionalFormattingLessThanOrEqual(
+                          address,
+                          priority,
+                          worksheet);
+
                 case eExcelConditionalFormattingRuleType.Between:
                     return new ExcelConditionalFormattingBetween(
+                       address,
+                       priority,
+                       worksheet);
+
+                case eExcelConditionalFormattingRuleType.NotBetween:
+                    return new ExcelConditionalFormattingNotBetween(
                        address,
                        priority,
                        worksheet);
@@ -323,8 +335,14 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.LessThan:
                     return new ExcelConditionalFormattingLessThan(address, ws, xr);
 
+                case eExcelConditionalFormattingRuleType.LessThanOrEqual:
+                    return new ExcelConditionalFormattingLessThanOrEqual(address, ws, xr);
+
                 case eExcelConditionalFormattingRuleType.Between:
                     return new ExcelConditionalFormattingBetween(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.NotBetween:
+                    return new ExcelConditionalFormattingNotBetween(address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.Equal:
                     return new ExcelConditionalFormattingEqual(address, ws, xr);

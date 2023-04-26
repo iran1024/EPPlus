@@ -598,11 +598,39 @@ namespace EPPlusTest.ConditionalFormatting
         }
 
         [TestMethod]
+        public void LessThanOrEqualReadWriteCF()
+        {
+            AddCFWorkbookSheetAndTestReadWrite("LessThanOrEqual", eExcelConditionalFormattingRuleType.LessThanOrEqual, "A1:A5", "5");
+        }
+
+        [TestMethod]
         public void ContainsBlanksReadWriteCF()
         {
             AddCFWorkbookSheetAndTestReadWrite("ContainsBlanks", eExcelConditionalFormattingRuleType.ContainsBlanks, "A1:A5");
         }
 
+        [TestMethod]
+        public void NotBetweeReadWriteCF()
+        {
+            var address = "A1:A5";
+
+            ExcelWorksheet origWS, ws;
+            var package = GenerateWorkSheets("NotBetween", out origWS, out ws);
+
+            var cf = ws.ConditionalFormatting.AddNotBetween(new ExcelAddress(address));
+            var origCF = origWS.ConditionalFormatting.AddNotBetween(new ExcelAddress(address));
+
+            cf.Formula = "1";
+            cf.Formula2 = "5";
+
+            origCF.Formula = "1";
+            origCF.Formula2 = "5";
+
+            StyleSheets((ExcelConditionalFormattingRule)cf, (ExcelConditionalFormattingRule)origCF);
+            TestReadWrite(package, (ExcelConditionalFormattingRule)cf, eExcelConditionalFormattingRuleType.NotBetween);
+        }
+
+        //Alternative re-usable methods
         [TestMethod]
         public void ContainsErrorsReadWriteCF()
         {
@@ -617,6 +645,8 @@ namespace EPPlusTest.ConditionalFormatting
             StyleSheets((ExcelConditionalFormattingRule)cf, (ExcelConditionalFormattingRule)origCF);
             TestReadWrite(package, (ExcelConditionalFormattingRule)cf, eExcelConditionalFormattingRuleType.ContainsErrors);
         }
+
+        private void BaseReadWriteTest()
 
         private ExcelPackage GenerateWorkSheets(string name, out ExcelWorksheet sheet1, out ExcelWorksheet sheet2)
         {
@@ -646,6 +676,8 @@ namespace EPPlusTest.ConditionalFormatting
             var cf2 = package.Workbook.Worksheets[0].ConditionalFormatting[0];
 
             Assert.AreEqual(cf.Formula, cf2.Formula);
+            Assert.AreEqual(cf.Formula2, cf2.Formula2);
+
             Assert.AreEqual(cf.Text, cf2.Text);
             Assert.AreEqual(cf2.Type, type);
 
@@ -676,6 +708,15 @@ namespace EPPlusTest.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.GreaterThanOrEqual:
                     origCF = (ExcelConditionalFormattingRule)origWS.ConditionalFormatting.AddGreaterThanOrEqual(new ExcelAddress(address));
                     cf = (ExcelConditionalFormattingRule)ws.ConditionalFormatting.AddGreaterThanOrEqual(new ExcelAddress(address));
+
+                    origCF.Formula = formula;
+                    cf.Formula = formula;
+                    break;
+
+
+                case eExcelConditionalFormattingRuleType.LessThanOrEqual:
+                    origCF = (ExcelConditionalFormattingRule)origWS.ConditionalFormatting.AddLessThanOrEqual(new ExcelAddress(address));
+                    cf = (ExcelConditionalFormattingRule)ws.ConditionalFormatting.AddLessThanOrEqual(new ExcelAddress(address));
 
                     origCF.Formula = formula;
                     cf.Formula = formula;
