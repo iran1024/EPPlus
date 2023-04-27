@@ -573,161 +573,99 @@ namespace EPPlusTest.ConditionalFormatting
             }
         }
 
-        [TestMethod]
-        public void BeginsWithReadWriteCF()
-        {
-            AddCFWorkbookSheetAndTestReadWrite("BeginsWith", eExcelConditionalFormattingRuleType.BeginsWith, "A1:A5", "", "abc");
-        }
 
         [TestMethod]
-        public void EndsWithReadWriteCF()
+        public void BeginsWith_ReadWrite()
         {
-            AddCFWorkbookSheetAndTestReadWrite("EndsWith", eExcelConditionalFormattingRuleType.EndsWith, "A1:A5", "", "er");
-        }
+            var type = eExcelConditionalFormattingRuleType.BeginsWith;
 
-        [TestMethod]
-        public void ExpressionReadWriteCF()
-        {
-            AddCFWorkbookSheetAndTestReadWrite("Expression", eExcelConditionalFormattingRuleType.Expression, "A1:A5", "$A1 < 5");
+            BaseReadWriteTest("A1:A5", "BeginsWith", type,
+                (sheet, address) =>
+                {
+                    return (ExcelConditionalFormattingRule)sheet.ConditionalFormatting.AddBeginsWith(address);
+                });
         }
 
         [TestMethod]
-        public void GreaterThanOrEqualReadWriteCF()
+        public void EndsWith_ReadWrite()
         {
-            AddCFWorkbookSheetAndTestReadWrite("GreaterThanOrEqual", eExcelConditionalFormattingRuleType.GreaterThanOrEqual, "A1:A5", "5");
+            var type = eExcelConditionalFormattingRuleType.EndsWith;
+
+            BaseReadWriteTest("A1:A5", "EndsWith", type,
+                (sheet, address) =>
+                {
+                    return (ExcelConditionalFormattingRule)sheet.ConditionalFormatting.AddEndsWith(address);
+                });
+        }
+
+
+        [TestMethod]
+        public void Expression_ReadWrite()
+        {
+            var type = eExcelConditionalFormattingRuleType.GreaterThanOrEqual;
+
+            BaseReadWriteTest("A1:A5", "Expression", type,
+                (sheet, address) =>
+                {
+                    return (ExcelConditionalFormattingRule)sheet.ConditionalFormatting.AddExpression(address);
+                });
+        }
+
+
+        [TestMethod]
+        public void GreaterThanOrEqual_ReadWrite()
+        {
+            var type = eExcelConditionalFormattingRuleType.GreaterThanOrEqual;
+
+            BaseReadWriteTest("A1:A5", "GreaterThanOrEqual", type,
+                (sheet, address) =>
+                {
+                    return (ExcelConditionalFormattingRule)sheet.ConditionalFormatting.AddGreaterThanOrEqual(address);
+                });
         }
 
         [TestMethod]
-        public void LessThanOrEqualReadWriteCF()
+        public void LessThanOrEqual_ReadWrite()
         {
-            AddCFWorkbookSheetAndTestReadWrite("LessThanOrEqual", eExcelConditionalFormattingRuleType.LessThanOrEqual, "A1:A5", "5");
+            var type = eExcelConditionalFormattingRuleType.LessThanOrEqual;
+
+            BaseReadWriteTest("A1:A5", "LessThanOrEqual", type,
+                (sheet, address) =>
+                {
+                    return (ExcelConditionalFormattingRule)sheet.ConditionalFormatting.AddLessThanOrEqual(address);
+                });
         }
 
         [TestMethod]
-        public void ContainsBlanksReadWriteCF()
+        public void ContainsBlanks_ReadWrite()
         {
-            AddCFWorkbookSheetAndTestReadWrite("ContainsBlanks", eExcelConditionalFormattingRuleType.ContainsBlanks, "A1:A5");
-        }
+            var type = eExcelConditionalFormattingRuleType.ContainsBlanks;
 
-        private void AddCFWorkbookSheetAndTestReadWrite(string wsName, eExcelConditionalFormattingRuleType type, string address, string formula = "", string containText = "")
-        {
-            var origWS = _pck.Workbook.Worksheets.Add(wsName);
-            ExcelConditionalFormattingRule origCF;
-
-            ExcelPackage package = new ExcelPackage();
-            var ws = package.Workbook.Worksheets.Add(wsName);
-
-            ExcelConditionalFormattingRule cf;
-
-            switch (type)
-            {
-                case eExcelConditionalFormattingRuleType.Expression:
-                    origCF = (ExcelConditionalFormattingRule)origWS.ConditionalFormatting.AddExpression(new ExcelAddress(address));
-                    cf = (ExcelConditionalFormattingRule)ws.ConditionalFormatting.AddExpression(new ExcelAddress(address));
-
-                    origCF.Formula = formula;
-                    cf.Formula = formula;
-                    break;
-
-                case eExcelConditionalFormattingRuleType.GreaterThanOrEqual:
-                    origCF = (ExcelConditionalFormattingRule)origWS.ConditionalFormatting.AddGreaterThanOrEqual(new ExcelAddress(address));
-                    cf = (ExcelConditionalFormattingRule)ws.ConditionalFormatting.AddGreaterThanOrEqual(new ExcelAddress(address));
-
-                    origCF.Formula = formula;
-                    cf.Formula = formula;
-                    break;
-
-
-                case eExcelConditionalFormattingRuleType.LessThanOrEqual:
-                    origCF = (ExcelConditionalFormattingRule)origWS.ConditionalFormatting.AddLessThanOrEqual(new ExcelAddress(address));
-                    cf = (ExcelConditionalFormattingRule)ws.ConditionalFormatting.AddLessThanOrEqual(new ExcelAddress(address));
-
-                    origCF.Formula = formula;
-                    cf.Formula = formula;
-                    break;
-
-                case eExcelConditionalFormattingRuleType.EndsWith:
-                    var cftemp = origWS.ConditionalFormatting.AddEndsWith(new ExcelAddress(address));
-                    cftemp.ContainText = containText;
-                    var cftemp2 = ws.ConditionalFormatting.AddEndsWith(new ExcelAddress(address));
-                    cftemp2.ContainText = containText;
-
-                    origCF = (ExcelConditionalFormattingRule)cftemp;
-                    cf = (ExcelConditionalFormattingRule)cftemp2;
-                    break;
-
-                case eExcelConditionalFormattingRuleType.ContainsBlanks:
-                    origCF = (ExcelConditionalFormattingRule)origWS.ConditionalFormatting.AddContainsBlanks(new ExcelAddress(address));
-                    cf = (ExcelConditionalFormattingRule)ws.ConditionalFormatting.AddContainsBlanks(new ExcelAddress(address));
-                    break;
-
-                case eExcelConditionalFormattingRuleType.ContainsErrors:
-                    origCF = (ExcelConditionalFormattingRule)origWS.ConditionalFormatting.AddContainsErrors(new ExcelAddress(address));
-                    cf = (ExcelConditionalFormattingRule)ws.ConditionalFormatting.AddContainsErrors(new ExcelAddress(address));
-                    break;
-                default:
-                    throw new NotImplementedException("Not implemented");
-            }
-
-            origCF.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            origCF.Style.Fill.BackgroundColor.Color = Color.Aquamarine;
-
-            cf.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-            cf.Style.Fill.BackgroundColor.Color = Color.Aquamarine;
-
-            var stream = new MemoryStream();
-            package.SaveAs(stream);
-
-            ExcelPackage package2 = new ExcelPackage(stream);
-
-            var cf2 = package.Workbook.Worksheets[0].ConditionalFormatting[0];
-
-            Assert.AreEqual(cf.Formula, cf2.Formula);
-            Assert.AreEqual(cf.Text, cf2.Text);
-            Assert.AreEqual(cf2.Type, type);
-
-            var stream2 = new MemoryStream();
-            package2.SaveAs("C:\\epplusTest\\Workbooks\\cf.xlsx");
+            BaseReadWriteTest("A1:A5", "ContainsBlanks", type,
+                (sheet, address) =>
+                {
+                    return (ExcelConditionalFormattingRule)sheet.ConditionalFormatting.AddContainsBlanks(address);
+                });
         }
 
         [TestMethod]
-        public void NotBetweeReadWriteCF()
+        public void NotBetween_ReadWrite()
         {
-            var address = "A1:A5";
+            var type = eExcelConditionalFormattingRuleType.NotBetween;
 
-            ExcelWorksheet origWS, ws;
-            var package = GenerateWorkSheets("NotBetween", out origWS, out ws);
+            BaseReadWriteTest("A1:A5", "NotBetween", type,
+                (sheet, address) =>
+                {
+                    var cf = sheet.ConditionalFormatting.AddNotBetween(address);
+                    cf.Formula = "1";
+                    cf.Formula2 = "5";
 
-            var cf = ws.ConditionalFormatting.AddNotBetween(new ExcelAddress(address));
-            var origCF = origWS.ConditionalFormatting.AddNotBetween(new ExcelAddress(address));
-
-            cf.Formula = "1";
-            cf.Formula2 = "5";
-
-            origCF.Formula = "1";
-            origCF.Formula2 = "5";
-
-            ApplyColorStyle((ExcelConditionalFormattingRule)cf, (ExcelConditionalFormattingRule)origCF);
-            TestReadWrite(package, (ExcelConditionalFormattingRule)cf, eExcelConditionalFormattingRuleType.NotBetween);
-        }
-
-        public void ContainsErrorsReadWriteCFALT()
-        {
-            var type = eExcelConditionalFormattingRuleType.ContainsErrors;
-
-            BaseReadWriteTest("A1:A5", "ContainsErrors", type, MakeReturnContainsErrorsCF);
-        }
-
-        public void ContainsErrorsReadWriteCFALTDelegate()
-        {
-            RuleDelegate rule = new RuleDelegate(MakeReturnContainsErrorsCF);
-            var type = eExcelConditionalFormattingRuleType.ContainsErrors;
-
-            BaseReadWriteTestDelegate("A1:A5", "ContainsErrors", type, rule);
+                    return (ExcelConditionalFormattingRule)cf;
+                });
         }
 
         [TestMethod]
-        public void ContainsErrorsReadWriteCF()
+        public void ContainsErrors_ReadWrite()
         {
             var type = eExcelConditionalFormattingRuleType.ContainsErrors;
 
@@ -807,7 +745,7 @@ namespace EPPlusTest.ConditionalFormatting
         public void NotContainsBlanks_WriteRead()
         {
             BaseReadWriteTest("A1:A5", "NotContainsBlanks", eExcelConditionalFormattingRuleType.NotContainsBlanks,
-                delegate (ExcelWorksheet sheet, ExcelAddress address)
+                (sheet, address) =>
                 {
                     return (ExcelConditionalFormattingRule)sheet.ConditionalFormatting.AddNotContainsBlanks(address);
                 });
@@ -817,28 +755,10 @@ namespace EPPlusTest.ConditionalFormatting
         public void NotContainsErrors_WriteRead()
         {
             BaseReadWriteTest("A1:A5", "NotContainsErrors", eExcelConditionalFormattingRuleType.NotContainsErrors,
-                delegate (ExcelWorksheet sheet, ExcelAddress address)
+                (sheet, address) =>
                 {
                     return (ExcelConditionalFormattingRule)sheet.ConditionalFormatting.AddNotContainsErrors(address);
                 });
-        }
-
-
-        public ExcelConditionalFormattingRule MakeReturnNotBetween(ExcelWorksheet sheet, ExcelAddress address)
-        {
-            var cf = sheet.ConditionalFormatting.AddNotBetween(address);
-            cf.Formula = "1";
-            cf.Formula = "5";
-
-            return (ExcelConditionalFormattingRule)cf;
-        }
-        //Alternative re-usable methods
-
-        public delegate ExcelConditionalFormattingRule RuleDelegate(ExcelWorksheet sheet, ExcelAddress address);
-
-        public ExcelConditionalFormattingRule MakeReturnContainsErrorsCF(ExcelWorksheet sheet, ExcelAddress address)
-        {
-            return (ExcelConditionalFormattingRule)sheet.ConditionalFormatting.AddContainsErrors(address);
         }
 
         private void BaseReadWriteTest(string address, string wsName, eExcelConditionalFormattingRuleType type,
@@ -849,18 +769,6 @@ namespace EPPlusTest.ConditionalFormatting
 
             var cf1 = MakeCF(origWS, new ExcelAddress(address));
             var cf2 = MakeCF(ws, new ExcelAddress(address));
-
-            ApplyColorStyle(cf1, cf2);
-            TestReadWrite(package, cf2, type);
-        }
-
-        private void BaseReadWriteTestDelegate(string address, string wsName, eExcelConditionalFormattingRuleType type, RuleDelegate rule)
-        {
-            ExcelWorksheet origWS, ws;
-            var package = GenerateWorkSheets(wsName, out origWS, out ws);
-
-            var cf1 = rule(origWS, new ExcelAddress(address));
-            var cf2 = rule(ws, new ExcelAddress(address));
 
             ApplyColorStyle(cf1, cf2);
             TestReadWrite(package, cf2, type);
