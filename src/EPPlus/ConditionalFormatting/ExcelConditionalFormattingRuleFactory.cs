@@ -72,8 +72,20 @@ namespace OfficeOpenXml.ConditionalFormatting
                        priority,
                        worksheet);
 
+                case eExcelConditionalFormattingRuleType.NotEqual:
+                    return new ExcelConditionalFormattingNotEqual(
+                        address, 
+                        priority, 
+                        worksheet);
+
                 case eExcelConditionalFormattingRuleType.ContainsText:
                     return new ExcelConditionalFormattingContainsText(
+                       address,
+                       priority,
+                       worksheet);
+
+                case eExcelConditionalFormattingRuleType.NotContainsText:
+                    return new ExcelConditionalFormattingNotContainsText(
                        address,
                        priority,
                        worksheet);
@@ -210,6 +222,12 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.BelowStdDev:
                     return new ExcelConditionalFormattingStdDevGroup(
                         type, 
+                        address,
+                        priority,
+                        worksheet);
+
+                case eExcelConditionalFormattingRuleType.UniqueValues:
+                    return new ExcelConditionalFormattingUniqueValues(
                         address,
                         priority,
                         worksheet);
@@ -366,8 +384,14 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.Equal:
                     return new ExcelConditionalFormattingEqual(address, ws, xr);
 
+                case eExcelConditionalFormattingRuleType.NotEqual:
+                    return new ExcelConditionalFormattingNotEqual(address, ws, xr);
+
                 case eExcelConditionalFormattingRuleType.ContainsText:
                     return new ExcelConditionalFormattingContainsText(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.NotContainsText:
+                    return new ExcelConditionalFormattingNotContainsText(address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.BeginsWith:
                     return new ExcelConditionalFormattingBeginsWith(address, ws, xr);
@@ -438,6 +462,9 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.AboveStdDev:
                 case eExcelConditionalFormattingRuleType.BelowStdDev:
                     return new ExcelConditionalFormattingStdDevGroup(eType, address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.UniqueValues:
+                    return new ExcelConditionalFormattingUniqueValues(address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.DataBar:
                     return new ExcelConditionalFormattingDataBar(address, ws, xr);
