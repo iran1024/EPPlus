@@ -497,6 +497,36 @@ namespace OfficeOpenXml.ConditionalFormatting
             return _rules.Find(x => x.Priority == priority);
         }
 
+        delegate ExcelConditionalFormattingRule Rule(ExcelAddress address, int priority, ExcelWorksheet ws);
+
+        ///// <summary>
+        ///// Add rule (internal)
+        ///// </summary>
+        ///// <param name="type"></param>
+        ///// <param name="address"></param>
+        ///// <returns></returns>F
+        //internal IExcelConditionalFormattingRule AddRule(
+        //  eExcelConditionalFormattingRuleType type,
+        //  ExcelAddress address)
+        //{
+        //    Require.Argument(address).IsNotNull("address");
+
+        //    // address = ValidateAddress(address);
+
+        //    // Create the Rule according to the correct type, address and priority
+        //    ExcelConditionalFormattingRule cfRule = ExcelConditionalFormattingRuleFactory.Create(
+        //      type,
+        //      address,
+        //      LastPriority++,
+        //      _ws);
+
+        //    // Add the newly created rule to the list
+        //    _rules.Add(cfRule);
+
+        //    // Return the newly created rule
+        //    return cfRule;
+        //}
+
         /// <summary>
         /// Add rule (internal)
         /// </summary>
@@ -525,6 +555,11 @@ namespace OfficeOpenXml.ConditionalFormatting
             return cfRule;
         }
 
+        ExcelConditionalFormattingRule ExcelConditionalFormattingGreaterThanFunc(ExcelAddress address, int priority, ExcelWorksheet ws)
+        {
+            return new ExcelConditionalFormattingGreaterThan(address, priority, ws);
+        }
+
         /// <summary>
         /// Add GreaterThan Rule
         /// </summary>
@@ -533,6 +568,8 @@ namespace OfficeOpenXml.ConditionalFormatting
         public IExcelConditionalFormattingGreaterThan AddGreaterThan(
           ExcelAddress address)
         {
+            //var rule = new ExcelConditionalFormattingGreaterThan(address, LastPriority++, _ws);
+
             return (IExcelConditionalFormattingGreaterThan)AddRule(
               eExcelConditionalFormattingRuleType.GreaterThan,
               address);

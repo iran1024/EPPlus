@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml.ConditionalFormatting;
+using OfficeOpenXml.ConditionalFormatting.Contracts;
 using OfficeOpenXml.ConditionalFormatting.Rules;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Text;
@@ -11,6 +12,12 @@ namespace OfficeOpenXml.ConditionalFormatting
 {
     internal static class ExcelConditionalFormattingRuleFactory
     {
+        //public static ExcelConditionalFormattingRule Create<T>(
+        //    ExcelAddress address, int priority, ExcelWorksheet worksheet) where T : ExcelConditionalFormattingRule, new()
+        //{
+        //    return new T(address, priority, worksheet);
+        //}
+
         public static ExcelConditionalFormattingRule Create(
         eExcelConditionalFormattingRuleType type,
         ExcelAddress address,
@@ -77,6 +84,12 @@ namespace OfficeOpenXml.ConditionalFormatting
                        priority,
                        worksheet);
 
+                case eExcelConditionalFormattingRuleType.NotContainsErrors:
+                    return new ExcelConditionalFormattingNotContainsErrors(
+                       address,
+                       priority,
+                       worksheet);
+
                 case eExcelConditionalFormattingRuleType.BeginsWith:
                     return new ExcelConditionalFormattingBeginsWith(
                        address,
@@ -91,6 +104,12 @@ namespace OfficeOpenXml.ConditionalFormatting
 
                 case eExcelConditionalFormattingRuleType.ContainsBlanks:
                     return new ExcelConditionalFormattingContainsBlanks(
+                       address,
+                       priority,
+                       worksheet);
+
+                case eExcelConditionalFormattingRuleType.NotContainsBlanks:
+                    return new ExcelConditionalFormattingNotContainsBlanks(
                        address,
                        priority,
                        worksheet);
@@ -362,8 +381,14 @@ namespace OfficeOpenXml.ConditionalFormatting
                 case eExcelConditionalFormattingRuleType.ContainsBlanks:
                     return new ExcelConditionalFormattingContainsBlanks(address, ws, xr);
 
+                case eExcelConditionalFormattingRuleType.NotContainsBlanks:
+                    return new ExcelConditionalFormattingNotContainsBlanks(address, ws, xr);
+
                 case eExcelConditionalFormattingRuleType.ContainsErrors:
                     return new ExcelConditionalFormattingContainsErrors(address, ws, xr);
+
+                case eExcelConditionalFormattingRuleType.NotContainsErrors:
+                    return new ExcelConditionalFormattingNotContainsErrors(address, ws, xr);
 
                 case eExcelConditionalFormattingRuleType.Yesterday:
                     return new ExcelConditionalFormattingYesterday(address, ws, xr);
