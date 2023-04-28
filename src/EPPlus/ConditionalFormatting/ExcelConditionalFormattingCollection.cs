@@ -58,8 +58,8 @@ namespace OfficeOpenXml.ConditionalFormatting
                     if(xr.LocalName == "dataBar")
                     {
                         var dataBar = (ExcelConditionalFormattingDataBar)_extLstDict[id];
-                        dataBar.LowValue.Value = double.Parse(xr.GetAttribute("minLength"));
-                        dataBar.HighValue.Value = double.Parse(xr.GetAttribute("maxLength"));
+                        dataBar.LowValue.minLength = int.Parse(xr.GetAttribute("minLength"));
+                        dataBar.HighValue.maxLength = int.Parse(xr.GetAttribute("maxLength"));
 
                         //CfRule -> cfvo
                         xr.Read();

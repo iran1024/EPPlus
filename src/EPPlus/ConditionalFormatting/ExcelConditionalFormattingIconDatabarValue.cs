@@ -36,6 +36,9 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         //eExcelConditionalFormattingValueObjectType _valueType;
 
+        internal int minLength = 0;
+        internal int maxLength = 100;
+
         internal ExcelConditionalFormattingIconDataBarValue(
             eExcelConditionalFormattingValueObjectType valueType,
             eExcelConditionalFormattingRuleType ruleType)
@@ -128,7 +131,7 @@ namespace OfficeOpenXml.ConditionalFormatting
                 if ((_ruleType == eExcelConditionalFormattingRuleType.ThreeIconSet || _ruleType == eExcelConditionalFormattingRuleType.FourIconSet || _ruleType == eExcelConditionalFormattingRuleType.FiveIconSet) &&
                     (value == eExcelConditionalFormattingValueObjectType.Min || value == eExcelConditionalFormattingValueObjectType.Max))
                 {
-                    throw new ArgumentException("Value type can't be Min or Max for icon sets");
+                    throw new ArgumentException("Value type can't be Min or Max for iconSets");
                 }
 
                 _type = value;

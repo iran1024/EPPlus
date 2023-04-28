@@ -602,7 +602,7 @@ namespace EPPlusTest.ConditionalFormatting
         [TestMethod]
         public void Expression_ReadWrite()
         {
-            var type = eExcelConditionalFormattingRuleType.GreaterThanOrEqual;
+            var type = eExcelConditionalFormattingRuleType.Expression;
 
             BaseReadWriteTest("A1:A5", "Expression", type,
                 (sheet, address) =>

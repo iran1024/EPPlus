@@ -1018,20 +1018,10 @@ namespace OfficeOpenXml.ExcelXMLWriter
                         var dataBar = (ExcelConditionalFormattingDataBar)format;
                         uid = dataBar.Uid.ToString();
 
-                        //if (format.Type == eExcelConditionalFormattingRuleType.DataBar)
-                        //{
-                        //    uid = dataBar.Uid.ToString();
-                        //}
-                        //else
-                        //{
-                        //    //TODO: Cast to and extract iconSet types here
-                        //}
-
                         cache.Append($"<{prefix}cfRule type=\"{format.Type.ToString().UnCapitalizeFirstLetter()}\" id=\"{uid}\">");
 
-
-                        cache.Append($"<{prefix}dataBar minLength=\"{0}\" ");
-                        cache.Append($"maxLength=\"{100}\">");
+                        cache.Append($"<{prefix}dataBar minLength=\"{dataBar.LowValue.minLength}\" ");
+                        cache.Append($"maxLength=\"{dataBar.HighValue.maxLength}\">");
 
                         cache.Append($"<{prefix}cfvo type=\"{dataBar.LowValue.Type.ToString().UnCapitalizeFirstLetter()}\"");
 

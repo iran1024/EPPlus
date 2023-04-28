@@ -58,6 +58,8 @@ namespace OfficeOpenXml.ConditionalFormatting
             xr.Read();
             var colVal = int.Parse(xr.GetAttribute("rgb"),NumberStyles.HexNumber);
             Color = Color.FromArgb(colVal);
+            //Correct the alpha
+            Color = Color.FromArgb(255, Color);
 
             //enter databar exit node ->(local) extLst -> ext -> id
             xr.Read();
