@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using OfficeOpenXml.Utils.Extensions;
 
 namespace OfficeOpenXml.ConditionalFormatting
@@ -35,13 +36,21 @@ namespace OfficeOpenXml.ConditionalFormatting
         }
 
         internal ExcelConditionalFormattingTwoColorScale(
-            ExcelConditionalFormattingRule rule, 
+            ExcelAddress address,
+            int priority,
+            ExcelWorksheet worksheet,
+            bool stopIfTrue,
             eExcelConditionalFormattingValueObjectType? low, 
             eExcelConditionalFormattingValueObjectType? high,
             string lowVal,
             string highVal,
-            XmlReader xr) : base (rule)
+            XmlReader xr) : base (
+                eExcelConditionalFormattingRuleType.TwoColorScale, 
+                address, 
+                priority, 
+                worksheet)
         {
+            StopIfTrue = stopIfTrue;
             SetValues(low, high, lowVal, highVal);
             ReadColors(xr);
         }

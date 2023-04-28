@@ -28,15 +28,17 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
 
         internal ExcelConditionalFormattingFourIconSet(
         ExcelAddress address,
+        int priority,
         ExcelWorksheet worksheet,
-        XmlReader xr,
-        ExcelConditionalFormattingRule rule)
+        bool stopIfTrue,
+        XmlReader xr)
             : base(
             eExcelConditionalFormattingRuleType.FourIconSet,
             address,
+            priority,
             worksheet,
-            xr,
-            rule)
+            stopIfTrue,
+            xr)
         {
             Icon4 = CreateIcon(75, eExcelConditionalFormattingRuleType.FourIconSet);
             

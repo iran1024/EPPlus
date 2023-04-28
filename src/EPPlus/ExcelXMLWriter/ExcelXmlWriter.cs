@@ -994,9 +994,12 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
             foreach (var format in _ws.ConditionalFormatting)
             {
-                if (format.IsExtLst)
+                if(format is ExcelConditionalFormattingRule cf)
                 {
-                    cfExtLst.Add(format);
+                    if (cf.IsExtLst)
+                    {
+                        cfExtLst.Add(cf);
+                    }
                 }
             }
 
@@ -1194,8 +1197,10 @@ namespace OfficeOpenXml.ExcelXMLWriter
         {
             var cache = new StringBuilder();
 
-            foreach (var conditionalFormat in _ws.ConditionalFormatting)
+            for (int j = 0; j < _ws.ConditionalFormatting.Count; j++)
             {
+                var conditionalFormat = _ws.ConditionalFormatting[j];
+
                 if (conditionalFormat.IsExtLst && conditionalFormat.Type != eExcelConditionalFormattingRuleType.DataBar)
                 {
                     continue;

@@ -28,16 +28,18 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
         }
 
         internal ExcelConditionalFormattingFiveIconSet(
-        ExcelAddress address,
-        ExcelWorksheet worksheet,
-        XmlReader xr,
-        ExcelConditionalFormattingRule rule)
+            ExcelAddress address,
+            int priority,
+            ExcelWorksheet worksheet,
+            bool stopIfTrue,
+            XmlReader xr)
             : base(
-            eExcelConditionalFormattingRuleType.FiveIconSet,
+            eExcelConditionalFormattingRuleType.FourIconSet,
             address,
+            priority,
             worksheet,
-            xr,
-            rule)
+            stopIfTrue,
+            xr)
         {
             Icon4 = CreateIcon(60, eExcelConditionalFormattingRuleType.FiveIconSet);
             Icon5 = CreateIcon(80, eExcelConditionalFormattingRuleType.FiveIconSet);

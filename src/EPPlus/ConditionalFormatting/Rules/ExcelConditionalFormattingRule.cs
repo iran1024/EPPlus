@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {
-    public class ExcelConditionalFormattingRule : IExcelConditionalFormattingRule
+    public abstract class ExcelConditionalFormattingRule : IExcelConditionalFormattingRule
     {
         //Deprecated
         public XmlNode Node { get; }
@@ -340,7 +340,7 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         internal virtual ExcelConditionalFormattingRule Clone()
         {
-            return new ExcelConditionalFormattingRule(this);
+            return this;
         }
     }
 }

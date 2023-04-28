@@ -12,7 +12,7 @@ using System.Xml;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {
-    internal class ExcelConditionalFormattingCollection : IEnumerable<ExcelConditionalFormattingRule>
+    internal class ExcelConditionalFormattingCollection : IEnumerable<IExcelConditionalFormattingRule>
     {
         List<ExcelConditionalFormattingRule> _rules = new List<ExcelConditionalFormattingRule>();
         ExcelWorksheet _ws;
@@ -398,9 +398,12 @@ namespace OfficeOpenXml.ConditionalFormatting
             _rules.Add(orginalRule.Clone());
         }
 
-        IEnumerator<ExcelConditionalFormattingRule> IEnumerable<ExcelConditionalFormattingRule>.GetEnumerator()
+        IEnumerator<IExcelConditionalFormattingRule> IEnumerable<IExcelConditionalFormattingRule>.GetEnumerator()
         {
-            return _rules.GetEnumerator();
+            for (int i = 0; i < _rules.Count; i++)
+            {
+                yield return _rules[i];
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -542,7 +545,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             // address = ValidateAddress(address);
 
             // Create the Rule according to the correct type, address and priority
-            ExcelConditionalFormattingRule cfRule = ExcelConditionalFormattingRuleFactory.Create(
+            var cfRule = ExcelConditionalFormattingRuleFactory.Create(
               type,
               address,
               LastPriority++,

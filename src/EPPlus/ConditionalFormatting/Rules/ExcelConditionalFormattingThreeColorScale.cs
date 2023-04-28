@@ -30,14 +30,26 @@ namespace OfficeOpenXml.ConditionalFormatting
         }
 
         internal ExcelConditionalFormattingThreeColorScale(
-        ExcelConditionalFormattingRule rule,
+        ExcelAddress address,
+        int priority,
+        ExcelWorksheet worksheet,
+        bool stopIfTrue,
         eExcelConditionalFormattingValueObjectType? low,
         eExcelConditionalFormattingValueObjectType? middle,
         eExcelConditionalFormattingValueObjectType? high,
         string lowVal,
         string middleVal,
         string highVal,
-        XmlReader xr) : base(rule, low, high, lowVal, highVal, xr)
+        XmlReader xr) : base(
+            address,
+            priority,
+            worksheet,
+            stopIfTrue, 
+            low, 
+            high, 
+            lowVal, 
+            highVal, 
+            xr)
         {
             MiddleValue = new ExcelConditionalFormattingColorScaleValue(
             middle,

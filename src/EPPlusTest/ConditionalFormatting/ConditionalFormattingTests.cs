@@ -34,6 +34,7 @@ using OfficeOpenXml.ConditionalFormatting.Rules;
 using OfficeOpenXml.Style.Dxf;
 using OfficeOpenXml.Utils.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
@@ -1112,7 +1113,7 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
-                var formattings = newPck.Workbook.Worksheets[0].ConditionalFormatting;
+                var formattings = newPck.Workbook.Worksheets[0].ConditionalFormatting as IEnumerable<ExcelConditionalFormattingRule>;
 
                 Assert.AreEqual(formattings.ToList()[0].Formula, "3");
                 Assert.AreEqual(formattings.ToList()[0].Formula2, "8");
@@ -1285,10 +1286,12 @@ namespace EPPlusTest.ConditionalFormatting
 
                 var readPck = new ExcelPackage(pck.Stream);
 
-                foreach (var format in readPck.Workbook.Worksheets[0].ConditionalFormatting)
+                for(int i = 0; i < readPck.Workbook.Worksheets[0].ConditionalFormatting.Count; i++)
                 {
+                    var format = readPck.Workbook.Worksheets[0].ConditionalFormatting[i];
+
                     Assert.AreEqual(format.Formula, "3");
-                    Assert.AreEqual(Color.Black.ToArgb(),  format.Style.Fill.BackgroundColor.Color.Value.ToArgb());
+                    Assert.AreEqual(Color.Black.ToArgb(), format.Style.Fill.BackgroundColor.Color.Value.ToArgb());
                     Assert.AreEqual(Color.Violet.ToArgb(), format.Style.Font.Color.Color.Value.ToArgb());
                 }
             }

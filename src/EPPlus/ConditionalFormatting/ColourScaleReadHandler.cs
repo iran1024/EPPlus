@@ -14,7 +14,12 @@ namespace OfficeOpenXml.ConditionalFormatting
         internal static ExcelConditionalFormattingRule CreateScales(ExcelAddress address, XmlReader xr, ExcelWorksheet ws)
         {
             //Read base rules
-            ExcelConditionalFormattingRule rule = new ExcelConditionalFormattingRule(eExcelConditionalFormattingRuleType.ThreeColorScale, address, ws, xr);
+            var priority = int.Parse(xr.GetAttribute("priority"));
+            var stopIfTrue = xr.GetAttribute("stopIfTrue") == "1";
+
+            xr.Read();
+
+            var rule = ws.ConditionalFormatting.AddContainsBlanks(address);
 
             xr.Read();
             var lowType = xr.GetAttribute("type").ToEnum<eExcelConditionalFormattingValueObjectType>();
@@ -29,7 +34,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             if (xr.LocalName == "color")
             {
                 var twoColor = new ExcelConditionalFormattingTwoColorScale(
-                    rule, lowType, middleOrHigh, lowVal, middleOrHighVal, xr);
+                    address, priority, ws, stopIfTrue, lowType, middleOrHigh, lowVal, middleOrHighVal, xr);
 
                 twoColor.Type = eExcelConditionalFormattingRuleType.TwoColorScale;
 
@@ -42,7 +47,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             xr.Read();
 
             var threeColor = new ExcelConditionalFormattingThreeColorScale(
-                rule, lowType, middleOrHigh, highType, lowVal, middleOrHighVal, highVal, xr);
+                address, priority, ws, stopIfTrue, lowType, middleOrHigh, highType, lowVal, middleOrHighVal, highVal, xr);
 
             return threeColor;
         }

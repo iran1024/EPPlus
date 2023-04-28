@@ -26,15 +26,17 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
 
         internal ExcelConditionalFormattingThreeIconSet(
         ExcelAddress address,
+        int priority,
         ExcelWorksheet worksheet,
-        XmlReader xr,
-        ExcelConditionalFormattingRule rule)
+        bool stopIfTrue,
+        XmlReader xr)
             : base(
-            eExcelConditionalFormattingRuleType.ThreeIconSet,
-            address,
-            worksheet,
-            xr,
-            rule)
+             eExcelConditionalFormattingRuleType.ThreeIconSet,
+             address,
+             priority,
+             worksheet,
+             stopIfTrue,
+             xr)
         {
             xr.Read();
         }

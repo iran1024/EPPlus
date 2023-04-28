@@ -431,7 +431,8 @@ namespace EPPlusTest.Core.Range
                     ws1.Cells["A1:C4"].Copy(ws2.Cells["E5"]);
 
                     Assert.AreEqual(1, ws2.ConditionalFormatting.Count);
-                    var cf2 = ws2.ConditionalFormatting[0].As.Between;
+                    var test = ws2.ConditionalFormatting[0];
+                    var cf2 = test.As.Between;
                     Assert.AreEqual("F6:G8", cf2.Address.Address);
                     Assert.AreEqual("1", cf2.Formula);
                     Assert.AreEqual("3", cf2.Formula2);

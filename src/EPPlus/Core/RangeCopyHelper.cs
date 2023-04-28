@@ -174,7 +174,7 @@ namespace OfficeOpenXml.Core
                     }
                     else
                     {
-                        _destination._worksheet.ConditionalFormatting.CopyRule(cf, new ExcelAddress(newAddress));
+                        _destination._worksheet.ConditionalFormatting.CopyRule((ExcelConditionalFormattingRule)cf, new ExcelAddress(newAddress));
                         if (cf.Style.HasValue)
                         {
                             var destRule = (_destination._worksheet.ConditionalFormatting[_destination._worksheet.ConditionalFormatting.Count - 1]);

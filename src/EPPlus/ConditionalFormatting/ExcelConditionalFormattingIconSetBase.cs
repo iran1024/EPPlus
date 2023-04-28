@@ -85,11 +85,18 @@ namespace OfficeOpenXml.ConditionalFormatting
         internal ExcelConditionalFormattingIconSetBase(
           eExcelConditionalFormattingRuleType type,
           ExcelAddress address,
+          int priority,
           ExcelWorksheet worksheet,
-          XmlReader xr, 
-          ExcelConditionalFormattingRule rule)
-            : base(rule)
+          bool stopIfTrue,
+          XmlReader xr)
+            :base (type, address, priority, worksheet)
         {
+            StopIfTrue = stopIfTrue;
+
+            ShowValue = xr.GetAttribute("showValue") != "0";
+            IconSetPercent = xr.GetAttribute("percent") != "0";
+            Reverse = xr.GetAttribute("reverse") == "0";
+
             var set = xr.GetAttribute("iconSet").Substring(1);
 
             Type = type;
@@ -166,6 +173,7 @@ namespace OfficeOpenXml.ConditionalFormatting
 
         /// <summary>
         /// Reverse the order of the icons
+        /// Default false
         /// </summary>
         public bool Reverse
         {
@@ -174,7 +182,18 @@ namespace OfficeOpenXml.ConditionalFormatting
         }
 
         /// <summary>
+        /// If its percent
+        /// default true
+        /// </summary>
+        public bool IconSetPercent
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
         /// If the cell values are visible
+        /// default true
         /// </summary>
         public bool ShowValue
         {
