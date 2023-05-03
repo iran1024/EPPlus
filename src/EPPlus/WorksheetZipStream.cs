@@ -3,7 +3,6 @@
   This software is licensed under PolyForm Noncommercial License 1.0.0 
   and may only be used for noncommercial purposes 
   https://polyformproject.org/licenses/noncommercial/1.0.0/
-
   A commercial license to use this software can be purchased at https://epplussoftware.com
  *************************************************************************************************
   Date               Author                       Change
@@ -52,7 +51,7 @@ namespace OfficeOpenXml
         //byte[] _prevBuffer, _tempBuffer = new byte[8192];
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if(_stream.Length > 0 && _stream.Position + count > _stream.Length)
+            if (_stream.Length > 0 && _stream.Position + count > _stream.Length)
             {
                 count = (int)(_stream.Length - _stream.Position);
             }
@@ -194,8 +193,7 @@ namespace OfficeOpenXml
 
             Buffer.Flush();
             var xml = System.Text.Encoding.UTF8.GetString(((MemoryStream)Buffer.BaseStream).ToArray());
-            var xmlTest = Convert.ToBase64String(((MemoryStream)Buffer.BaseStream).ToArray());
-            var endElementIx = FindElementPos(xml, endElement, false, true);
+            var endElementIx = FindElementPos(xml, endElement, false);
 
             if (endElementIx < 0) return startXml;
             if (string.IsNullOrEmpty(readToElement))
@@ -221,7 +219,7 @@ namespace OfficeOpenXml
             WriteToBuffer = writeToBuffer;
             return startXml + xml;
         }
-        internal string ReadToExt(string startXml, string uriValue, ref string lastElement, string lastUri="")
+        internal string ReadToExt(string startXml, string uriValue, ref string lastElement, string lastUri = "")
         {
             Buffer.Flush();
             var xml = System.Text.Encoding.UTF8.GetString(((MemoryStream)Buffer.BaseStream).ToArray());
@@ -230,13 +228,13 @@ namespace OfficeOpenXml
             {
                 var lastExtStartIx = GetXmlIndex(xml, lastUri);
                 int endExtIx;
-                if(lastExtStartIx < 0)
+                if (lastExtStartIx < 0)
                 {
                     endExtIx = FindElementPos(xml, "ext", false);
                 }
                 else
                 {
-                    endExtIx = FindElementPos(xml, "ext", false, lastExtStartIx+4);
+                    endExtIx = FindElementPos(xml, "ext", false, lastExtStartIx + 4);
                 }
                 xml = xml.Substring(endExtIx);
             }
@@ -285,16 +283,16 @@ namespace OfficeOpenXml
         private bool HasExtElementUri(string elementString, string uriValue)
         {
             if (elementString.StartsWith("</")) return false; //An endtag, return false;
-            var ix=elementString.IndexOf("uri");
+            var ix = elementString.IndexOf("uri");
             var pc = elementString[ix - 1];
             var nc = elementString[ix + 3];
-            if(char.IsWhiteSpace(pc) && (char.IsWhiteSpace(nc) || nc=='='))
+            if (char.IsWhiteSpace(pc) && (char.IsWhiteSpace(nc) || nc == '='))
             {
                 ix = elementString.IndexOf('=', ix + 1);
                 var ixAttrStart = elementString.IndexOf('"', ix + 1) + 1;
                 var ixAttrEnd = elementString.IndexOf('"', ixAttrStart + 1) - 1;
 
-                var uri = elementString.Substring(ixAttrStart, ixAttrEnd - ixAttrStart+1);
+                var uri = elementString.Substring(ixAttrStart, ixAttrEnd - ixAttrStart + 1);
                 return uriValue.Equals(uri, StringComparison.OrdinalIgnoreCase);
             }
             return false;
@@ -306,47 +304,42 @@ namespace OfficeOpenXml
         /// <param name="xml">The xml to search</param>
         /// <param name="element">The element</param>
         /// <param name="returnStartPos">If the position before the start element is returned. If false the end of the end element is returned.</param>
-        /// <param name="findLastInstance">If the first or last instance is to be found</param>
         /// <returns>The position of the element in the input xml</returns>
-        private int FindElementPos(string xml, string element, bool returnStartPos = true, int ix=0)
+        private int FindElementPos(string xml, string element, bool returnStartPos = true, int ix = 0)
         {
             while (true)
             {
-                ix = findLastInstance == false ? xml.IndexOf(element, ix) : xml.LastIndexOf(element, ix);
-
+                ix = xml.IndexOf(element, ix);
                 if (ix > 0 && ix < xml.Length - 1)
                 {
                     var c = xml[ix + element.Length];
                     if (c == '>' || c == ' ' || c == '/')
                     {
                         c = xml[ix - 1];
-                        if (c != '/' && c != ':' && xml[ix - 1] != '<') return -1;
-
-                        if (returnStartPos)
+                        if (c == '/' || c == ':' || xml[ix - 1] == '<')
                         {
-                            return xml.LastIndexOf('<', ix);
-                        }
-                        else
-                        {
-                            //Return the end element, either </element> or <element/>
-                            var startIx = xml.LastIndexOf("<", ix);
-                            if (ix > 0)
+                            if (returnStartPos)
                             {
-                                var end = xml.IndexOf(">", ix + element.Length - 1);
-                                if (xml[startIx + 1] == '/' || xml[end - 1] == '/')
+                                return xml.LastIndexOf('<', ix);
+                            }
+                            else
+                            {
+                                //Return the end element, either </element> or <element/>
+                                var startIx = xml.LastIndexOf("<", ix);
+                                if (ix > 0)
                                 {
-                                    return end + 1;
+                                    var end = xml.IndexOf(">", ix + element.Length - 1);
+                                    if (xml[startIx + 1] == '/' || xml[end - 1] == '/')
+                                    {
+                                        return end + 1;
+                                    }
                                 }
                             }
                         }
                     }
                 }
                 if (ix <= 0) return -1;
-
-                if(findLastInstance== false)
-                {
-                    ix += element.Length;
-                }
+                ix += element.Length;
             }
         }
     }

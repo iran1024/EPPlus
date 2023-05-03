@@ -3146,27 +3146,8 @@ namespace OfficeOpenXml
                 return _pivotTables != null;
             }
         }
-        //private ExcelConditionalFormattingCollection _conditionalFormatting = null;
-        ///// <summary>
-        ///// ConditionalFormatting defined in the worksheet. Use the Add methods to create ConditionalFormatting and add them to the worksheet. Then
-        ///// set the properties on the instance returned.
-        ///// </summary>
-        ///// <seealso cref="ExcelConditionalFormattingCollection"/>
-        //public ExcelConditionalFormattingCollection ConditionalFormatting
-        //{
-        //    get
-        //    {
-        //        CheckSheetTypeAndNotDisposed();
-        //        if (_conditionalFormatting == null)
-        //        {
-        //            _conditionalFormatting = new ExcelConditionalFormattingCollection(this);
-        //        }
-        //        return _conditionalFormatting;
-        //    }
-        //}
 
         private ExcelConditionalFormattingCollection _conditionalFormatting = null;
-
 
         internal ExcelConditionalFormattingCollection ConditionalFormatting
         { 

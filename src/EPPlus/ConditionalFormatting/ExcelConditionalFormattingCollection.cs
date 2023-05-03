@@ -17,7 +17,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         List<ExcelConditionalFormattingRule> _rules = new List<ExcelConditionalFormattingRule>();
         ExcelWorksheet _ws;
         int LastPriority = 1;
-        Dictionary<string, ExcelConditionalFormattingRule> _extLstDict = new Dictionary<string, ExcelConditionalFormattingRule>();
+        internal Dictionary<string, ExcelConditionalFormattingRule> _extLstDict = new Dictionary<string, ExcelConditionalFormattingRule>();
 
 
         internal ExcelConditionalFormattingCollection(ExcelWorksheet ws)
