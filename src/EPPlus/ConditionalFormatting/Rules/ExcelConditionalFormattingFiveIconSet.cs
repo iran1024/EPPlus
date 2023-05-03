@@ -34,7 +34,7 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
             bool stopIfTrue,
             XmlReader xr)
             : base(
-            eExcelConditionalFormattingRuleType.FourIconSet,
+            eExcelConditionalFormattingRuleType.FiveIconSet,
             address,
             priority,
             worksheet,

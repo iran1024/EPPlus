@@ -1104,129 +1104,130 @@ namespace EPPlusTest.ConditionalFormatting
                 threeGreatherThan.Icon2.GreaterThanOrEqualTo = false;
                 threeGreatherThan.Icon3.GreaterThanOrEqualTo = false;
 
+                wks.Calculate();
+
                 ////ExtLst iconsets are best written last as they will then be read in the correct order
                 //var five2 = wks.ConditionalFormatting.AddFiveIconSet(new ExcelAddress(1, 47, 10, 47), eExcelconditionalFormatting5IconsSetType.Boxes);
                 //var threeIcons2 = wks.ConditionalFormatting.AddThreeIconSet(new ExcelAddress(1, 46, 10, 46), eExcelconditionalFormatting3IconsSetType.Triangles);
-
 
                 pck.SaveAs("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
                 var newPck = new ExcelPackage("C:/epplusTest/Workbooks/conditionalTestEppCopy.xlsx");
 
-                var formattings = newPck.Workbook.Worksheets[0].ConditionalFormatting as IEnumerable<ExcelConditionalFormattingRule>;
+                var formattings = newPck.Workbook.Worksheets[0].ConditionalFormatting;
 
-                Assert.AreEqual(formattings.ToList()[0].Formula, "3");
-                Assert.AreEqual(formattings.ToList()[0].Formula2, "8");
-                Assert.AreEqual(formattings.ToList()[1].Formula, "7");
-                Assert.AreEqual(formattings.ToList()[2].Formula, "1");
-                Assert.AreEqual(((IExcelConditionalFormattingContainsText)formattings.ToList()[3]).ContainText, "o");
+                Assert.AreEqual(formattings[0].Formula, "3");
+                Assert.AreEqual(formattings[0].Formula2, "8");
+                Assert.AreEqual(formattings[1].Formula, "7");
+                Assert.AreEqual(formattings[2].Formula, "1");
+                Assert.AreEqual(((IExcelConditionalFormattingContainsText)formattings[3]).ContainText, "o");
 
-                Assert.AreEqual(formattings.ToList()[4].TimePeriod, eExcelConditionalFormattingTimePeriodType.Last7Days);
-                Assert.AreEqual(formattings.ToList()[5].TimePeriod, eExcelConditionalFormattingTimePeriodType.Yesterday);
-                Assert.AreEqual(formattings.ToList()[6].TimePeriod, eExcelConditionalFormattingTimePeriodType.Today);
-                Assert.AreEqual(formattings.ToList()[7].TimePeriod, eExcelConditionalFormattingTimePeriodType.Tomorrow);
-                Assert.AreEqual(formattings.ToList()[8].TimePeriod, eExcelConditionalFormattingTimePeriodType.LastWeek);
-                Assert.AreEqual(formattings.ToList()[9].TimePeriod, eExcelConditionalFormattingTimePeriodType.ThisWeek);
-                Assert.AreEqual(formattings.ToList()[10].TimePeriod, eExcelConditionalFormattingTimePeriodType.NextWeek);
-                Assert.AreEqual(formattings.ToList()[11].TimePeriod, eExcelConditionalFormattingTimePeriodType.LastMonth);
-                Assert.AreEqual(formattings.ToList()[12].TimePeriod, eExcelConditionalFormattingTimePeriodType.ThisMonth);
-                Assert.AreEqual(formattings.ToList()[13].TimePeriod, eExcelConditionalFormattingTimePeriodType.NextMonth);
+                Assert.AreEqual(formattings[4].TimePeriod, eExcelConditionalFormattingTimePeriodType.Last7Days);
+                Assert.AreEqual(formattings[5].TimePeriod, eExcelConditionalFormattingTimePeriodType.Yesterday);
+                Assert.AreEqual(formattings[6].TimePeriod, eExcelConditionalFormattingTimePeriodType.Today);
+                Assert.AreEqual(formattings[7].TimePeriod, eExcelConditionalFormattingTimePeriodType.Tomorrow);
+                Assert.AreEqual(formattings[8].TimePeriod, eExcelConditionalFormattingTimePeriodType.LastWeek);
+                Assert.AreEqual(formattings[9].TimePeriod, eExcelConditionalFormattingTimePeriodType.ThisWeek);
+                Assert.AreEqual(formattings[10].TimePeriod, eExcelConditionalFormattingTimePeriodType.NextWeek);
+                Assert.AreEqual(formattings[11].TimePeriod, eExcelConditionalFormattingTimePeriodType.LastMonth);
+                Assert.AreEqual(formattings[12].TimePeriod, eExcelConditionalFormattingTimePeriodType.ThisMonth);
+                Assert.AreEqual(formattings[13].TimePeriod, eExcelConditionalFormattingTimePeriodType.NextMonth);
 
-                Assert.AreEqual(formattings.ToList()[14].Type, eExcelConditionalFormattingRuleType.DuplicateValues);
+                Assert.AreEqual(formattings[14].Type, eExcelConditionalFormattingRuleType.DuplicateValues);
 
-                Assert.AreEqual(formattings.ToList()[15].Rank, 11);
-                Assert.AreEqual(formattings.ToList()[15].Bottom, false);
-                Assert.AreEqual(formattings.ToList()[15].Percent, false);
+                Assert.AreEqual(formattings[15].Rank, 11);
+                Assert.AreEqual(formattings[15].Bottom, false);
+                Assert.AreEqual(formattings[15].Percent, false);
 
-                Assert.AreEqual(formattings.ToList()[16].Rank, 12);
-                Assert.AreEqual(formattings.ToList()[16].Bottom, true);
-                Assert.AreEqual(formattings.ToList()[16].Percent, false);
+                Assert.AreEqual(formattings[16].Rank, 12);
+                Assert.AreEqual(formattings[16].Bottom, true);
+                Assert.AreEqual(formattings[16].Percent, false);
 
-                Assert.AreEqual(formattings.ToList()[17].Bottom, false);
-                Assert.AreEqual(formattings.ToList()[17].Percent, true);
-                Assert.AreEqual(formattings.ToList()[17].Rank, 13);
+                Assert.AreEqual(formattings[17].Bottom, false);
+                Assert.AreEqual(formattings[17].Percent, true);
+                Assert.AreEqual(formattings[17].Rank, 13);
 
-                Assert.AreEqual(formattings.ToList()[18].Bottom, true);
-                Assert.AreEqual(formattings.ToList()[18].Percent, true);
-                Assert.AreEqual(formattings.ToList()[18].Rank, 14);
+                Assert.AreEqual(formattings[18].Bottom, true);
+                Assert.AreEqual(formattings[18].Percent, true);
+                Assert.AreEqual(formattings[18].Rank, 14);
 
-                Assert.AreEqual(formattings.ToList()[19].AboveAverage, true);
-                Assert.AreEqual(formattings.ToList()[19].EqualAverage, false);
+                Assert.AreEqual(formattings[19].AboveAverage, true);
+                Assert.AreEqual(formattings[19].EqualAverage, false);
 
-                Assert.AreEqual(formattings.ToList()[20].AboveAverage, true);
-                Assert.AreEqual(formattings.ToList()[20].EqualAverage, true);
+                Assert.AreEqual(formattings[20].AboveAverage, true);
+                Assert.AreEqual(formattings[20].EqualAverage, true);
 
-                Assert.AreEqual(formattings.ToList()[21].AboveAverage, false);
-                Assert.AreEqual(formattings.ToList()[21].EqualAverage, false);
+                Assert.AreEqual(formattings[21].AboveAverage, false);
+                Assert.AreEqual(formattings[21].EqualAverage, false);
 
-                Assert.AreEqual(formattings.ToList()[22].AboveAverage, false);
-                Assert.AreEqual(formattings.ToList()[22].EqualAverage, true);
+                Assert.AreEqual(formattings[22].AboveAverage, false);
+                Assert.AreEqual(formattings[22].EqualAverage, true);
 
-                Assert.AreEqual(formattings.ToList()[23].Type, eExcelConditionalFormattingRuleType.AboveStdDev);
-                Assert.AreEqual(formattings.ToList()[23].StdDev, 1);
+                Assert.AreEqual(formattings[23].Type, eExcelConditionalFormattingRuleType.AboveStdDev);
+                Assert.AreEqual(formattings[23].StdDev, 1);
 
-                Assert.AreEqual(formattings.ToList()[24].Type, eExcelConditionalFormattingRuleType.BelowStdDev);
-                Assert.AreEqual(formattings.ToList()[24].StdDev, 2);
+                Assert.AreEqual(formattings[24].Type, eExcelConditionalFormattingRuleType.BelowStdDev);
+                Assert.AreEqual(formattings[24].StdDev, 2);
 
-                Assert.AreEqual(formattings.ToList()[25].Type, eExcelConditionalFormattingRuleType.DataBar);
-                Assert.AreEqual(formattings.ToList()[25].As.DataBar.LowValue.Value, 0);
-                Assert.AreEqual(formattings.ToList()[25].As.DataBar.HighValue.Value, 50);
+                Assert.AreEqual(formattings[25].Type, eExcelConditionalFormattingRuleType.DataBar);
+                Assert.AreEqual(formattings[25].As.DataBar.LowValue.Value, 0);
+                Assert.AreEqual(formattings[25].As.DataBar.HighValue.Value, 50);
 
-                Assert.AreEqual(formattings.ToList()[26].Type, eExcelConditionalFormattingRuleType.TwoColorScale);
-                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.LowValue.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.LowValue.Value, 5);
-                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Value, 80);
-                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.LowValue.Color.ToColorString(), Color.Gold.ToColorString());
-                Assert.AreEqual(formattings.ToList()[26].As.TwoColorScale.HighValue.Color.ToColorString(), Color.Silver.ToColorString());
+                Assert.AreEqual(formattings[26].Type, eExcelConditionalFormattingRuleType.TwoColorScale);
+                Assert.AreEqual(formattings[26].As.TwoColorScale.LowValue.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[26].As.TwoColorScale.HighValue.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[26].As.TwoColorScale.LowValue.Value, 5);
+                Assert.AreEqual(formattings[26].As.TwoColorScale.HighValue.Value, 80);
+                Assert.AreEqual(formattings[26].As.TwoColorScale.LowValue.Color.ToColorString(), Color.Gold.ToColorString());
+                Assert.AreEqual(formattings[26].As.TwoColorScale.HighValue.Color.ToColorString(), Color.Silver.ToColorString());
 
-                Assert.AreEqual(formattings.ToList()[27].Type, eExcelConditionalFormattingRuleType.ThreeColorScale);
-                Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.LowValue.Type, eExcelConditionalFormattingValueObjectType.Min);
-                Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.MiddleValue.Type, eExcelConditionalFormattingValueObjectType.Percentile);
-                Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.HighValue.Type, eExcelConditionalFormattingValueObjectType.Max);
-                Assert.AreEqual(formattings.ToList()[27].As.ThreeColorScale.MiddleValue.Value, 50);
+                Assert.AreEqual(formattings[27].Type, eExcelConditionalFormattingRuleType.ThreeColorScale);
+                Assert.AreEqual(formattings[27].As.ThreeColorScale.LowValue.Type, eExcelConditionalFormattingValueObjectType.Min);
+                Assert.AreEqual(formattings[27].As.ThreeColorScale.MiddleValue.Type, eExcelConditionalFormattingValueObjectType.Percentile);
+                Assert.AreEqual(formattings[27].As.ThreeColorScale.HighValue.Type, eExcelConditionalFormattingValueObjectType.Max);
+                Assert.AreEqual(formattings[27].As.ThreeColorScale.MiddleValue.Value, 50);
 
-                Assert.AreEqual(formattings.ToList()[28].Type, eExcelConditionalFormattingRuleType.ThreeIconSet);
-                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.IconSet, eExcelconditionalFormatting3IconsSetType.Symbols2);
-                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[28].Type, eExcelConditionalFormattingRuleType.ThreeIconSet);
+                Assert.AreEqual(formattings[28].As.ThreeIconSet.IconSet, eExcelconditionalFormatting3IconsSetType.Symbols2);
+                Assert.AreEqual(formattings[28].As.ThreeIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[28].As.ThreeIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[28].As.ThreeIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
 
-                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon1.Value, 0);
-                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon2.Value, Math.Round(100D / 3, 0));
-                Assert.AreEqual(formattings.ToList()[28].As.ThreeIconSet.Icon3.Value, Math.Round(100D * (2D / 3), 0));
+                Assert.AreEqual(formattings[28].As.ThreeIconSet.Icon1.Value, 0);
+                Assert.AreEqual(formattings[28].As.ThreeIconSet.Icon2.Value, Math.Round(100D / 3, 0));
+                Assert.AreEqual(formattings[28].As.ThreeIconSet.Icon3.Value, Math.Round(100D * (2D / 3), 0));
 
-                Assert.AreEqual(formattings.ToList()[29].Type, eExcelConditionalFormattingRuleType.FourIconSet);
-                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.IconSet, eExcelconditionalFormatting4IconsSetType.RedToBlack);
-                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon4.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[29].Type, eExcelConditionalFormattingRuleType.FourIconSet);
+                Assert.AreEqual(formattings[29].As.FourIconSet.IconSet, eExcelconditionalFormatting4IconsSetType.RedToBlack);
+                Assert.AreEqual(formattings[29].As.FourIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[29].As.FourIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[29].As.FourIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[29].As.FourIconSet.Icon4.Type, eExcelConditionalFormattingValueObjectType.Percent);
 
-                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon1.Value, 0);
-                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon2.Value, Math.Round(100D / 4, 0));
-                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon3.Value, Math.Round(100D * (2D / 4), 0));
-                Assert.AreEqual(formattings.ToList()[29].As.FourIconSet.Icon4.Value, 75);
+                Assert.AreEqual(formattings[29].As.FourIconSet.Icon1.Value, 0);
+                Assert.AreEqual(formattings[29].As.FourIconSet.Icon2.Value, Math.Round(100D / 4, 0));
+                Assert.AreEqual(formattings[29].As.FourIconSet.Icon3.Value, Math.Round(100D * (2D / 4), 0));
+                Assert.AreEqual(formattings[29].As.FourIconSet.Icon4.Value, 75);
 
-                Assert.AreEqual(formattings.ToList()[30].Type, eExcelConditionalFormattingRuleType.FiveIconSet);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.IconSet, eExcelconditionalFormatting5IconsSetType.Rating);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon4.Type, eExcelConditionalFormattingValueObjectType.Percent);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon5.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[30].Type, eExcelConditionalFormattingRuleType.FiveIconSet);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.IconSet, eExcelconditionalFormatting5IconsSetType.Rating);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon1.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon2.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon3.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon4.Type, eExcelConditionalFormattingValueObjectType.Percent);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon5.Type, eExcelConditionalFormattingValueObjectType.Percent);
 
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon1.Value, 0);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon2.Value, 20);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon3.Value, 40);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon4.Value, 60);
-                Assert.AreEqual(formattings.ToList()[30].As.FiveIconSet.Icon5.Value, 80);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon1.Value, 0);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon2.Value, 20);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon3.Value, 40);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon4.Value, 60);
+                Assert.AreEqual(formattings[30].As.FiveIconSet.Icon5.Value, 80);
 
-                Assert.AreEqual(formattings.ToList()[31].Type, eExcelConditionalFormattingRuleType.ThreeIconSet);
-                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.IconSet, eExcelconditionalFormatting3IconsSetType.TrafficLights2);
-                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon1.GreaterThanOrEqualTo, true);
-                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon2.GreaterThanOrEqualTo, false);
-                Assert.AreEqual(formattings.ToList()[31].As.ThreeIconSet.Icon3.GreaterThanOrEqualTo, false);
+                Assert.AreEqual(formattings[31].Type, eExcelConditionalFormattingRuleType.ThreeIconSet);
+                Assert.AreEqual(formattings[31].As.ThreeIconSet.IconSet, eExcelconditionalFormatting3IconsSetType.TrafficLights2);
+                Assert.AreEqual(formattings[31].As.ThreeIconSet.Icon1.GreaterThanOrEqualTo, true);
+                Assert.AreEqual(formattings[31].As.ThreeIconSet.Icon2.GreaterThanOrEqualTo, false);
+                Assert.AreEqual(formattings[31].As.ThreeIconSet.Icon3.GreaterThanOrEqualTo, false);
             }
         }
 
