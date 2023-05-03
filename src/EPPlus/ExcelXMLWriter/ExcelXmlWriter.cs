@@ -34,6 +34,7 @@ using System.Xml.Linq;
 using static OfficeOpenXml.ExcelWorksheet;
 using OfficeOpenXml.ConditionalFormatting.Rules;
 using System.Runtime.CompilerServices;
+using OfficeOpenXml.XMLWritingEncoder;
 
 namespace OfficeOpenXml.ExcelXMLWriter
 {
@@ -97,11 +98,15 @@ namespace OfficeOpenXml.ExcelXMLWriter
             FindNodePositionAndClearIt(sw, xml, "colBreaks", ref startOfNode, ref endOfNode);
             UpdateColBreaks(sw, prefix);
 
-            ExtLstHelper extLst = new ExtLstHelper(xml);
+            // ExtLstHelper extLst = new ExtLstHelper(xml);
 
-            FindNodePositionAndClearIt(sw, xml, "extLst", ref startOfNode, ref endOfNode);
+            // FindNodePositionAndClearIt(sw, xml, "extLst", ref startOfNode, ref endOfNode);
 
-            if (_ws.DataValidations.Count() != 0)
+            // if (_ws.DataValidations.Count() != 0)
+            
+            //Careful. Ensure that we only do appropriate extLst things when there are objects to operate on.
+            //Creating an empty DataValidations Node in ExtLst for example generates a corrupt excelfile that passes validation tool checks.
+            if (_ws.GetNode("d:extLst") != null && _ws.DataValidations.GetExtLstCount() != 0)
             {
                 extLst.InsertExt(ExtLstUris.DataValidationsUri, UpdateExtLstDataValidations(), "");
             }
@@ -146,12 +151,14 @@ namespace OfficeOpenXml.ExcelXMLWriter
             bool first = true;
             while (cse.Next())
             {
+                var col = cse.Value._value as ExcelColumn;
+                if (col == null) continue;
+                
                 if (first)
                 {
                     sw.Write($"<{prefix}cols>");
                     first = false;
                 }
-                var col = cse.Value._value as ExcelColumn;
                 ExcelStyleCollection<ExcelXfs> cellXfs = _package.Workbook.Styles.CellXfs;
 
                 sw.Write($"<{prefix}col min=\"{col.ColumnMin}\" max=\"{col.ColumnMax}\"");
@@ -628,22 +635,22 @@ namespace OfficeOpenXml.ExcelXMLWriter
 
             if (string.IsNullOrEmpty(_ws.DataValidations[i].ErrorTitle) == false)
             {
-                cache.Append($"errorTitle=\"{_ws.DataValidations[i].ErrorTitle}\" ");
+                cache.Append($"errorTitle=\"{_ws.DataValidations[i].ErrorTitle.EncodeXMLAttribute()}\" ");
             }
 
             if (string.IsNullOrEmpty(_ws.DataValidations[i].Error) == false)
             {
-                cache.Append($"error=\"{_ws.DataValidations[i].Error}\" ");
+                cache.Append($"error=\"{_ws.DataValidations[i].Error.EncodeXMLAttribute()}\" ");
             }
 
             if (string.IsNullOrEmpty(_ws.DataValidations[i].PromptTitle) == false)
             {
-                cache.Append($"promptTitle=\"{_ws.DataValidations[i].PromptTitle}\" ");
+                cache.Append($"promptTitle=\"{_ws.DataValidations[i].PromptTitle.EncodeXMLAttribute()}\" ");
             }
 
             if (string.IsNullOrEmpty(_ws.DataValidations[i].Prompt) == false)
             {
-                cache.Append($"prompt=\"{_ws.DataValidations[i].Prompt}\" ");
+                cache.Append($"prompt=\"{_ws.DataValidations[i].Prompt.EncodeXMLAttribute()}\" ");
             }
 
             if (_ws.DataValidations.HasValidationType(InternalValidationType.DataValidation))

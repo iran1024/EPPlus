@@ -1284,6 +1284,7 @@ namespace OfficeOpenXml
             LoadCells(xr);
             var nextElementLength = GetAttributeLength(xr);
             stream.SetWriteToBuffer();
+            
             LoadMergeCells(xr);
 
             var nextElement = "conditionalFormatting";
@@ -1314,14 +1315,17 @@ namespace OfficeOpenXml
                 LoadExtLst(xr, stream, ref xml, ref lastXmlElement);
                 //lastXmlElement = "extLst";
             }
+            if(!string.IsNullOrEmpty(lastXmlElement))
+            {
+                xml = stream.ReadFromEndElement(lastXmlElement, xml);
+            }
 
-            Encoding encoding = Encoding.UTF8;
-            xml = stream.ReadFromEndElement(lastXmlElement, xml);
 
             // now release stream buffer (already converted whole Xml into XmlDocument Object and String)
             stream.Dispose();
             packPart.Stream = RecyclableMemory.GetStream();
 
+            Encoding encoding = Encoding.UTF8;
             //first char is invalid sometimes?? 
             if (xml[0] != '<')
                 LoadXmlSafe(_worksheetXml, xml.Substring(1, xml.Length - 1), encoding);
@@ -1638,22 +1642,27 @@ namespace OfficeOpenXml
 
         private void LoadExtLst(XmlReader xr, WorksheetZipStream stream, ref string xml, ref string lastXmlElement)
         {
+            string lastUri = "";
             while (xr.ReadUntil(2, "ext"))
             {
                 if (xr.GetAttribute("uri") == ExtLstUris.DataValidationsUri)
                 {
-                    var nextXmlElement = "ext";
-                    xml = stream.ReadFromEndElement(lastXmlElement, xml, "ext", false, xr.Prefix, $" uri=\"{ExtLstUris.DataValidationsUri}\"", false);
-
+                    xml = stream.ReadToExt(xml, ExtLstUris.DataValidationsUri, ref lastXmlElement, lastUri);
+                    lastUri = ExtLstUris.DataValidationsUri;
+                    stream.WriteToBuffer = false;
                     xr.Read();
 
                     if (_dataValidations == null)
+                    {
                         _dataValidations = new ExcelDataValidationCollection(xr, this);
+                    }
                     else
+                    {
                         _dataValidations.ReadDataValidations(xr);
+                    }
+                    xr.Read(); //Read over ext end tag
 
                     stream.SetWriteToBuffer();
-                    lastXmlElement = nextXmlElement;
                 }
                 else if(xr.GetAttribute("uri") == ExtLstUris.ConditionalFormattingUri)
                 {
@@ -1676,6 +1685,11 @@ namespace OfficeOpenXml
                     //TODO: add other extLst options here. For now avoid infinite loop.
                     xr.Read();
                 }
+            }
+            if(string.IsNullOrEmpty(lastUri)==false)
+            {
+                stream.ReadToEnd();
+                xml = stream.ReadToExt(xml, "", ref lastXmlElement, lastUri);
             }
         }
 
@@ -2842,6 +2856,7 @@ namespace OfficeOpenXml
                     }
                 }
             }
+            if (colNum == -1) return;
             if (col.TotalsRowFunction == RowFunctions.Custom)
             {
                 SetFormula(tbl.Address._toRow, colNum, col.TotalsRowFormula);
@@ -2889,11 +2904,6 @@ namespace OfficeOpenXml
             _formulas.SetValue(row, col, value);
             if (!ExistsValueInner(row, col)) SetValueInner(row, col, null);
         }
-        //internal void SetStyle(int row, int col, int value)
-        //{
-        //    SetStyleInner(row, col, value);
-        //    if(!_values.Exists(row,col)) SetValueInner(row, col, null);
-        //}
 
         private void SavePivotTables()
         {

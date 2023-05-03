@@ -29,10 +29,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using OfficeOpenXml.DataValidation.Contracts;
 using OfficeOpenXml.Drawing;
 using OfficeOpenXml.Drawing.Chart;
 using OfficeOpenXml.Drawing.Chart.Style;
+using OfficeOpenXml.Drawing.Slicer;
 using OfficeOpenXml.Drawing.Style.Coloring;
+using OfficeOpenXml.Sparkline;
 using OfficeOpenXml.Style;
 using OfficeOpenXml.Table;
 using OfficeOpenXml.Table.PivotTable;
@@ -4250,8 +4253,8 @@ namespace EPPlusTest
         [TestMethod]
         public void s803()
         {
-            using (var p = OpenPackage("s803.xlsx",true))
-            {                
+            using (var p = OpenPackage("s803.xlsx", true))
+            {
                 var ws = p.Workbook.Worksheets.Add("Sheet1");
                 ws.Cells["A1:E100"].FillNumber(1, 1);
                 ws.Cells["A82"].Formula = "a1";
@@ -4356,34 +4359,34 @@ namespace EPPlusTest
                 SaveAndCleanup(package);
             }
         }
-            private void AddLineSeries(ExcelChart chart, string seriesAddress, string xSeriesAddress, string seriesName)
-            {
-                var lineSeries = chart.Series.Add(seriesAddress, xSeriesAddress);
-                lineSeries.Header = seriesName;
-            }
+        private void AddLineSeries(ExcelChart chart, string seriesAddress, string xSeriesAddress, string seriesName)
+        {
+            var lineSeries = chart.Series.Add(seriesAddress, xSeriesAddress);
+            lineSeries.Header = seriesName;
+        }
 
 
-            private DataTable Data()
-            {
-                var toReturn = new DataTable();
-                toReturn.Columns.Add("Month");
-                toReturn.Columns.Add("Serie1", typeof(decimal));
-                toReturn.Columns.Add("Serie2", typeof(decimal));
-                toReturn.Columns.Add("Serie3", typeof(decimal));
+        private DataTable Data()
+        {
+            var toReturn = new DataTable();
+            toReturn.Columns.Add("Month");
+            toReturn.Columns.Add("Serie1", typeof(decimal));
+            toReturn.Columns.Add("Serie2", typeof(decimal));
+            toReturn.Columns.Add("Serie3", typeof(decimal));
 
 
-                toReturn.Rows.Add("01/2022", 1.4, 2.4, 3.4);
-                toReturn.Rows.Add("02/2022", 1.4, 2.4, 3.4);
-                toReturn.Rows.Add("03/2022", 1.4, 2.4, 3.4);
-                toReturn.Rows.Add("04/2022", 1.7, 2.7, 3.7);
-                toReturn.Rows.Add("05/2022", 1.7, 2.7, 3.7);
-                toReturn.Rows.Add("06/2022", 1.7, 2.7, 3.7);
-                toReturn.Rows.Add("07/2022", 1.9, 2.9, 3.9);
-                toReturn.Rows.Add("08/2022", 1.9, 2.9, 3.9);
+            toReturn.Rows.Add("01/2022", 1.4, 2.4, 3.4);
+            toReturn.Rows.Add("02/2022", 1.4, 2.4, 3.4);
+            toReturn.Rows.Add("03/2022", 1.4, 2.4, 3.4);
+            toReturn.Rows.Add("04/2022", 1.7, 2.7, 3.7);
+            toReturn.Rows.Add("05/2022", 1.7, 2.7, 3.7);
+            toReturn.Rows.Add("06/2022", 1.7, 2.7, 3.7);
+            toReturn.Rows.Add("07/2022", 1.9, 2.9, 3.9);
+            toReturn.Rows.Add("08/2022", 1.9, 2.9, 3.9);
 
 
-                return toReturn;
-            }
+            return toReturn;
+        }
         [TestMethod]
         public void s437()
         {
@@ -4398,12 +4401,12 @@ namespace EPPlusTest
                     metroChart.YAxis.MinValue = 0d;
                     metroChart.YAxis.MajorUnit = 0.05d;
 
-                    
+
                     foreach (var ct in metroChart.PlotArea.ChartTypes)
                     {
                         ///The "Series" being returned in this is only the bar series
                         ///while the other two line series are not being returned.
-                        foreach(var serie in ct.Series)
+                        foreach (var serie in ct.Series)
                         {
 
                         }
@@ -4420,6 +4423,267 @@ namespace EPPlusTest
                 SaveAndCleanup(package);
             }
         }
+        [TestMethod]
+        public void RichText()
+        {
+            using (ExcelPackage package = OpenPackage("richtextclear.xlsx", true))
+            {
+                var ws = package.Workbook.Worksheets.Add("Sheet1");
+                ws.Cells["A1"].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                ws.Cells["A1"].Style.Fill.BackgroundColor.SetColor(Color.Red);
+
+                ws.Cells["A1"].RichText.Add("Test");
+                ws.Cells["A1"].RichText.Clear();
+
+                SaveAndCleanup(package);
+            }
+        }
+
+        [TestMethod]
+        public void extLst()
+        {
+            using (ExcelPackage package = OpenTemplatePackage("extLstMany.xlsx"))
+            {
+                //package.Workbook.Worksheets.Delete(0);
+                Assert.AreEqual(1, package.Workbook.Worksheets[0].DataValidations.Count);
+                SaveAndCleanup(package);
+            }
+        }
+
+        //Should not generate a corrupt file when opened.
+        [TestMethod]
+        public void Issue842()
+        {
+            using (var package = OpenPackage("issue842_SHOULD_BE_OPENEABLE.xlsx", true))
+            {
+                ExcelWorksheet ws = package.Workbook.Worksheets.Add("exampleSheet");
+
+                ws.SetValue("C1", "0");
+
+                var address = new ExcelAddress(1, 1, 3, 1);
+                var testValidation = ws.DataValidations.AddDecimalValidation(address.Address);
+                testValidation.Formula.Value = 10;
+                testValidation.Formula2.Value = 15;
+
+                ExcelRange range = ws.Cells[1, 1, 4, 1];
+                ExcelTable table = ws.Tables.Add(range, "TestTable");
+                table.StyleName = "None";
+
+                ExcelTableSlicer slicer = ws.Drawings.AddTableSlicer(table.Columns[0]);
+
+                SaveAndCleanup(package);
+            }
+        }
+        [TestMethod]
+        public void s449()
+        {
+            using (var xlPackage = OpenTemplatePackage("s449.xlsx"))
+            {
+                using (var p2 = OpenPackage("s449-saved.xlsx", true))
+                {
+                    var SheetName = "Error_Sheet";
+                    var InSheet = xlPackage.Workbook.Worksheets[SheetName];
+                    var xlSheet = p2.Workbook.Worksheets.Add(SheetName, InSheet);
+                    SaveAndCleanup(p2);
+
+                }
+            }
+        }
+        [TestMethod]
+        public void i848()
+        {
+            using (var p = OpenTemplatePackage("i848.xlsx"))
+            {
+                // We have 2 rows with formulas in C column.
+                var book = p.Workbook;
+                var eppWorksheet = book.Worksheets[0];
+
+                // Insert row(-s) after first one. 
+                // New row one-based index is 2.
+                // Second row index is 3 now.
+                eppWorksheet.InsertRow(2, 1);
+                Assert.AreEqual("A3*B3", eppWorksheet.Cells["C3"].Formula);
+
+                // Formula updated fine =A3*B3.
+                Console.WriteLine(eppWorksheet.Cells["C3"].Formula);
+
+                // Insert row(-s) after second one (it has index 3 now).
+                eppWorksheet.InsertRow(4, 1);
+
+                // Formula should not be updated, because row 3 is above.
+                // But now its =A2*B2. Why?
+                Assert.AreEqual("A3*B3", eppWorksheet.Cells["C3"].Formula);
+
+                SaveAndCleanup(p);
+            }
+        }
+        [TestMethod]
+        public void Issue848()
+        {
+            using (var p = OpenPackage("issue848-2.xlsx", true))
+            {
+                var worksheet = p.Workbook.Worksheets.Add("Sheet1");
+
+                // We start with a single row that has a formula
+                worksheet.Cells["A1"].Value = 1;
+                worksheet.Cells["B1"].Value = 2;
+                worksheet.Cells["C1"].Formula = "A1*B1";
+
+                // Insert a row and copy the original row
+                worksheet.InsertRow(2, 1);
+                worksheet.Cells["A1:C1"].Copy(worksheet.Cells["A2:C2"]);
+                Assert.AreEqual("A1*B1", worksheet.Cells["C1"].Formula);
+                Assert.AreEqual("A2*B2", worksheet.Cells["C2"].Formula);
+
+                // Insert another row and copy the original row
+                worksheet.InsertRow(3, 1);
+                worksheet.Cells["A1:C1"].Copy(worksheet.Cells["A3:C3"]);
+                Assert.AreEqual("A1*B1", worksheet.Cells["C1"].Formula);
+                Assert.AreEqual("A2*B2", worksheet.Cells["C2"].Formula);
+                Assert.AreEqual("A3*B3", worksheet.Cells["C3"].Formula);
+
+                // Delete the original row
+                worksheet.DeleteRow(1);
+                Assert.AreEqual("A1*B1", worksheet.Cells["C1"].Formula); // This still succeeds...
+                Assert.AreEqual("A2*B2", worksheet.Cells["C2"].Formula);
+
+                // Insert a row the end
+                worksheet.InsertRow(4, 1); // This seems to trigger the issue
+
+                // Next line fails, the formula in C1 is "A2*B2" (which is wrong)
+                Assert.AreEqual("A1*B1", worksheet.Cells["C1"].Formula); //  ... Now this fails
+                Assert.AreEqual("A2*B2", worksheet.Cells["C2"].Formula);
+            }
+        }
+        [TestMethod]
+        public void Issue854()
+        {
+            //using (var p = OpenTemplatePackage("i854.xlsx"))
+            using (var p = OpenTemplatePackage("i854.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets["Component Failure Rates"];
+                ws.Tables[0].DeleteRow(0, 1);
+                SaveAndCleanup(p);
+            }
+        }
+        [TestMethod]
+        public void Issue854_2()
+        {
+            using (var p = OpenTemplatePackage("i854-2.xlsx"))
+            {
+                var ws = p.Workbook.Worksheets["Component Failure Rates"];
+                var table = ws.Tables[0];
+                table.Columns.Insert(8,1);
+                SaveAndCleanup(p);
+            }
+        }
+
+        [TestMethod]
+        public void Issue852()
+        {
+            using (var p = OpenPackage("i852.xlsx",true))
+            {
+                //Making the sheet
+                var sheet = p.Workbook.Worksheets.Add("mergedCellsTest");
+
+                var cells = sheet.Cells["A1:D1"];
+
+                cells.Merge = true;
+                cells.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                cells.Style.Fill.BackgroundColor.SetColor(Color.Orange);
+
+                sheet.Cells["A2"].Value = "a";
+                sheet.Cells["B2"].Value = "b";
+                sheet.Cells["A3"].Value = "c";
+                sheet.Cells["B3"].Value = "d";
+
+                var square = sheet.Cells["C2:C3"];
+
+                square.Merge = true;
+
+                square.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                square.Style.Fill.BackgroundColor.SetColor(Color.LightYellow);
+
+                var numberRange = sheet.Cells["A5:E5"];
+
+                for(int i = 0; i < numberRange.Columns; i++)
+                {
+                    numberRange.SetCellValue(0, i, i + 1);
+                }
+
+                var lowMerge = sheet.Cells["A6:E6"];
+
+                lowMerge.Merge = true;
+
+                lowMerge.Style.Fill.PatternType = ExcelFillStyle.Solid;
+                lowMerge.Style.Fill.BackgroundColor.SetColor(Color.Blue);
+
+                sheet.Cells["A2:C3"].Insert(eShiftTypeInsert.Right);
+
+                Assert.IsTrue(sheet.Cells["A1:D1"].Merge);
+                Assert.IsTrue(sheet.Cells["A6:E6"].Merge);
+                Assert.IsFalse(sheet.Cells["E1:G1"].Merge);
+                Assert.IsFalse(sheet.Cells["A6:H6"].Merge);
+
+                Assert.AreEqual(Color.LightYellow.ToArgb().ToString("X"), sheet.Cells["F2:F3"].Style.Fill.BackgroundColor.Rgb);
+
+                var stream = new MemoryStream(); 
+                p.SaveAs(stream);
+
+                ExcelPackage newPack = new ExcelPackage(stream);
+
+                var newSheet = newPack.Workbook.Worksheets[0];
+
+                //Performing the test
+
+                Assert.IsTrue(newSheet.Cells["A1:D1"].Merge);
+                Assert.IsTrue(newSheet.Cells["A6:E6"].Merge);
+                Assert.IsFalse(newSheet.Cells["E1:G1"].Merge);
+                Assert.IsFalse(newSheet.Cells["A6:H6"].Merge);
+
+                Assert.AreEqual(Color.LightYellow.ToArgb().ToString("X"), newSheet.Cells["F2:F3"].Style.Fill.BackgroundColor.Rgb);
+            }
+        }
+        [TestMethod]
+        public void Issue858()
+        {
+            using (var p = OpenTemplatePackage("i858.xlsx"))
+            {
+                var sheet = p.Workbook.Worksheets[0];
+
+                for (int i = 1; i <= 4; i++)
+                {
+                    sheet.Cells[1, i].IsRichText = true;
+                    sheet.Cells[1, i].Style.WrapText = true;
+                    sheet.Cells[1, i].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                    sheet.Cells[1, i].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+                    sheet.Cells[1, i].RichText.Add($"Hello world {i}");
+
+                }
+
+                var bytearray = p.GetAsByteArray();
+            }
+        }
+
+        [TestMethod]
+        public void Issue861()
+        {
+            var ep = new ExcelPackage();
+            var ws = ep.Workbook.Worksheets.Add("Test");
+
+            for (int row = 1; row < 10; ++row)
+                for (int col = 1; col < 10; ++col)
+                    ws.Cells[row, col].Value = $"{row}:{col}";
+
+            var wsCol = ws.Column(3);
+            wsCol.Style.Border.Left.Style = wsCol.Style.Border.Right.Style = ExcelBorderStyle.Thick;
+            wsCol.Style.Fill.SetBackground(System.Drawing.Color.Black);
+
+            ws.Row(3).Style.Fill.SetBackground(System.Drawing.Color.Aqua);
+
+            Assert.AreNotEqual(ws.Row(3).Style.Border.Left.Style, wsCol.Style.Border.Left.Style);
+            Assert.AreNotEqual(ws.Row(3).Style.Border.Right.Style, wsCol.Style.Border.Right.Style);
+        }
+
     }
 }
-

@@ -15,6 +15,7 @@ using OfficeOpenXml.Core.CellStore;
 using OfficeOpenXml.DataValidation;
 using OfficeOpenXml.FormulaParsing;
 using OfficeOpenXml.FormulaParsing.Excel.Functions;
+using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using OfficeOpenXml.Table;
 using OfficeOpenXml.Table.PivotTable;
@@ -465,16 +466,18 @@ namespace OfficeOpenXml.Core.Worksheet
                 }
 
                 //Update CalculatedColumnFormula
+                var address = tbl.Address.Intersect(range);
                 foreach (var col in tbl.Columns)
                 {
                     if (string.IsNullOrEmpty(col.CalculatedColumnFormula) == false)
                     {
                         var cf = ExcelCellBase.UpdateFormulaReferences(col.CalculatedColumnFormula, range, effectedAddress, shift, ws.Name, ws.Name);
                         col.SetFormula(cf);
-                        var address = tbl.Address.Intersect(range);
-                        if (address != null)
+                        if (address != null && tbl.Address._fromCol+col.Position-1 >= effectedAddress._fromCol)
                         {
-                            col.SetFormulaCells(address._fromRow, address._toRow, tbl.Address._fromCol + col.Position);
+                            var fromRow = tbl.ShowHeader && address._fromRow == tbl.Address._fromRow ? address._fromRow + 1 : address._fromRow;
+                            var toRow = tbl.ShowTotal ? address._toRow - 1 : address._toRow;
+                            col.SetFormulaCells(fromRow, toRow, tbl.Address._fromCol + col.Position + range.Columns);
                         }
                     }
                 }
@@ -760,6 +763,10 @@ namespace OfficeOpenXml.Core.Worksheet
                             var tokens = GetTokens(wsToUpdate, cse.Row, cse.Column, v);
                             cse.Value = ExcelCellBase.UpdateFormulaReferences(v, rows, 0, rowFrom, 0, wsToUpdate.Name, ws.Name, false, false, tokens);
                         }
+                        if(v!=cse.Value.ToString())
+                        {
+                            wsToUpdate._formulaTokens.SetValue(cse.Row, cse.Column, null);
+                        }
                     }
                 }
             }
@@ -768,16 +775,10 @@ namespace OfficeOpenXml.Core.Worksheet
         private static SourceCodeTokenizer _sct = new SourceCodeTokenizer(FunctionNameProvider.Empty, NameValueProvider.Empty);
         private static IEnumerable<Token> GetTokens(ExcelWorksheet ws, int row, int column, string formula)
         {
-            if(string.IsNullOrEmpty(formula)) return new List<Token>();
-            var tokens = ws._formulaTokens.GetValue(row, column);
-            if (tokens == null)
-            {
-                tokens = (List<Token>)_sct.Tokenize(formula, ws.Name);
-                ws._formulaTokens.SetValue(row, column, tokens);
-            }
-            return tokens;
+            return string.IsNullOrEmpty(formula) ? 
+                new List<Token>() : 
+                (List<Token>)_sct.Tokenize(formula, ws.Name);
         }
-
         private static void FixFormulasInsertColumn(ExcelWorksheet ws, int columnFrom, int columns)
         {
             foreach (var wsToUpdate in ws.Workbook.Worksheets)
@@ -797,6 +798,7 @@ namespace OfficeOpenXml.Core.Worksheet
                         {
                             a._toCol += columns;
                         }
+
                         f.Address = ExcelCellBase.GetAddress(a._fromRow, a._fromCol, a._toRow, a._toCol);
                         f.Formula = ExcelCellBase.UpdateFormulaReferences(f.Formula, 0, columns, 0, columnFrom, wsToUpdate.Name, ws.Name);
                     }
@@ -832,7 +834,8 @@ namespace OfficeOpenXml.Core.Worksheet
             {
                 throw (new ArgumentOutOfRangeException("columnFrom can't be lesser that 1"));
             }
-            //Check that cells aren't shifted outside the boundries
+            
+            //Check that cells aren't shifted outside the boundries.
             if (d != null && d.End.Column > columnFrom && d.End.Column + columns > ExcelPackage.MaxColumns)
             {
                 throw (new ArgumentOutOfRangeException("Can't insert. Columns will be shifted outside the boundries of the worksheet."));
@@ -841,7 +844,6 @@ namespace OfficeOpenXml.Core.Worksheet
             var insertRange = new ExcelAddressBase(rowFrom, columnFrom, rowFrom + rows - 1, columnFrom + columns - 1);
             FormulaDataTableValidation.HasPartlyFormulaDataTable(ws, insertRange, false, "Can't insert a part of a data table function");
         }
-
         #region private methods
         private static void ValidateInsertRow(ExcelWorksheet ws, int rowFrom, int rows, int columnFrom = 1, int columns = ExcelPackage.MaxColumns)
         {
@@ -874,6 +876,7 @@ namespace OfficeOpenXml.Core.Worksheet
             ws._flags.Insert(rowFrom, columnFrom, rows, columns);
             ws._metadataStore.Insert(rowFrom, columnFrom, rows, columns);
             ws._vmlDrawings?._drawingsCellStore.Insert(rowFrom, columnFrom, rows, columns);
+            ws.MergedCells._cells.Insert(rowFrom, columnFrom, rows, columns);
 
             if (rows == 0 || columns == 0)
             {
@@ -902,6 +905,7 @@ namespace OfficeOpenXml.Core.Worksheet
             ws._flags.InsertShiftRight(fromAddress);
             ws._metadataStore.InsertShiftRight(fromAddress);
             ws._vmlDrawings?._drawingsCellStore.InsertShiftRight(fromAddress);
+            ws.MergedCells._cells.InsertShiftRight(fromAddress); 
 
             ws.Comments.Insert(fromAddress._fromRow, fromAddress._fromCol, 0, fromAddress.Columns, fromAddress._toRow, fromAddress._toCol);
             ws.ThreadedComments.Insert(fromAddress._fromRow, fromAddress._fromCol, 0, fromAddress.Columns, fromAddress._toRow, fromAddress._toCol);
