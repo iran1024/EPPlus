@@ -173,6 +173,7 @@ namespace OfficeOpenXml.ConditionalFormatting
         /// <param name="original"></param>
         protected ExcelConditionalFormattingRule(ExcelConditionalFormattingRule original)
         {
+            _ws = original._ws;
             Rank = original.Rank;
             Formula = original.Formula;
             Formula2 = original.Formula2;
@@ -338,9 +339,6 @@ namespace OfficeOpenXml.ConditionalFormatting
         }
 
 
-        internal virtual ExcelConditionalFormattingRule Clone()
-        {
-            return this;
-        }
+        internal abstract ExcelConditionalFormattingRule Clone();
     }
 }

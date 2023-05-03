@@ -47,6 +47,15 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
         }
 
+        internal ExcelConditionalFormattingContainsErrors(ExcelConditionalFormattingContainsErrors copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingContainsErrors(this);
+        }
+
         public override ExcelAddress Address 
         { 
             get { return base.Address; } 

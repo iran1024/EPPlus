@@ -20,5 +20,14 @@ namespace OfficeOpenXml.ConditionalFormatting
           : base(eExcelConditionalFormattingRuleType.DuplicateValues, address, ws, xr)
         {
         }
+
+        internal ExcelConditionalFormattingDuplicateValues(ExcelConditionalFormattingDuplicateValues copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingDuplicateValues(this);
+        }
     }
 }

@@ -84,6 +84,18 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
         }
 
+        internal ExcelConditionalFormattingTwoColorScale(ExcelConditionalFormattingTwoColorScale copy) : base(copy)
+        {
+            LowValue = copy.LowValue;
+            HighValue = copy.HighValue;
+            StopIfTrue = copy.StopIfTrue;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingTwoColorScale(this);
+        }
+
         internal virtual void ReadColors(XmlReader xr)
         {
             Type = eExcelConditionalFormattingRuleType.TwoColorScale;

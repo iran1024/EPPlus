@@ -1297,7 +1297,6 @@ namespace OfficeOpenXml
             }
 
             nextElement = "dataValidations";
-
             if (xr.ReadUntil(1, NodeOrders.WorksheetTopElementOrder, nextElement))
             {
                 xml = stream.ReadFromEndElement(lastXmlElement, xml, nextElement, false, xr.Prefix);
@@ -3153,6 +3152,7 @@ namespace OfficeOpenXml
         { 
             get
             {
+                CheckSheetTypeAndNotDisposed();
                 if (_conditionalFormatting == null)
                 {
                     _conditionalFormatting = new ExcelConditionalFormattingCollection(this);

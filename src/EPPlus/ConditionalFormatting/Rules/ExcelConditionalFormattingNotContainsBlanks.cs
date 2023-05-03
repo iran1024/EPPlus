@@ -47,6 +47,15 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
         }
 
+        internal ExcelConditionalFormattingNotContainsBlanks(ExcelConditionalFormattingNotContainsBlanks copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingNotContainsBlanks(this);
+        }
+
         public override ExcelAddress Address
         {
             get { return base.Address; }

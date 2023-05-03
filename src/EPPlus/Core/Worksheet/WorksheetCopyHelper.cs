@@ -29,6 +29,7 @@ using OfficeOpenXml.Drawing.Controls;
 using OfficeOpenXml.Style.Dxf;
 using OfficeOpenXml.Table.PivotTable;
 using OfficeOpenXml.DataValidation;
+using OfficeOpenXml.ConditionalFormatting;
 
 namespace OfficeOpenXml.Core.Worksheet
 {
@@ -105,6 +106,13 @@ namespace OfficeOpenXml.Core.Worksheet
                 foreach(ExcelDataValidation dv in copy.DataValidations)
                 {
                     added.DataValidations.AddCopyOfDataValidation(dv);
+                }
+            }
+            if(copy.ConditionalFormatting.Count > 0)
+            {
+                foreach (ExcelConditionalFormattingRule rule in copy.ConditionalFormatting)
+                {
+                    added.ConditionalFormatting.CopyRule(rule);
                 }
             }
 

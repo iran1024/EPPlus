@@ -53,6 +53,17 @@ namespace OfficeOpenXml.ConditionalFormatting
             _containText = Text;
         }
 
+        internal ExcelConditionalFormattingBeginsWith(ExcelConditionalFormattingBeginsWith copy) : base(copy)
+        {
+            Operator = copy.Operator;
+            ContainText = copy.Text;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingBeginsWith(this);
+        }
+
         private string _containText = ""; 
 
         public string ContainText {

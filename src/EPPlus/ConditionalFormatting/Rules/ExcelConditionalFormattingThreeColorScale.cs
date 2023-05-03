@@ -66,6 +66,19 @@ namespace OfficeOpenXml.ConditionalFormatting
             MiddleValue.Color = tempColor;
         }
 
+        internal ExcelConditionalFormattingThreeColorScale(ExcelConditionalFormattingThreeColorScale copy) : base(copy)
+        {
+            LowValue = copy.LowValue;
+            MiddleValue = copy.MiddleValue;
+            HighValue = copy.HighValue;
+            StopIfTrue = copy.StopIfTrue;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingThreeColorScale(this);
+        }
+
 
         internal override void ReadColors(XmlReader xr)
         {

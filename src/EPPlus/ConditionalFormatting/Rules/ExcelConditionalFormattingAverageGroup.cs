@@ -21,5 +21,14 @@ namespace OfficeOpenXml.ConditionalFormatting
           : base(type, address, ws, xr)
         {
         }
+
+        internal ExcelConditionalFormattingAverageGroup(ExcelConditionalFormattingAverageGroup copy): base(copy) 
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingAverageGroup(this);
+        }
     }
 }

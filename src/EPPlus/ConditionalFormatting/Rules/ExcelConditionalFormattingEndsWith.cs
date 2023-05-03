@@ -50,6 +50,14 @@ namespace OfficeOpenXml.ConditionalFormatting
             Operator = eExcelConditionalFormattingOperatorType.EndsWith;
         }
 
+        internal ExcelConditionalFormattingEndsWith(ExcelConditionalFormattingEndsWith copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingEndsWith(this);
+        }
 
         /// <summary>
         /// The text to search in the end of the cell

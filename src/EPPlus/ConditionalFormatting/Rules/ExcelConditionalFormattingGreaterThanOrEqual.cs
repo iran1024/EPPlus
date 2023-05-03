@@ -35,6 +35,15 @@ namespace OfficeOpenXml.ConditionalFormatting
             Operator = eExcelConditionalFormattingOperatorType.GreaterThanOrEqual;
         }
 
+        internal ExcelConditionalFormattingGreaterThanOrEqual(ExcelConditionalFormattingGreaterThanOrEqual copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingGreaterThanOrEqual(this);
+        }
+
         #endregion Constructors
     }
 }

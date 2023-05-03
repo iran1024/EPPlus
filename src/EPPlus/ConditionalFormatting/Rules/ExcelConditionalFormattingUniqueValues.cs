@@ -32,6 +32,16 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
         }
 
+        internal ExcelConditionalFormattingUniqueValues(ExcelConditionalFormattingUniqueValues copy) : base(copy)
+        {
+            Rank = copy.Rank;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingUniqueValues(this);
+        }
+
         #endregion Constructors
     }
 }

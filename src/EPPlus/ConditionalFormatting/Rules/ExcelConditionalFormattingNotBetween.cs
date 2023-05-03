@@ -50,6 +50,14 @@ namespace OfficeOpenXml.ConditionalFormatting
             Operator = eExcelConditionalFormattingOperatorType.NotBetween;
         }
 
+        internal ExcelConditionalFormattingNotBetween(ExcelConditionalFormattingNotBetween copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingNotBetween(this);
+        }
 
         #endregion Constructors
 

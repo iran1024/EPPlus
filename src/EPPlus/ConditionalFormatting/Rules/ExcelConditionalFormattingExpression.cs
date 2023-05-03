@@ -37,5 +37,14 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
                 xr)
         {
         }
+
+        internal ExcelConditionalFormattingExpression(ExcelConditionalFormattingExpression copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingExpression(this);
+        }
     }
 }

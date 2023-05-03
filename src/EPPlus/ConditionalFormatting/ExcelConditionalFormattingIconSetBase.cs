@@ -8,6 +8,7 @@ using System.Xml;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.RefAndLookup;
 using OfficeOpenXml.Utils;
+using OfficeOpenXml.ConditionalFormatting.Rules;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {
@@ -143,6 +144,26 @@ namespace OfficeOpenXml.ConditionalFormatting
             }
 
             xr.Read();
+        }
+
+        internal ExcelConditionalFormattingIconSetBase(ExcelConditionalFormattingIconSetBase<T> copy) : base(copy)
+        {
+            StopIfTrue = copy.StopIfTrue;
+            ShowValue = copy.ShowValue;
+            IconSetPercent = copy.IconSetPercent;
+            Reverse = copy.Reverse;
+
+            Type = copy.Type;
+            IconSet = copy.IconSet;
+
+            Icon1 = copy.Icon1;
+            Icon2 = copy.Icon2;
+            Icon3 = copy.Icon3;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingIconSetBase<T>(this);
         }
 
         /// <summary>

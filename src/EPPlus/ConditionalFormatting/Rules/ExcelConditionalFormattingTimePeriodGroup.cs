@@ -55,9 +55,19 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
         }
 
+        internal ExcelConditionalFormattingTimePeriodGroup(ExcelConditionalFormattingTimePeriodGroup copy) : base(copy)
+        {
+            TimePeriod = copy.TimePeriod;
+        }
 
-    #endregion Constructors
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingTimePeriodGroup(this);
+        }
+
+
+        #endregion Constructors
 
         /****************************************************************************************/
-  }
+    }
 }

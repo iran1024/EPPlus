@@ -24,6 +24,16 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
         }
 
+        internal ExcelConditionalFormattingStdDevGroup(ExcelConditionalFormattingStdDevGroup copy) : base(copy)
+        {
+            StdDev = copy.StdDev;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingStdDevGroup(this);
+        }
+
         internal override void ReadClassSpecificXmlNodes(XmlReader xr)
         {
             base.ReadClassSpecificXmlNodes(xr);

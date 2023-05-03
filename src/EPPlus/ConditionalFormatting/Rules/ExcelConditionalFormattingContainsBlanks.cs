@@ -31,6 +31,16 @@ namespace OfficeOpenXml.ConditionalFormatting
               Address.Start.Address);
         }
 
+        internal ExcelConditionalFormattingContainsBlanks(ExcelConditionalFormattingContainsBlanks copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingContainsBlanks(this);
+        }
+
+
         void UpdateFormula()
         {
             Formula = string.Format(
@@ -61,6 +71,7 @@ namespace OfficeOpenXml.ConditionalFormatting
             get { return base.Address; } 
             set { base.Address = value; UpdateFormula(); } 
         }
+
 
         #endregion Constructors
 

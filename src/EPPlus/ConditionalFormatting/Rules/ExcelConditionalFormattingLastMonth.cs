@@ -41,6 +41,15 @@ namespace OfficeOpenXml.ConditionalFormatting
             : base(eExcelConditionalFormattingRuleType.LastMonth, address, ws, xr)
         {
         }
+
+        internal ExcelConditionalFormattingLastMonth(ExcelConditionalFormattingLastMonth copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingLastMonth(this);
+        }
         #endregion
     }
 }

@@ -1,4 +1,6 @@
 ﻿using OfficeOpenXml.ConditionalFormatting.Contracts;
+using OfficeOpenXml.ConditionalFormatting.Rules;
+using System.Drawing;
 using System.Xml;
 
 namespace OfficeOpenXml.ConditionalFormatting
@@ -31,6 +33,15 @@ namespace OfficeOpenXml.ConditionalFormatting
             : base(eExcelConditionalFormattingRuleType.GreaterThan, address, ws, xr)
         {
             Operator = eExcelConditionalFormattingOperatorType.GreaterThan;
+        }
+
+        internal ExcelConditionalFormattingGreaterThan(ExcelConditionalFormattingGreaterThan copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingGreaterThan(this);
         }
 
         #endregion Constructors

@@ -41,6 +41,15 @@ namespace OfficeOpenXml.ConditionalFormatting
             : base(eExcelConditionalFormattingRuleType.Last7Days, address, ws, xr)
         {
         }
+
+        internal ExcelConditionalFormattingLast7Days(ExcelConditionalFormattingLast7Days copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingLast7Days(this);
+        }
         #endregion
     }
 }

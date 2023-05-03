@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -47,6 +48,16 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
 
             xr.Read();
             xr.Read();
+        }
+
+        internal ExcelConditionalFormattingFourIconSet(ExcelConditionalFormattingFourIconSet copy) : base(copy)
+        {
+            Icon4 = copy.Icon4;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingFourIconSet(this);
         }
 
         /// <summary>

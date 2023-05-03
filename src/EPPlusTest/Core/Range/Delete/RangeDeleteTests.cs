@@ -1260,6 +1260,7 @@ namespace EPPlusTest.Core.Range.Delete
             ws.DeleteColumn(1, 1);
             Assert.AreEqual("A2:B10", ws.SparklineGroups[0].DataRange.Address);
         }
+
         [TestMethod]
         public void DeleteFromTemplate1()
         {

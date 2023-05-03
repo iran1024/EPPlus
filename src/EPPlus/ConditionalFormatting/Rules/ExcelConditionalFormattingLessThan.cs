@@ -20,5 +20,14 @@ namespace OfficeOpenXml.ConditionalFormatting
         {
             Operator = eExcelConditionalFormattingOperatorType.LessThan;
         }
+
+        internal ExcelConditionalFormattingLessThan(ExcelConditionalFormattingLessThan copy) : base(copy)
+        {
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingLessThan(this);
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml;
 using OfficeOpenXml.ConditionalFormatting.Contracts;
+using OfficeOpenXml.ConditionalFormatting.Rules;
 
 namespace OfficeOpenXml.ConditionalFormatting
 {
@@ -30,5 +31,14 @@ namespace OfficeOpenXml.ConditionalFormatting
             Rank = UInt16.Parse(xr.GetAttribute("rank"));
         }
 
+        internal ExcelConditionalFormattingTopBottomGroup(ExcelConditionalFormattingTopBottomGroup copy) : base(copy)
+        {
+            Rank = copy.Rank;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingTopBottomGroup(this);
+        }
     }
 }

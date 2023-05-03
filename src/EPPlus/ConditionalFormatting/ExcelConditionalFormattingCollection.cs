@@ -301,16 +301,18 @@ namespace OfficeOpenXml.ConditionalFormatting
                     {
                         string address = xr.GetAttribute("sqref");
 
-                        if (xr.NodeType == XmlNodeType.Element)
+                        if (address != null)
                         {
+                            if (xr.NodeType == XmlNodeType.Element)
+                            {
+                                xr.Read();
+
+                                var cf = ExcelConditionalFormattingRuleFactory.Create(new ExcelAddress(address), _ws, xr);
+
+                                _rules.Add(cf);
+                            }
                             xr.Read();
-
-                            var cf = ExcelConditionalFormattingRuleFactory.Create(new ExcelAddress(address), _ws, xr);
-
-                            _rules.Add(cf);
                         }
-
-                        xr.Read();
                         xr.Read();
                     }
                 }
@@ -386,16 +388,11 @@ namespace OfficeOpenXml.ConditionalFormatting
         internal void CopyRule(ExcelConditionalFormattingRule rule, ExcelAddress address = null)
         {
             var ruleCopy = rule.Clone();
-            if(address != null)
+            if (address != null)
             {
                 ruleCopy.Address = address;
             }
             _rules.Add(ruleCopy);
-        }
-
-        internal void DeepCopyWithNewAddress(ExcelAddress address, ExcelConditionalFormattingRule orginalRule)
-        {
-            _rules.Add(orginalRule.Clone());
         }
 
         IEnumerator<IExcelConditionalFormattingRule> IEnumerable<IExcelConditionalFormattingRule>.GetEnumerator()

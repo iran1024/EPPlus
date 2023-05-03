@@ -56,6 +56,17 @@ namespace OfficeOpenXml.ConditionalFormatting.Rules
             xr.Read();
         }
 
+        internal ExcelConditionalFormattingFiveIconSet(ExcelConditionalFormattingFiveIconSet copy) : base(copy)
+        {
+            Icon4 = copy.Icon4;
+            Icon5 = copy.Icon5;
+        }
+
+        internal override ExcelConditionalFormattingRule Clone()
+        {
+            return new ExcelConditionalFormattingFiveIconSet(this);
+        }
+
         /// <summary>
         /// Icon 4 value
         /// </summary>
