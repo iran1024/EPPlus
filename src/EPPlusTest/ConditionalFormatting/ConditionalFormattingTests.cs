@@ -486,7 +486,6 @@ namespace EPPlusTest.ConditionalFormatting
                 specialCase.Icon4.CustomIcon = eExcelconditionalFormattingCustomIcon.SignalMeterWithThreeFilledBars;
                 specialCase.Icon5.CustomIcon = eExcelconditionalFormattingCustomIcon.SignalMeterWithFourFilledBars;
 
-
                 MemoryStream stream = new MemoryStream();
                 pck.SaveAs(stream);
 

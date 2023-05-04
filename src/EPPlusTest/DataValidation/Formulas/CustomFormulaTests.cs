@@ -56,8 +56,6 @@ namespace EPPlusTest.DataValidation.Formulas
 
             var validationAmpersand = sheet.DataValidations.AddCustomValidation("A1");
 
-            var validation = ReadTValidation<ExcelDataValidationCustom>(package);
-
             sheet.Cells["B1"].Value = "EP";
             sheet.Cells["C1"].Value = "Plus";
 

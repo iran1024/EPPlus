@@ -108,13 +108,13 @@ namespace OfficeOpenXml.Core.Worksheet
                     added.DataValidations.AddCopyOfDataValidation(dv);
                 }
             }
-            if(copy.ConditionalFormatting.Count > 0)
-            {
-                foreach (ExcelConditionalFormattingRule rule in copy.ConditionalFormatting)
-                {
-                    added.ConditionalFormatting.CopyRule(rule);
-                }
-            }
+            //if(copy.ConditionalFormatting.Count > 0)
+            //{
+            //    foreach (ExcelConditionalFormattingRule rule in copy.ConditionalFormatting)
+            //    {
+            //        added.ConditionalFormatting.CopyRule(rule);
+            //    }
+            //}
 
             //Copy all cells and styles if the worksheet is from another workbook.
             CloneCellsAndStyles(copy, added);
