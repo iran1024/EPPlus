@@ -830,9 +830,9 @@ namespace EPPlusTest.ConditionalFormatting
         [TestMethod]
         public void TestReadingConditionalFormatting()
         {
-            using (var pck = new ExcelPackage())
+            using (_pck)
             {
-                var wks = pck.Workbook.Worksheets.Add("FormattingTest");
+                var wks = _pck.Workbook.Worksheets.Add("FormattingTest");
 
                 string date = "2023-03-";
 
@@ -1416,12 +1416,23 @@ namespace EPPlusTest.ConditionalFormatting
         [TestMethod]
         public void ExtLstFormulaValidations()
         {
-
             using (var pck = OpenPackage("ExtLstFormulas.xlsx", true))
             {
                 var sheet = pck.Workbook.Worksheets.Add("formulas");
-                var refSheet = pck.Workbook.Worksheets.Add("formulasReference");
+                var refSheet = pck.Workbook.Worksheets.Add("ref");
 
+                var between = sheet.ConditionalFormatting.AddBetween(new ExcelAddress("A1"));
+                between.Formula = "ref!A1";
+                between.Formula2 = "ref!A2";
+
+                var notBetween = sheet.ConditionalFormatting.AddNotBetween(new ExcelAddress("A2"));
+                notBetween.Formula = "ref!A3";
+                notBetween.Formula2 = "ref!A4";
+
+                var equal = sheet.ConditionalFormatting.AddEqual(new ExcelAddress("A3"));
+                equal.Formula = "ref!A5";
+
+                SaveAndCleanup(pck);
             }
         }
     }
