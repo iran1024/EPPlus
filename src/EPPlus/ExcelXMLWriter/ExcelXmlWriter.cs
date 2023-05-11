@@ -88,7 +88,6 @@ namespace OfficeOpenXml.ExcelXMLWriter
                sw.Write(UpdateDataValidation(prefix));
             }
             
-
             FindNodePositionAndClearIt(sw, xml, "hyperlinks", ref startOfNode, ref endOfNode);
             UpdateHyperLinks(sw, prefix);
 

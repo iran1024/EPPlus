@@ -1665,10 +1665,6 @@ namespace OfficeOpenXml
                 }
                 else if(xr.GetAttribute("uri") == ExtLstUris.ConditionalFormattingUri)
                 {
-                    //var nextXmlElement = "ext";
-                    //xml = stream.ReadFromEndElement(lastXmlElement, xml, "ext", false, xr.Prefix, $" uri=\"{ExtLstUris.ConditionalFormattingUri}\"", false);
-
-                    //Ext->ConditionalFormattings
                     xml = stream.ReadToExt(xml, ExtLstUris.ConditionalFormattingUri, ref lastXmlElement, lastUri);
                     lastUri = ExtLstUris.ConditionalFormattingUri;
                     stream.WriteToBuffer = false;
